@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('id_compte_envoyeur')->unsigned();
             $table->bigInteger('id_compte_receveur')->unsigned();
             $table->bigInteger('id_type_transaction')->unsigned();
+            $table->bigInteger('id_etat_transaction')->unsigned();
             $table->timestamps();
         });
 
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->foreign('id_compte_envoyeur')->references('id')->on('compte_bancaires');
             $table->foreign('id_compte_receveur')->references('id')->on('compte_bancaires');
             $table->foreign('id_type_transaction')->references('id')->on('type_transactions');
+            $table->foreign('id_etat_transaction')->references('id')->on('etat_transactions');
         });
     }
 
