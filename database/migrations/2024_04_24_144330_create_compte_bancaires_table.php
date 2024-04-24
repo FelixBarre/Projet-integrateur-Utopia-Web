@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('nom');
             $table->decimal('solde', 15, 2);
             $table->decimal('taux_interet', 5, 2);
+            $table->bigInteger('id_user')->unsigned();
+        });
+
+        Schema::table('compte_bancaires', function (Blueprint $table) {
+            $table->foreign('id_user')->references('id')->on('users');
         });
     }
 
