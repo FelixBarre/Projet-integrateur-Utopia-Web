@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             RolesUsersSeeder::class,
+            CompteBancaireSeeder::class,
+            TypeDemandeSeeder::class,
+            EtatDemandeSeeder::class,
             ConversationSeeder::class,
             MessageSeeder::class
         ]);
