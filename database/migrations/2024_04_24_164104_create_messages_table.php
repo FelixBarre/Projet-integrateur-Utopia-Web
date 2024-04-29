@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('texte');
-            $table->string('chemin_du_fichier');
-            $table->datetime('date_heure_supprime');
+            $table->string('chemin_du_fichier')->nullable();
+            $table->datetime('date_heure_supprime')->nullable();
             $table->bigInteger('id_envoyeur')->unsigned();
             $table->bigInteger('id_receveur')->unsigned();
             $table->bigInteger('id_conversation')->unsigned();
