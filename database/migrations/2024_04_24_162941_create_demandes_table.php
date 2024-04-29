@@ -17,11 +17,13 @@ return new class extends Migration
             $table->date('date_traitement');
             $table->bigInteger('id_etat_demande')->unsigned();
             $table->bigInteger('id_demandeur')->unsigned();
+            $table->bigInteger('id_type_demande')->unsigned();
         });
 
         Schema::table('demandes', function (Blueprint $table) {
             $table->foreign('id_etat_demande')->references('id')->on('etat_demandes');
             $table->foreign('id_demandeur')->references('id')->on('users');
+            $table->foreign('id_type_demande')->references('id')->on('type_demandes');
         });
     }
 
