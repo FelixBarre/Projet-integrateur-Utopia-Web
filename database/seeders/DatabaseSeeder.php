@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\EtatTransaction;
-use App\Models\Transaction;
-use App\Models\TypeTransaction;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,13 +24,11 @@ class DatabaseSeeder extends Seeder
             VilleSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
-            RolesUsersSeeder::class
+            RolesUsersSeeder::class,
+            TypeTransactionSeeder::class,
+            EtatTransactionSeeder::class,
+            TransactionSeeder::class
         ]);
 
-        $this->call([
-            User::class,
-            TypeTransaction::class,
-            EtatTransaction::class
-            ]);
     }
 }

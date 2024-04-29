@@ -16,8 +16,8 @@ class TransactionSeeder extends Seeder
 
     DB::table('transactions')->insert([
         ['montant' => 500,
-        'id_compte_envoyeur' => '00000',
-        'id_compte_receveur' => 'Paquet de 10 crayons de marque HB',
+        'id_compte_envoyeur' => 1,
+        'id_compte_receveur' => 1,
         'id_type_transaction' =>1,
         'id_etat_transaction' =>1]
         ]);
