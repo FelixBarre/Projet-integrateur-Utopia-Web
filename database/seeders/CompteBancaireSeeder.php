@@ -17,6 +17,7 @@ class CompteBancaireSeeder extends Seeder
             ['nom' => 'compteExemple',
             'solde' => 1299.58,
             'taux_interet' => 0.01,
+            'est_valide' => 1,
             'id_user' => 1]
         ]);
     }
