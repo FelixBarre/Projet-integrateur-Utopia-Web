@@ -22,7 +22,7 @@ class RapportController extends Controller
      */
     public function create()
     {
-        //
+        return view('rapport.nouveauRapport');
     }
 
     /**
