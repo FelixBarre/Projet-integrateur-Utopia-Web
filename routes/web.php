@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
 
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
-    Route::get('transaction/update', 'update')->name('transactionUpdate');
+    Route::get('transaction/view/{id_transaction}', 'show')->name('transactionView');
 });
 
 require __DIR__.'/auth.php';

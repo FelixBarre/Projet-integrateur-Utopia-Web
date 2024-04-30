@@ -14,9 +14,9 @@
     </head>
 
 
-    <body class="flex flex-row h-screen">
+    <body class="flex flex-row">
 
-            <nav class="bg-[#F9F7F0] flex flex-col w-24 p-1 h-2/5"><!--Section de gauche -->
+            <nav class="bg-[#F9F7F0] flex flex-col w-24 p-1 h-full"><!--Section de gauche -->
                 <a class="p-3" href=""><img src="{{asset('img/letter-u.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/receive-mail.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/money-exchange.png')}}" alt=""></a>
@@ -25,7 +25,7 @@
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/user.png')}}" alt=""></a>
             </nav>
 
-            <div class="bg-[#18B7BE] w-full"><!--Section de droite -->
+            <div class="bg-[#18B7BE] w-full h-full"><!--Section de droite -->
 
                 <header class="grid items-center grid-cols-2 gap-2 py-10 lg:grid-cols-3">
 
@@ -67,9 +67,9 @@
 
                         <div>
                             @php
-                                use Carbon\Carbon;
+
                             @endphp
-                            <p class="mr-20 tex9t-white">{{Carbon::now()->format('d-M-Y H:i') }}</p>
+                            <p class="mr-20 tex9t-white">{{$date_time }}</p>
 
                         </div>
 
@@ -110,31 +110,37 @@
                             </tr>
                         </thead>
                         <tbody">
-                            <tr>
+                            @php
+
+                            @endphp
                             @foreach ($transactions as $transaction)
+                                @if ($transaction->etat_transactions->label != "En cours")
+                                    @php
+                                        $class_value = " bg-green-500 ";
+                                    @endphp
+                                @else
+                                    @php
+                                    $class_value = "bg-white";
+                                    @endphp
+                                @endif
+                            <tr>
                             <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                             <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
                             <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->nom}}</td>
                             <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->email}}</td>
                             <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->created_at}}</td>
-                            <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->etat_transactions->label}}</td>
-                                @if ($transaction->etat_transactions->label != "Terminer")
+                            <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
+                                @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
                                     <td class="m-auto text-center border-none">
-                                        <a class="p-1 mt-3 ml-4 text-white bg-blue-600 rounded hover:bg-blue-70"
-                                            href="{{ route('transactionUpdate') }}"
-
-                                        >
-                                            Modifier
-                                        </a>
-                                    </td>
+                                       <a href="{{
+                                        route('transactionView', ['id_transaction' => $transaction->id]) }}""> Voir </a>
 
 
 
                                 @endif
 
-                            @endforeach
-
                             </tr>
+                            @endforeach
 
                         </tbody>
                         </table>
