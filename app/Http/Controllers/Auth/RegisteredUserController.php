@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\LoginsInscriptionUtilisateur;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +14,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use App\Models\Role;
 use App\Models\Ville;
+use Illuminate\Support\Facades\Mail;
 
 class RegisteredUserController extends Controller
 {
@@ -41,7 +43,6 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'telephone' => ['required', 'string', 'max:255'],
             'noCivique' => ['required', 'string'],
-            'appt' => ['required', 'string'],
             'rue' => ['required', 'string', 'max:255'],
             'ville' => ['required'],
             'roles' => ['required', 'array', 'min:1']
@@ -67,6 +68,8 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        Mail::to($user)->send(new LoginsInscriptionUtilisateur($request->username, $mdpTemp));
 
         return redirect(route('dashboard', absolute: false));
     }
