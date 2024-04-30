@@ -86,7 +86,7 @@
             </select>
         </div>
 
-        <p>Un mot de passe temporaire sera envoyé à l'utilisateur</p>
+        <p>Le nom d'utilisateur et un mot de passe temporaire sera envoyé à l'utilisateur</p>
 
         <div class="flex items-center justify-end mt-4">
             <x-primary-button class="ms-4">
