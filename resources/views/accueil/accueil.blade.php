@@ -1,10 +1,6 @@
 <x-app-layout>
 
-    <div class="bg-[#18B7BE] w-full h-full"><!--Section de droite -->
-
-
-
-        <div class="flex flex-row w-full">
+        <div class="flex flex-row">
 
                 <div class="w-2/4 text-left">
                     <h2 class="text-6xl font-bold text-white mx-9">Bonjour !</h2>
@@ -18,126 +14,119 @@
 
 
                     <div>
-                        @php
-
-                        @endphp
                         <p class="mr-20 tex9t-white">{{$date_time }}</p>
-
                     </div>
 
 
                 </div>
 
-            </div>
+        </div>
 
-            <div><!--Section filter -->
-                <form action="">
-                    <p class="my-5 mx-9">
-                        <label for="filter" class="text-lg text-white">Filtrer par </label>
-                        <select name="typeTransaction" id="typeTransaction" class="w-64 p-3">
-                            @foreach ($type_transactions as $type_transaction)
-                            <option value="{{$type_transaction->label}}">{{$type_transaction->label}}</option>
-                            @endforeach
-
-                        </select>
-                    </p>
-
-                </form>
-
-            </div>
-
-
-
-
-            <main class="p-10 m_auto">
-                <table>
-                    <thead>
-                        <tr class=" bg-[#178CA4] text-white">
-                        <th class="w-1/6 m-auto border-2 border-solid ">IdDemande</th>
-                        <th class="w-1/6 m-auto border-2 border-solid">Tâche</th>
-                        <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
-                        <th class="w-1/6 m-auto border-2 border-solid">Téléphone</th>
-                        <th class="w-1/6 m-auto border-2 border-solid">Date</th>
-                        <th class="w-1/6 m-auto border-2 border-solid">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody">
-                        @php
-
-                        @endphp
-                        @foreach ($transactions as $transaction)
-                            @if ($transaction->etat_transactions->label != "En cours")
-                                @php
-                                    $class_value = " bg-green-500 ";
-                                @endphp
-                            @else
-                                @php
-                                $class_value = "bg-white";
-                                @endphp
-                            @endif
-                        <tr>
-                        <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
-                        <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                        <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->nom}}</td>
-                        <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->email}}</td>
-                        <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->created_at}}</td>
-                        <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
-                            @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
-                                <td class="m-auto text-center border-none">
-                                   <a href="{{
-                                    route('transactionView', ['id_transaction' => $transaction->id]) }}""> Voir </a>
-
-
-
-                            @endif
-
-                        </tr>
+        <div><!--Section filter -->
+            <form action="">
+                <p class="my-5 mx-9">
+                    <label for="filter" class="text-lg text-white">Filtrer par </label>
+                    <select name="typeTransaction" id="typeTransaction" class="w-64 p-3">
+                        @foreach ($type_transactions as $type_transaction)
+                        <option value="{{$type_transaction->label}}">{{$type_transaction->label}}</option>
                         @endforeach
 
-                    </tbody>
-                    </table>
-            </main>
+                    </select>
+                </p>
 
-            <footer class="flex flex-row text-white mx-9">
+            </form>
 
-                <div class="w-1/4">
-                    <p class="mb-3 font-bold">Gestion de comptes</p>
-                    <p><a href="">Création des comptes utilisateurs</a></p>
-                    <p><a href="">Modification de profil</a></p>
-                    <p><a href="">Changement de mot de passe </a></p>
-                    <p><a href="">Consultation des demandes de désactivation de compte </a></p>
-                    <p><a href="">Modification des demandes de désactivation de compte </a></p>
-                </div>
-
-                <div class="w-1/4">
-                    <p class="mb-3 font-bold">Gestion de profils</p>
-                    <p><a href="">Modification des informations personnelles</a></p>
-                    <p><a href="">Gestion des préférences </a></p>
-
-                </div>
-
-                <div class="w-1/4">
-                    <p class="mb-3 font-bold">Gestion des opérations</p>
-                    <p><a href="">Virement</a></p>
-                    <p><a href="">Transaction</a></p>
-                    <p><a href="">Facture</a></p>
-                    <p><a href="">Consulter une demande de prêt </a></p>
-                    <p><a href="">Modifier une demande de prêt </a></p>
-
-                </div>
-
-                <div class="w-1/4">
-                    <p class="mb-3 font-bold">Gestion de rapports</p>
-                    <p><a href="">Création des rapports </a></p>
-                    <p><a href="">Consultation des rapports </a></p>
-
-                </div>
-
-            </footer>
+        </div>
 
 
 
-    </div>
+
+
+        <div class="p-10 m_auto">
+            <table>
+                <thead>
+                    <tr class=" bg-[#178CA4] text-white">
+                    <th class="w-1/6 m-auto border-2 border-solid ">IdDemande</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Tâche</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Téléphone</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Date</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Status</th>
+                    </tr>
+                </thead>
+                <tbody">
+                    @php
+
+                    @endphp
+                    @foreach ($transactions as $transaction)
+                        @if ($transaction->etat_transactions->label != "En cours")
+                            @php
+                                $class_value = " bg-green-500 ";
+                            @endphp
+                        @else
+                            @php
+                            $class_value = "bg-white";
+                            @endphp
+                        @endif
+                    <tr>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->nom}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->email}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->created_at}}</td>
+                    <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
+                        @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
+                            <td class="m-auto text-center border-none">
+                               <a href="{{
+                                route('transactionView', ['id_transaction' => $transaction->id]) }}""> Voir </a>
+
+
+
+                        @endif
+
+                    </tr>
+                    @endforeach
+
+                </tbody>
+                </table>
+        </div>
+
+        <footer class="flex flex-row text-white mx-9">
+
+            <div class="w-1/4">
+                <p class="mb-3 font-bold">Gestion de comptes</p>
+                <p><a href="">Création des comptes utilisateurs</a></p>
+                <p><a href="">Modification de profil</a></p>
+                <p><a href="">Changement de mot de passe </a></p>
+                <p><a href="">Consultation des demandes de désactivation de compte </a></p>
+                <p><a href="">Modification des demandes de désactivation de compte </a></p>
+            </div>
+
+            <div class="w-1/4">
+                <p class="mb-3 font-bold">Gestion de profils</p>
+                <p><a href="">Modification des informations personnelles</a></p>
+                <p><a href="">Gestion des préférences </a></p>
+
+            </div>
+
+            <div class="w-1/4">
+                <p class="mb-3 font-bold">Gestion des opérations</p>
+                <p><a href="">Virement</a></p>
+                <p><a href="">Transaction</a></p>
+                <p><a href="">Facture</a></p>
+                <p><a href="">Consulter une demande de prêt </a></p>
+                <p><a href="">Modifier une demande de prêt </a></p>
+
+            </div>
+
+            <div class="w-1/4">
+                <p class="mb-3 font-bold">Gestion de rapports</p>
+                <p><a href="">Création des rapports </a></p>
+                <p><a href="">Consultation des rapports </a></p>
+
+            </div>
+
+        </footer>
 
 
 </x-app-layout>
