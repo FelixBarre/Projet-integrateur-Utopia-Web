@@ -12,20 +12,20 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
     </head>
-    <body>
 
-        <div class="flex flex-row w-full">
-            
-            <div class="bg-[#F9F7F0] flex flex-col w-24 p-1"><!--Section de gauche -->
+
+    <body class="flex flex-row h-screen">
+
+            <nav class="bg-[#F9F7F0] flex flex-col w-24 p-1 h-2/5"><!--Section de gauche -->
                 <a class="p-3" href=""><img src="{{asset('img/letter-u.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/receive-mail.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/money-exchange.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/info.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/chat.png')}}" alt=""></a>
                 <a class="p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/user.png')}}" alt=""></a>
-            </div>
+            </nav>
 
-            <div class="bg-[#18B7BE]"><!--Section de droite -->
+            <div class="bg-[#18B7BE] w-full"><!--Section de droite -->
 
                 <header class="grid items-center grid-cols-2 gap-2 py-10 lg:grid-cols-3">
 
@@ -39,14 +39,14 @@
                                 >
                                     Employé {{Auth::user}}
                                 </a>
-    
+
                             </span>
-    
+
                             <span>
                                 <img src="{{ asset('img/') }}" alt="icon user">
                             </span>
-    
-    
+
+
                             @endauth
                         </nav>
                     @endif
@@ -86,16 +86,16 @@
                                 @foreach ($type_transactions as $type_transaction)
                                 <option value="{{$type_transaction->label}}">{{$type_transaction->label}}</option>
                                 @endforeach
-                                
+
                             </select>
                         </p>
-                        
+
                     </form>
-                     
+
                 </div>
 
 
- 
+
 
                 <main class="p-10 m_auto">
                     <table>
@@ -177,7 +177,7 @@
 
                 </footer>
 
-            </div>
+
 
 
         </div>
