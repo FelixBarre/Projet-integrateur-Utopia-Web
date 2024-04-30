@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RapportController;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsEmploye;
 use App\Models\Transaction;
 
 Route::get('/', function () {
@@ -27,7 +28,7 @@ Route::controller(TransactionController::class)->group(function(){
 });
 
 Route::controller(RapportController::class)->group(function(){
-    Route::get('rapports', 'index')->name('rapports')->middleware(EnsureUserIsAdmin::class);
+    Route::get('rapports', 'index')->name('rapports')->middleware(EnsureUserIsEmploye::class);
 });
 
 require __DIR__.'/auth.php';
