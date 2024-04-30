@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\TypeTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class TransactionController extends Controller
@@ -15,8 +16,10 @@ class TransactionController extends Controller
     public function index()
     {
         $date_time = Carbon::now()->format('d-M-Y H:i');
+        $employe =Auth::user();
 
-        return view('accueil.accueil', [
+        return view('accueil/accueil', [
+            'employe'=>$employe,
             'transactions'=>Transaction::all(),
             'type_transactions'=>TypeTransaction::all(),
             'date_time'=>$date_time
