@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\RapportController;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Models\Transaction;
 
 Route::get('/', function () {
@@ -22,6 +24,10 @@ Route::middleware('auth')->group(function () {
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
     Route::get('transaction/update', 'update')->name('transactionUpdate');
+});
+
+Route::controller(RapportController::class)->group(function(){
+    Route::get('rapports', 'index')->name('rapports')->middleware(EnsureUserIsAdmin::class);
 });
 
 require __DIR__.'/auth.php';
