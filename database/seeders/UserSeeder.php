@@ -14,9 +14,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            ['name' => "usernameTest",
+            ['username' => "usernameTest",
             'nom' => 'Nom-Test',
             'prenom' => 'Prenom-Test',
+            'telephone' => '(819) 555-5555',
             'no_civique' => 123,
             'rue' => 'du Cégep',
             'id_ville' => 1,
@@ -26,9 +27,10 @@ class UserSeeder extends Seeder
             'remember_token' => null,
             'created_at' => '1970-01-01 00:00:01',
             'updated_at' => null],
-            ['name' => "usernameTest",
+            ['username' => "usernameTest",
             'nom' => 'Nom-Test',
             'prenom' => 'Prenom-Test',
+            'telephone' => '(819) 555-5555',
             'no_civique' => 123,
             'rue' => 'du Cégep',
             'id_ville' => 1,
