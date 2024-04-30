@@ -67,8 +67,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
         Mail::to($user)->send(new LoginsInscriptionUtilisateur($request->username, $mdpTemp));
 
         return redirect(route('dashboard', absolute: false));
