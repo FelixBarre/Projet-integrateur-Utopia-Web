@@ -12,7 +12,9 @@ class RapportController extends Controller
      */
     public function index()
     {
-        //
+        return view('rapport.rapports', [
+            'rapports' => Rapport::All()
+        ]);
     }
 
     /**
