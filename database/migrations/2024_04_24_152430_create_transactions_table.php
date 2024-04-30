@@ -22,8 +22,8 @@ return new class extends Migration
         });
 
         Schema::table('transactions', function (Blueprint $table) {
-            $table->foreign('id_compte_envoyeur')->references('id')->on('compte_bancaires');
-            $table->foreign('id_compte_receveur')->references('id')->on('compte_bancaires');
+            $table->foreign('id_compte_envoyeur')->references('id_user')->on('compte_bancaires');
+            $table->foreign('id_compte_receveur')->references('id_user')->on('compte_bancaires');
             $table->foreign('id_type_transaction')->references('id')->on('type_transactions');
             $table->foreign('id_etat_transaction')->references('id')->on('etat_transactions');
         });
