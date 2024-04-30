@@ -1,6 +1,6 @@
 <x-app-layout>
 
-        <div class="flex flex-row">
+        <div class="flex flex-row"><!-- Premier bloc contenant message, infos et datetime -->
 
                 <div class="w-2/4 text-left">
                     <h2 class="text-6xl font-bold text-white mx-9">Bonjour !</h2>
@@ -20,7 +20,7 @@
 
                 </div>
 
-        </div>
+        </div> <!-- Fin du premier bloc -->
 
         <div><!--Section filter -->
             <form action="">
@@ -36,13 +36,11 @@
 
             </form>
 
-        </div>
+        </div><!-- Fin section filter -->
 
 
 
-
-
-        <div class="p-10 m_auto">
+        <div class="p-10 m_auto"><!-- Bloc du tableau des transactions -->
             <table>
                 <thead>
                     <tr class=" bg-[#178CA4] text-white">
@@ -89,9 +87,9 @@
 
                 </tbody>
                 </table>
-        </div>
+        </div><!-- Fin du bloc du tableau des transactions -->
 
-        <footer class="flex flex-row text-white mx-9">
+        <footer class="flex flex-row text-white mx-9"><!-- Debut du footer -->
 
             <div class="w-1/4">
                 <p class="mb-3 font-bold">Gestion de comptes</p>
@@ -126,7 +124,7 @@
 
             </div>
 
-        </footer>
+        </footer><!-- Fin du footer -->
 
 
 </x-app-layout>
