@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TransactionController;
+use App\Models\Transaction;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,8 +19,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('accueil', function () {
-    return view('accueil/accueil');
+Route::controller(TransactionController::class)->group(function(){
+    Route::get('accueil', 'index')->name('accueil');
+    Route::get('transaction/update', 'update')->name('transactionUpdate');
 });
 
 require __DIR__.'/auth.php';
