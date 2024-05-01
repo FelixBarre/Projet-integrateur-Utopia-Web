@@ -34,9 +34,9 @@ class UserSeeder extends Seeder
             'no_civique' => 123,
             'rue' => 'du Cégep',
             'id_ville' => 1,
-            'email' => 'testdeuxieme@bidon.ca',
+            'email' => '456@456.456',
             'email_verified_at' => null,
-            'password' => 'abcd1234',
+            'password' => '$2y$12$Og5cEf0tYCXkUajniy6zXu99AZ7BlytdrxLZ92Gu6QMMlp3h1C4cG',
             'remember_token' => null,
             'created_at' => '1970-01-01 00:00:01',
             'updated_at' => null]
