@@ -37,7 +37,6 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'username' => ['required', 'string', 'max:255'],
             'prenom' => ['required', 'string', 'max:255'],
             'nom' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -45,13 +44,13 @@ class RegisteredUserController extends Controller
             'noCivique' => ['required', 'string'],
             'rue' => ['required', 'string', 'max:255'],
             'ville' => ['required'],
+            'codePostal' => ['required'],
             'roles' => ['required', 'array', 'min:1']
         ]);
 
         $mdpTemp = $this->getTempMDP(10);
 
         $user = User::create([
-            'username' => $request->username,
             'prenom' => $request->prenom,
             'nom' => $request->nom,
             'email' => $request->email,
@@ -60,6 +59,7 @@ class RegisteredUserController extends Controller
             'no_porte' => $request->appt,
             'rue' => $request->rue,
             'id_ville' => $request->ville,
+            'code_postal' => $request->codePostal,
             'password' => Hash::make($mdpTemp)
         ]);
 
@@ -67,7 +67,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Mail::to($user)->send(new LoginsInscriptionUtilisateur($request->username, $mdpTemp));
+        Mail::to($user)->send(new LoginsInscriptionUtilisateur($mdpTemp));
 
         return redirect(route('dashboard', absolute: false));
     }

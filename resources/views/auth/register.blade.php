@@ -12,13 +12,6 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Username -->
-        <div>
-            <x-input-label for="username" :value="__('Nom d\'utilisateur')" />
-            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('username')" class="mt-2" />
-        </div>
-
         <!-- Prenom -->
         <div>
             <x-input-label for="prenom" :value="__('Prénom')" />
@@ -69,8 +62,14 @@
             </select>
         </div>
 
+        <div class = "mt-4">
+            <x-input-label for="codePostal" :value="__('Code postal')" />
+            <x-text-input id="codePostal" class="block mt-1 w-full" type="text" name="codePostal" :value="old('codePostal')" required autofocus autocomplete="codePostal" />
+            <x-input-error :messages="$errors->get('codePostal')" class="mt-2" />
+        </div>
+
         <div>
-            <x-input-label for="appt" :value="__('2e numéro d\'addresse (ex.: 103)')" />
+            <x-input-label for="appt" :value="__('Numéro de porte / d\'appartement')" />
             <x-text-input id="appt" class="block mt-1 w-full" type="text" name="appt" :value="old('appt')" autofocus autocomplete="appt" />
             <x-input-error :messages="$errors->get('appt')" class="mt-2" />
         </div>

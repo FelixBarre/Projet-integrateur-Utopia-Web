@@ -10,7 +10,7 @@ use App\Http\Middleware\EnsureUserIsEmploye;
 use App\Models\Transaction;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -23,6 +23,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::controller(ProfileController::class)->group(function() {
+    Route::get('/profile',  'show')->name('profile.show');
+    Route::patch('/profile', 'edit')->name('profile.edit');
+});
+
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
     Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
@@ -31,7 +36,7 @@ Route::controller(TransactionController::class)->group(function(){
 Route::controller(RapportController::class)->group(function(){
     Route::get('rapports', 'index')->name('rapports');
     Route::get('nouveauRapport', 'create')->name('nouveauRapport');
-    Route::get('creationRapport', 'store')->name('creationRapport');
+    Route::post('creationRapport', 'store')->name('creationRapport');
 })->middleware(EnsureUserIsEmploye::class);
 
 Route::controller(DemandeController::class)->group(function(){
