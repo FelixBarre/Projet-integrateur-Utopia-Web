@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
 
 Route::controller(ProfileController::class)->group(function() {
     Route::get('/profile',  'show')->name('profile.show');
+    Route::patch('/profile', 'edit')->name('profile.edit');
 });
 
 Route::controller(TransactionController::class)->group(function(){
