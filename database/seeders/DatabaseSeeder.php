@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             RapportSeeder::class,
             TypeDemandeSeeder::class,
             EtatDemandeSeeder::class,
+            DemandeSeeder::class,
             ConversationSeeder::class,
             MessageSeeder::class
         ]);

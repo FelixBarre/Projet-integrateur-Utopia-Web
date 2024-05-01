@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('demandes', function (Blueprint $table) {
             $table->id();
             $table->date('date_demande');
-            $table->date('date_traitement');
+            $table->date('date_traitement')->nullable();
+            $table->string('raison')->nullable();
+            $table->decimal('montant', 15, 2)->nullable();
             $table->bigInteger('id_etat_demande')->unsigned();
             $table->bigInteger('id_demandeur')->unsigned();
             $table->bigInteger('id_type_demande')->unsigned();
