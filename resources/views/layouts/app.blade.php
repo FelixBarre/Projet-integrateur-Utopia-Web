@@ -17,14 +17,14 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
-    <body class="font-sans antialiased">
+    <body class="h-screen font-sans antialiased">
 
         <div class="flex flex-row bg-gray-100">
 
             @include('layouts.navigation')
 
             <!-- Page Content -->
-            <main class="bg-[#18B7BE]">
+            <main class="bg-[#18B7BE] h-screen ml-24 w-screen">
 
                 {{ $slot }}
 
