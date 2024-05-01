@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
             $table->string('nom');
             $table->string('prenom');
             $table->string('telephone');
@@ -21,6 +20,7 @@ return new class extends Migration
             $table->integer('no_porte')->nullable();
             $table->string('rue');
             $table->bigInteger('id_ville')->unsigned();
+            $table->string('code_postal');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
