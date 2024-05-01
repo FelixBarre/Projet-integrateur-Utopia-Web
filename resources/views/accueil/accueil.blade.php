@@ -76,7 +76,7 @@
                         @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
                             <td class="m-auto text-center border-none">
                                <a href="{{
-                                route('transactionView', ['id_transaction' => $transaction->id]) }}""> Voir </a>
+                                route('transactionView', ['id_compte_envoyeur' => $transaction->id_compte_envoyeur]) }}""> Voir </a>
 
 
 
