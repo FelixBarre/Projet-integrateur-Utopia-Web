@@ -10,10 +10,6 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    public function comptes() : BelongsTo
-    {
-        return $this->belongsTo(User::class, 'id_compte_envoyeur');
-    }
 
     public function type_transactions() : BelongsTo
     {

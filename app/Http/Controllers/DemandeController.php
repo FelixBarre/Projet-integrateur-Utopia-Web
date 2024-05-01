@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Demande;
+use App\Models\EtatDemande;
 use Illuminate\Http\Request;
 
 class DemandeController extends Controller
@@ -10,9 +11,19 @@ class DemandeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('demandePret/demandesPret');
+        if ($request->routeIs('demandesPret')) {
+            return view('demandePret/demandesPret', [
+            'demandes' => Demande::where('id_type_demande', 1)->get(),
+            'etats' => EtatDemande::all()
+            ]);
+        } elseif ($request->routeIs('demandesPretFiltre')) {
+            return view('demandePret/demandesPret', [
+                'demandes' => Demande::where('id_type_demande', 1)->where('id_etat_demande', $request['filtre_demandePret'])->get(),
+                'etats' => EtatDemande::all()
+            ]);
+        }
     }
 
     /**
