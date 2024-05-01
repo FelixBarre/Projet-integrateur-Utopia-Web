@@ -7,6 +7,8 @@
 
         <title>{{ config('app.name', 'Utopia') }}</title>
 
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -19,12 +21,16 @@
 
     <body class="font-sans antialiased ">
 
-        <div class="flex flex-row bg-gray-100">
+        <div class="flex flex-row h-screen bg-gray-100">
 
             @include('layouts.navigation')
 
             <!-- Page Content -->
-            <main class="bg-[#18B7BE] ml-24 w-screen h-screen">
+            <main class="bg-[#18B7BE] ml-24 w-screen p-4">
+
+                <div class="m-8">
+                    @include('messageFlash')
+                </div>
 
                 {{ $slot }}
 

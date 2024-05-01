@@ -4,12 +4,13 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RapportController;
+use App\Http\Controllers\DemandeController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsEmploye;
 use App\Models\Transaction;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -33,5 +34,9 @@ Route::controller(RapportController::class)->group(function(){
     Route::get('nouveauRapport', 'create')->name('nouveauRapport');
     Route::get('creationRapport', 'store')->name('creationRapport');
 })->middleware(EnsureUserIsEmploye::class);
+
+Route::controller(DemandeController::class)->group(function(){
+    Route::get('demandes_de_pret', 'index')->name('demandesPret');
+});
 
 require __DIR__.'/auth.php';
