@@ -31,7 +31,7 @@ Route::controller(TransactionController::class)->group(function(){
 Route::controller(RapportController::class)->group(function(){
     Route::get('rapports', 'index')->name('rapports');
     Route::get('nouveauRapport', 'create')->name('nouveauRapport');
-    Route::get('creationRapport', 'store')->name('creationRapport');
+    Route::post('creationRapport', 'store')->name('creationRapport');
 })->middleware(EnsureUserIsEmploye::class);
 
 Route::controller(DemandeController::class)->group(function(){
