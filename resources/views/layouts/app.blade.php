@@ -21,12 +21,16 @@
 
     <body class="h-screen font-sans antialiased">
 
-        <div class="flex flex-row bg-gray-100">
+        <div class="flex flex-row bg-gray-100 h-screen">
 
             @include('layouts.navigation')
 
             <!-- Page Content -->
-            <main class="bg-[#18B7BE] h-screen ml-24 w-screen">
+            <main class="bg-[#18B7BE] ml-24 w-screen p-4">
+
+                <div class="m-8">
+                    @include('messageFlash')
+                </div>
 
                 {{ $slot }}
 
