@@ -8,6 +8,7 @@ use App\Models\TypeTransaction;
 use App\Models\TypeDemande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 class RapportController extends Controller
@@ -77,6 +78,8 @@ class RapportController extends Controller
 
         $contenuFormulaire = $validation->validated();
 
+        $this->genererRapport($contenuFormulaire);
+
         $rapport = Rapport::create([
             'titre' => $contenuFormulaire['titre'],
             'description' => $contenuFormulaire['description'],
@@ -86,6 +89,18 @@ class RapportController extends Controller
             'chemin_du_fichier' => '/rapports/fichiers/monrapport.pdf',
             'id_employe' => Auth::id()
         ]);
+
+        return $this->index($request);
+    }
+
+    public function genererRapport($contenuFormulaire) {
+        $chemin = '/rapports/' . $contenuFormulaire['titre'] . date('_Y-m-d_H-i-s_') . '.pdf';
+
+        $html = view('rapport.rapport', [
+            'contenuFormulaire' => $contenuFormulaire
+        ])->render();
+
+        Storage::disk('public')->put($chemin, $html);
     }
 
     /**
