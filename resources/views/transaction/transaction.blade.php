@@ -52,7 +52,7 @@
                 <th class="w-1/6 m-auto border-2 border-solid">Status</th>
                 </tr>
             </thead>
-            <tbody">
+            <tbody>
                 @php
 
                 @endphp
