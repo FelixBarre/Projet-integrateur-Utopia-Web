@@ -15,8 +15,16 @@ class CompteBancaireController extends Controller
      */
     public function index(Request $request)
     {
+        // Peut prendre en paramètre l'id_user
+        // Retourne en Json tous les comptes d'un utilisateur si l'id_user est set sinon retourne tpous les comptes de
+        // la base de données
+        // impossible d'afficher les comptes s'il ont été désactivés
         if ($request->routeIs('comptesBancairesApi'))
-            return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)->get());
+            if(isset($request['id_user']))
+                return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)
+                ->where('id_user', $request['id_user'])->get());
+            else
+                return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)->get());
     }
 
     /**
@@ -32,6 +40,9 @@ class CompteBancaireController extends Controller
      */
     public function store(Request $request)
     {
+        // Reçois une requête en Json avec en paramètre:
+        // nom qui est obligatoire, solde qui falcultatif (par défaut: 0.00) avec deux chiffres après la virgule
+        // taux_interet qui falcultatif (par défaut: 0.01) avec deux chiffres après la virgule et id_user qui est obligatoire
         if ($request->routeIs('creationCompteBancaireApi')) {
             $validation = Validator::make($request->all(), [
             'nom' => 'required',
@@ -94,6 +105,8 @@ class CompteBancaireController extends Controller
      */
     public function show(Request $request, CompteBancaire $compteBancaire)
     {
+        // Recois un id en paramètre et affiche en Json le compte correspondant à cet id
+        // impossible d'afficher le compte s'il a été désactivé
         if ($request->routeIs('compteBancaireApi')) {
             $compteBancaire = CompteBancaire::find($request['id']);
 
@@ -118,6 +131,11 @@ class CompteBancaireController extends Controller
      */
     public function update(Request $request, CompteBancaire $compteBancaire)
     {
+        // Reçois une requête en Json avec en paramètre:
+        // le id du compte à modifié
+        // nom qui est obligatoire (le compte va prendre ce nom), solde qui falcultatif avec deux chiffres après la virgule
+        // taux_interet qui falcultatif avec deux chiffres après la virgule et id_user qui est obligatoire
+        // impossible de modifier le compte s'il a été désactivé
         if ($request->routeIs('modificationCompteBancaireApi')) {
             $validation = Validator::make($request->all(), [
                 'id' => 'required',
@@ -163,6 +181,7 @@ class CompteBancaireController extends Controller
      */
     public function destroy(Request $request, CompteBancaire $compteBancaire)
     {
+        // Recois un id en paramètre et met le compte correspondant à cet id à non-valide
         if ($request->routeIs('desactivationCompteBancaireApi')) {
             if (!CompteBancaire::find($request['id'])) {
                 return response()->json(['ERREUR' => 'Ce compte n\'existe pas.'], 400);
