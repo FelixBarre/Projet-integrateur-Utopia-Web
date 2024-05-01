@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\RapportController;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsEmploye;
 use App\Models\Transaction;
 
 Route::get('/', function () {
@@ -21,7 +24,13 @@ Route::middleware('auth')->group(function () {
 
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
-    Route::get('transaction/update', 'update')->name('transactionUpdate');
+    Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
 });
+
+Route::controller(RapportController::class)->group(function(){
+    Route::get('rapports', 'index')->name('rapports');
+    Route::get('nouveauRapport', 'create')->name('nouveauRapport');
+    Route::get('creationRapport', 'store')->name('creationRapport');
+})->middleware(EnsureUserIsEmploye::class);
 
 require __DIR__.'/auth.php';

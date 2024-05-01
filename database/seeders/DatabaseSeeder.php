@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             TypeTransactionSeeder::class,
             EtatTransactionSeeder::class,
             TransactionSeeder::class,
+            RapportSeeder::class,
             TypeDemandeSeeder::class,
             EtatDemandeSeeder::class,
             ConversationSeeder::class,

@@ -1,0 +1,14 @@
+.bouton {
+    background-color: #178CA4;
+    color: white;
+    border: 1px solid white;
+    padding: 5px 20px;
+    border-radius: 15px;
+    box-shadow: 0px 3px 0px #072A40;
+}
+
+.bouton:active {
+    position: relative;
+    top: 3px;
+    box-shadow: 0px 0px 0px #072A40;
+}

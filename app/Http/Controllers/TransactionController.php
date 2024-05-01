@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompteBancaire;
 use App\Models\Transaction;
 use App\Models\TypeTransaction;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -13,10 +17,14 @@ class TransactionController extends Controller
      */
     public function index()
     {
+        $date_time = Carbon::now()->format('d-M-Y H:i');
+        $employe =Auth::user();
 
-        return view('accueil.accueil', [
+        return view('accueil/accueil', [
+            'employe'=>$employe,
             'transactions'=>Transaction::all(),
-            'type_transactions'=>TypeTransaction::all()
+            'type_transactions'=>TypeTransaction::all(),
+            'date_time'=>$date_time
         ]);
 
     }
@@ -40,9 +48,21 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Transaction $transaction)
+    public function show(Request $request, int $idCompte)
     {
-        //
+        $compteBancaire = CompteBancaire::find($idCompte);
+        $user = User::find($compteBancaire->id_user);
+        $transaction = Transaction::where('id_compte_envoyeur', $idCompte)->get();
+
+
+        return view('transaction/transaction', [
+            'employe'=>Auth::user(),
+            'user'=>$user,
+            'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+            'transactions'=>$transaction,
+            'type_transactions'=>TypeTransaction::all()
+
+        ]);
     }
 
     /**
