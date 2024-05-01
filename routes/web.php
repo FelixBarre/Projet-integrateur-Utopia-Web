@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::controller(ProfileController::class)->group(function() {
+    Route::get('/profile',  'show')->name('profile.show');
+});
+
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
     Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');

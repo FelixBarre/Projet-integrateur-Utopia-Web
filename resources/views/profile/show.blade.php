@@ -1,14 +1,34 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
+<x-app-layout>
     <div class="w-1/2 text-left mt-6">
-        <h2 class="text-6xl font-bold text-white mx-9">Banque Utopia - Connexion</h2>
+        <h2 class="text-5xl font-bold text-white mx-9">Consultation de compte</h2>
     </div>
 
     <div class="flex justify-center flex-col flex-wrap items-center mt-44 space-y-5">
         <div>
-            <h3 class="text-4xl font-bold text-white">Veuillez vous connecter</h3>
+            <h3 class="text-4xl font-bold text-white">Consultation du profil</h3>
+        </div>
+
+        <div>
+            <p class="text-2xl font-bold text-white">{{ $user->prenom }} {{ $user->nom }}</p>
+        </div>
+
+        <div class="flex">
+            <div class="w-1/2">
+                <p>{{ $user->email }}</p>
+            </div>
+            <div class="w-1/2">
+                <p>{{ $user->telephone }}</p>
+            </div>
+        </div>
+
+        <div>
+            @if (isset($user->no_porte))
+                <p>{{ $user->no_porte}}-{{ $user->no_civique}}, rue {{ $user->rue }}</p>
+                <p>{{ $ville->nom }}, QC, {{ $user->code_postal }}</p>
+            @else
+                <p>{{ $user->no_civique}}, rue {{ $user->rue }}</p>
+                <p>{{ $ville->nom }}, QC, {{ $user->code_postal }}</p>
+            @endif
         </div>
 
 
@@ -50,4 +70,4 @@
             @endif
         </form>
     </div>
-</x-guest-layout>
+</x-app-layout>
