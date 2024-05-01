@@ -24,7 +24,8 @@ Route::middleware('auth')->group(function () {
 
 Route::controller(TransactionController::class)->group(function(){
     Route::get('accueil', 'index')->name('accueil');
-    Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
+    Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
+    Route::get('transaction/{id}', 'show')->name('transaction');
 });
 
 Route::controller(RapportController::class)->group(function(){

@@ -48,21 +48,34 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $idCompte)
+    public function show(Request $request, int $id)
     {
-        $compteBancaire = CompteBancaire::find($idCompte);
-        $user = User::find($compteBancaire->id_user);
-        $transaction = Transaction::where('id_compte_envoyeur', $idCompte)->get();
+        $transaction = Transaction::find($id);
+        $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
 
 
-        return view('transaction/transaction', [
-            'employe'=>Auth::user(),
-            'user'=>$user,
-            'date_time'=>Carbon::now()->format('d-M-Y H:i'),
-            'transactions'=>$transaction,
-            'type_transactions'=>TypeTransaction::all()
+        if($request->routeIs('transactions')){
+            return view('transaction/transactions', [
+                'employe'=>Auth::user(),
+                'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'transaction'=> $transaction,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all()
 
-        ]);
+            ]);
+
+        }
+        else if($request->routeIs('transaction')){
+            return view('transaction/transaction', [
+                'employe'=>Auth::user(),
+                'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'transaction'=>$transaction,
+                'type_transactions'=>TypeTransaction::all()
+
+            ]);
+        }
+
+
     }
 
     /**

@@ -23,7 +23,7 @@
         </div> <!-- Fin du premier bloc -->
 
         <div><!--Section filter -->
-            <form action="">
+            <form action="#">
                 <p class="my-5 mx-9">
                     <label for="filter" class="text-lg text-white">Filtrer par </label>
                     <select name="typeTransaction" id="typeTransaction" class="w-64 p-3">
@@ -69,14 +69,14 @@
                     <tr>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->nom}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->email}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->created_at}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
+                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->created_at}}</td>
                     <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
                         @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
                             <td class="m-auto text-center border-none">
-                               <a href="{{
-                                route('transactionView', ['id_compte_envoyeur' => $transaction->id_compte_envoyeur]) }}""> Voir </a>
+                               <a  href="{{
+                                route('transactions', ['id_compte_envoyeur' => $transaction->id_compte_envoyeur]) }}" class="bouton"> Voir </a>
 
 
 
