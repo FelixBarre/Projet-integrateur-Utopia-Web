@@ -102,10 +102,13 @@ class TransactionController extends Controller
                     'created_at' => now(),
                     'updated_at' => null
                     ]);
-                    } catch (QueryException $erreur) {
-                        report($erreur);
-                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée.'], 500);
-                    }
+
+                    return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
+
+                }catch (QueryException $erreur) {
+                    report($erreur);
+                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée.'], 400);
+                }
 
         }
     }
@@ -163,7 +166,64 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        //
+        if($request->routeIs('updateTransactionApi')){
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+                'montant' => 'required|regex:/^\d+\.\d\d$/',
+                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
+                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/',
+                'id_type_transaction' => 'required|regex:/^[1-9]\d*$/',
+                'id_etat_transaction' => 'required|regex:/^[1-9]\d*$/'
+
+                ], [
+                'montant.required' => 'Veuillez entrer un chiffre valide',
+                'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
+                'id_compte_receveur.required' => 'Veuillez un numero de compte valide',
+                'id_type_transaction.required' => 'Veuillez entrer un chiffre validee',
+                'id_etat_transaction.required' => 'Veuillez entrer un chiffre valide',
+
+                ]);
+                if ($validation->fails()) {
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
+                }
+
+                $contenuDecode = $validation->validated();
+
+                if (!Transaction::find($contenuDecode['id'])) {
+                    return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
+                } elseif (!Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($contenuDecode['id'])) {
+                    return response()->json(['ERREUR' => 'Cette transaction est déjà finaliser, vous ne pouver pas la modifier.'], 400);
+                }
+
+                $transaction = transaction::find($contenuDecode['id']);
+                $transaction->montant = $contenuDecode['montant'];
+                $transaction->id_compte_envoyeur = $contenuDecode['id_compte_envoyeur'];
+                $transaction->id_compte_receveur = $contenuDecode['id_compte_receveur'];
+                $transaction->id_type_transaction = $contenuDecode['id_type_transaction'];
+                $transaction->id_etat_transaction = $contenuDecode['id_etat_transaction'];
+                $transaction->updated_at = now();
+
+                if ($transaction->save())
+                    return response()->json(['SUCCES' => 'La modification de la transaction a été effectuée avec succès.'], 200);
+                else
+                    return response()->json(['ERREUR' => 'La modification de la transaction a échoué.'], 400);
+
+        }else if ($request->routeIs('annulerTransactionApi')) {
+            if (!Transaction::find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
+            } elseif (Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction à déjà été Annuler.'], 400);
+            }
+
+            $transaction = Transaction::find($request['id']);
+            $transaction->id_etat_transaction = 3;
+            $transaction->updated_at = now();
+
+            if ($transaction->save())
+                return response()->json(['SUCCES' => 'La transaction a été annulée avec succès.'], 200);
+            else
+                return response()->json(['ERREUR' => 'L\annulation de la transaction a échoué.'], 400);
+        }
     }
 
     /**

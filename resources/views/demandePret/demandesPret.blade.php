@@ -41,7 +41,12 @@
                     <td class="pt-5 pb-5 border-2 border-solid">{{$demande->raison}}</td>
                     <td class="pt-5 pb-5 border-2 border-solid">{{$demande->montant}}$</td>
                     <td class="pt-5 pb-5 border-2 border-solid">{{$demande->etat_demande->label}}</td>
-                    <td class="pt-5 pb-5 border-2 border-solid"><a class="bouton" href="">Voir</a></td>
+                    <td class="pt-5 pb-5 border-2 border-solid">
+                        <form method="GET" action="{{ route('demandePret') }}">
+                            <input type="hidden" value="{{$demande->id}}" name="id_demande">
+                            <button class="bouton" href="">Voir</button>
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
 
