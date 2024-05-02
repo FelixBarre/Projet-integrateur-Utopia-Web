@@ -46,8 +46,15 @@ Route::controller(ProfileController::class)->group(function() {
 });
 
 Route::controller(TransactionController::class)->group(function(){
+<<<<<<< HEAD
+    Route::get('accueil', 'index')->name('accueil');
+    Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
+    Route::get('transaction/{id}', 'show')->name('transaction');
+
+=======
     Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
     Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
+>>>>>>> 884470d8c4bf8685f2830c5ad80fc98ff8a8d468
 });
 
 Route::controller(RapportController::class)->group(function(){

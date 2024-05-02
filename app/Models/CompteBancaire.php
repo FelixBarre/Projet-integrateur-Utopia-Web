@@ -25,4 +25,10 @@ class CompteBancaire extends Model
     {
         return $this->HasMany(Transaction::class, 'id_user');
     }
+
+    public function comptes() : BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
 }

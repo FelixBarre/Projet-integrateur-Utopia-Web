@@ -19,9 +19,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
-    <body class="h-screen font-sans antialiased">
+    <body class="h-screen font-sans antialiased ">
 
-        <div class="flex flex-row bg-gray-100 h-screen">
+        <div class="flex flex-row h-screen bg-gray-100">
 
             @include('layouts.navigation')
 
