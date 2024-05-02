@@ -70,7 +70,7 @@
 
                 <p class="mb-5">
                     <label for="nom" class="w-32 text-xl text-white">Date de la transaction :  </label><br>
-                    <input type="text" name="nom" value="{{$transaction->created_at}}" class="text-xl" disabled>
+                    <input type="text" name="nom" value="{{$transaction->created_at->format('d-M-Y')}}" class="text-xl" disabled>
                 </p>
 
 
