@@ -1,9 +1,6 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
-    @auth
-        <h1>test</h1>
-    @endauth
 
     <div class="w-1/2 text-left mt-6">
         <h2 class="text-6xl font-bold text-white mx-9">Banque Utopia - Connexion</h2>

@@ -20,8 +20,6 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-
-
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
         $transaction = Transaction::find($request['id']);
