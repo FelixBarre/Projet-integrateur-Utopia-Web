@@ -44,7 +44,7 @@
             <table>
                 <thead>
                     <tr class=" bg-[#178CA4] text-white">
-                    <th class="w-1/6 m-auto border-2 border-solid ">IdDemande</th>
+                    <th class="w-1/6 p-4 m-auto border-2 border-solid">IdDemande</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Tâche</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Téléphone</th>
@@ -67,7 +67,7 @@
                             @endphp
                         @endif
                     <tr>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
+                    <td class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
