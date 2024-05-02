@@ -73,7 +73,7 @@ class RapportController extends Controller
 
         $contenuFormulaire = $validation->validated();
 
-        $this->genererRapport($contenuFormulaire);
+        $chemin = $this->genererRapport($contenuFormulaire);
 
         $rapport = Rapport::create([
             'titre' => $contenuFormulaire['titre'],
@@ -81,7 +81,7 @@ class RapportController extends Controller
             'date_debut' => $contenuFormulaire['date_debut'],
             'date_fin' => $contenuFormulaire['date_fin'],
             'date_creation' => date('Y-m-d'),
-            'chemin_du_fichier' => '/rapports/fichiers/monrapport.pdf',
+            'chemin_du_fichier' => $chemin,
             'id_employe' => Auth::id()
         ]);
 
@@ -89,7 +89,7 @@ class RapportController extends Controller
     }
 
     public function genererRapport($contenuFormulaire) {
-        $chemin = 'public/rapports/' . $contenuFormulaire['titre'] . date('_Y-m-d_H-i-s_') . '.pdf';
+        $chemin = '/rapports/' . $contenuFormulaire['titre'] . date('_Y-m-d_H-i-s_') . '.pdf';
 
         $transactions = array();
         $demandes = array();
@@ -115,7 +115,9 @@ class RapportController extends Controller
 
         $content = $pdf->download()->getOriginalContent();
 
-        Storage::put($chemin, $content);
+        Storage::put('public' . $chemin, $content);
+
+        return 'storage' . $chemin;
     }
 
     /**
