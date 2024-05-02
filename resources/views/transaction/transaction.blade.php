@@ -2,8 +2,10 @@
 
     <div class="flex flex-row"><!-- Premier bloc contenant message, infos et datetime -->
 
-            <div class="w-2/4 text-left">
-                <h2 class="text-3xl font-bold text-white mx-9">Liste des transactions de : <br>{{$user->prenom}} {{$user->nom}}</h2>
+            <div class="w-2/4 text-left ">
+                <h2 class="text-3xl font-bold text-white mx-9">Détails de la transation <br>Client :  {{$transaction->comptes_bancaire->comptes->prenom}} {{$transaction->comptes_bancaire->comptes->nom}} <br>
+                    Transaction N° : {{$transaction->id}}
+                </h2>
             </div>
 
             <div class="w-2/4 text-right text-white">
@@ -22,72 +24,98 @@
 
     </div> <!-- Fin du premier bloc -->
 
-    <div><!--Section filter -->
-        <form action="">
-            <p class="my-5 mx-9">
-                <label for="filter" class="text-lg text-white">Filtrer par </label>
-                <select name="typeTransaction" id="typeTransaction" class="w-64 p-3">
-                    @foreach ($type_transactions as $type_transaction)
-                    <option value="{{$type_transaction->label}}">{{$type_transaction->label}}</option>
-                    @endforeach
 
-                </select>
-            </p>
+    <div class="flex flex-row my-5 mx-9"><!-- Bloc détails -->
 
-        </form>
+        <div class="w-1/4 "><!-- Bloc expéditeur -->
+        <p class="mt-10 mb-5 text-2xl font-bold text-white underline">Expéditeur</p>
+            <form action="#">
+                <p class="mb-5">
+                    <label for="nom" class="text-xl text-white w-80">Nom :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire->comptes->nom}}" class="text-xl" disabled>
+                </p>
 
-    </div><!-- Fin section filter -->
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Prenom :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire->comptes->prenom}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Type d'operation :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->type_transactions->label}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Numero de compte :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire->id}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Type de compte :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire->nom}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Montant :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->montant}}" class="text-xl" disabled>
+                </p>
 
 
-
-    <div class="p-10 m_auto"><!-- Bloc du tableau des transactions -->
-        <table>
-            <thead>
-                <tr class=" bg-[#178CA4] text-white">
-                <th class="w-1/6 m-auto border-2 border-solid ">IdDemande</th>
-                <th class="w-1/6 m-auto border-2 border-solid">Tâche</th>
-                <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
-                <th class="w-1/6 m-auto border-2 border-solid">Téléphone</th>
-                <th class="w-1/6 m-auto border-2 border-solid">Date</th>
-                <th class="w-1/6 m-auto border-2 border-solid">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-
-                @endphp
-                @foreach ($transactions as $transaction)
-                    @if ($transaction->etat_transactions->label != "En cours")
-                        @php
-                            $class_value = " bg-green-500 ";
-                        @endphp
-                    @else
-                        @php
-                        $class_value = "bg-white";
-                        @endphp
-                    @endif
-                <tr>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->nom}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->email}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes->created_at}}</td>
-                <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
-                    @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
-                        <td class="m-auto text-center border-none">
-                           <a href="{{
-                            route('transactionView', ['id_compte_envoyeur' => $transaction->id]) }}""> Voir </a>
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Etat de la transaction :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->etat_transactions->label}}" class="text-xl" disabled>
+                </p>
 
 
 
-                    @endif
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Date de la transaction :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->created_at->format('d-M-Y')}}" class="text-xl" disabled>
+                </p>
 
-                </tr>
-                @endforeach
 
-            </tbody>
-            </table>
-    </div><!-- Fin du bloc du tableau des transactions -->
+            </form>
+
+        </div>
+
+
+
+        <div class="w-1/4"><!-- Bloc destinataire -->
+
+            <p class="mt-10 mb-5 text-2xl font-bold text-white underline">Destinataire</p>
+
+            <form action="#">
+                <p class="mb-5">
+                    <label for="nom" class="text-xl text-white w-80">Nom :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire_receveur->comptes->nom}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Prenom :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire_receveur->comptes->prenom}}" class="text-xl" disabled>
+                </p>
+
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Numero de compte :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire_receveur->id}}" class="text-xl" disabled>
+                </p>
+
+                <p class="mb-5">
+                    <label for="nom" class="w-32 text-xl text-white">Nom de compte :  </label><br>
+                    <input type="text" name="nom" value="{{$transaction->comptes_bancaire_receveur->nom}}" class="text-xl" disabled>
+                </p>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+
 
     <footer class="flex flex-row text-white mx-9"><!-- Debut du footer -->
 

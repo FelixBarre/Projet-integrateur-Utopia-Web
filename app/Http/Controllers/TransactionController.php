@@ -9,23 +9,52 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Http\Resources\TransactionResource;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\QueryException;
 
 class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
+        $transaction = Transaction::find($request['id']);
+        $transactions = Transaction::where('id_compte_envoyeur',$request['id'])->get();
 
-        return view('accueil/accueil', [
-            'employe'=>$employe,
-            'transactions'=>Transaction::all(),
-            'type_transactions'=>TypeTransaction::all(),
-            'date_time'=>$date_time
-        ]);
+        if($request->routeIs('transactionsApi')){
+
+            if ($transactions->isEmpty())
+                return response()->json(['ERREUR' => 'Aucune transaction n\'est liée à ce compte'], 400);
+
+            return TransactionResource::collection($transactions);
+        }
+        else if($request->routeIs('transactionApi')){
+
+
+            if (empty($transaction))
+                return response()->json(['ERREUR' => 'Aucune transaction n\'est liée à ce compte'], 400);
+
+            return new TransactionResource($transaction);
+        }
+        else{
+            return view('accueil/accueil', [
+                'employe'=>$employe,
+                'transactions'=>Transaction::all(),
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+
+
+        }
+
+
+
+
+
 
     }
 
@@ -42,27 +71,86 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if($request->routeIs('newTransactionApi')){
+            $validation = Validator::make($request->all(), [
+                'montant' => 'required|regex:/^\d+\.\d\d$/',
+                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
+                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/',
+                'id_type_transaction' => 'required|regex:/^[1-9]\d*$/',
+                'id_etat_transaction' => 'required|regex:/^[1-9]\d*$/',
+                ], [
+                'montant.required' => 'Veuillez entrer un chiffre valide',
+                'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
+                'id_compte_receveur.required' => 'Veuillez un numero de compte valide',
+                'id_type_transaction.required' => 'Veuillez entrer un chiffre validee',
+                'id_etat_transaction.required' => 'Veuillez entrer un chiffre valide',
+
+                ]);
+                if ($validation->fails()) {
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
+                }
+
+                $contenuDecode = $validation->validated();
+
+                try {
+                    Transaction::create([
+                    'montant' => $contenuDecode['montant'],
+                    'id_compte_envoyeur' => $contenuDecode['id_compte_envoyeur'],
+                    'id_compte_receveur' => $contenuDecode['id_compte_receveur'],
+                    'id_type_transaction' => $contenuDecode['id_type_transaction'],
+                    'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
+                    'created_at' => now(),
+                    'updated_at' => null
+                    ]);
+
+                    return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
+
+                }catch (QueryException $erreur) {
+                    report($erreur);
+                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée.'], 400);
+                }
+
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $idCompte)
+    public function show(Request $request, int $id)
     {
-        $compteBancaire = CompteBancaire::find($idCompte);
-        $user = User::find($compteBancaire->id_user);
-        $transaction = Transaction::where('id_compte_envoyeur', $idCompte)->get();
+        $transaction = Transaction::find($id);
+        $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
 
 
-        return view('transaction/transaction', [
-            'employe'=>Auth::user(),
-            'user'=>$user,
-            'date_time'=>Carbon::now()->format('d-M-Y H:i'),
-            'transactions'=>$transaction,
-            'type_transactions'=>TypeTransaction::all()
+        if($request->routeIs('transactions')){
+            if(is_null($transaction)){
+                return abort(404);
+            }
+            return view('transaction/transactions', [
+                'employe'=>Auth::user(),
+                'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'transaction'=> $transaction,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all()
 
-        ]);
+            ]);
+
+        }
+        else if($request->routeIs('transaction')){
+            if(is_null($transaction)){
+                return abort(404);
+            }
+            return view('transaction/transaction', [
+                'employe'=>Auth::user(),
+                'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'transaction'=>$transaction,
+                'type_transactions'=>TypeTransaction::all()
+
+            ]);
+        }
+
+
+
     }
 
     /**
@@ -78,7 +166,64 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        //
+        if($request->routeIs('updateTransactionApi')){
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+                'montant' => 'required|regex:/^\d+\.\d\d$/',
+                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
+                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/',
+                'id_type_transaction' => 'required|regex:/^[1-9]\d*$/',
+                'id_etat_transaction' => 'required|regex:/^[1-9]\d*$/'
+
+                ], [
+                'montant.required' => 'Veuillez entrer un chiffre valide',
+                'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
+                'id_compte_receveur.required' => 'Veuillez un numero de compte valide',
+                'id_type_transaction.required' => 'Veuillez entrer un chiffre validee',
+                'id_etat_transaction.required' => 'Veuillez entrer un chiffre valide',
+
+                ]);
+                if ($validation->fails()) {
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
+                }
+
+                $contenuDecode = $validation->validated();
+
+                if (!Transaction::find($contenuDecode['id'])) {
+                    return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
+                } elseif (!Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($contenuDecode['id'])) {
+                    return response()->json(['ERREUR' => 'Cette transaction est déjà finaliser, vous ne pouver pas la modifier.'], 400);
+                }
+
+                $transaction = transaction::find($contenuDecode['id']);
+                $transaction->montant = $contenuDecode['montant'];
+                $transaction->id_compte_envoyeur = $contenuDecode['id_compte_envoyeur'];
+                $transaction->id_compte_receveur = $contenuDecode['id_compte_receveur'];
+                $transaction->id_type_transaction = $contenuDecode['id_type_transaction'];
+                $transaction->id_etat_transaction = $contenuDecode['id_etat_transaction'];
+                $transaction->updated_at = now();
+
+                if ($transaction->save())
+                    return response()->json(['SUCCES' => 'La modification de la transaction a été effectuée avec succès.'], 200);
+                else
+                    return response()->json(['ERREUR' => 'La modification de la transaction a échoué.'], 400);
+
+        }else if ($request->routeIs('deleteTransactionApi')) {
+            if (!Transaction::find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
+            } elseif (Transaction::where('id_etat_transaction', 4)->find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction à déjà été supprimée.'], 400);
+            }
+
+            $transaction = Transaction::find($request['id']);
+            $transaction->id_etat_transaction = 4;
+            $transaction->updated_at = now();
+
+            if ($transaction->save())
+                return response()->json(['SUCCES' => 'La transaction è été supprimée avec succès.'], 200);
+            else
+                return response()->json(['ERREUR' => 'La supression de la transaction a échoué.'], 400);
+        }
     }
 
     /**

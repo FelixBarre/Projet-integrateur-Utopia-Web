@@ -36,7 +36,7 @@
             </div>
 
             <div>
-                <button class="bouton">
+                <button class="bouton" type="submit">
                     {{ __('Se connecter') }}
                 </button>
             <div>

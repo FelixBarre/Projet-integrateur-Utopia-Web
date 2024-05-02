@@ -69,7 +69,7 @@ class RegisteredUserController extends Controller
 
         Mail::to($user)->send(new LoginsInscriptionUtilisateur($mdpTemp));
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('accueil', absolute: false));
     }
 
     public function getTempMDP($length)
