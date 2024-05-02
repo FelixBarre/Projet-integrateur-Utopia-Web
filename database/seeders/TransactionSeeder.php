@@ -19,22 +19,26 @@ class TransactionSeeder extends Seeder
         'id_compte_envoyeur' => 1,
         'id_compte_receveur' => 1,
         'id_type_transaction' =>1,
-        'id_etat_transaction' =>1],
+        'id_etat_transaction' =>1,
+        'created_at' => date('Y-m-d H:i:s')],
         ['montant' => 1500,
         'id_compte_envoyeur' => 1,
         'id_compte_receveur' => 1,
         'id_type_transaction' =>2,
-        'id_etat_transaction' =>2],
+        'id_etat_transaction' =>2,
+        'created_at' => date('Y-m-d H:i:s')],
         ['montant' => 2800,
         'id_compte_envoyeur' => 1,
         'id_compte_receveur' => 1,
         'id_type_transaction' =>3,
-        'id_etat_transaction' =>3],
+        'id_etat_transaction' =>3,
+        'created_at' => date('Y-m-d H:i:s')],
         ['montant' => 280,
         'id_compte_envoyeur' => 1,
         'id_compte_receveur' => 1,
         'id_type_transaction' =>1,
-        'id_etat_transaction' =>1]
+        'id_etat_transaction' =>1,
+        'created_at' => date('Y-m-d H:i:s')]
         ]);
     }
 

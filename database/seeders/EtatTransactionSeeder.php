@@ -14,6 +14,6 @@ class EtatTransactionSeeder extends Seeder
     public function run(): void
     {
         DB::table('etat_transactions')->insert([
-            ['label' => 'En cours'],['label' => 'Annuler'],['label' => 'Terminer']]);
+            ['label' => 'En cours'],['label' => 'Annulé'],['label' => 'Terminé']]);
         }
 }

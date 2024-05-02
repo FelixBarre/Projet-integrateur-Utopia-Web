@@ -20,14 +20,6 @@
                 <label for="date_fin">{{ __('Date de fin') }}</label>
                 <input type="date" name="date_fin" id="date_fin">
 
-                <label for="user">{{ __('Utilisateur concerné') }}</label>
-                <select name="user" id="user">
-                    <option value="0" selected>Tous</option>
-                    @foreach ($utilisateurs as $utilisateur)
-                        <option value="{{ $utilisateur->id }}" {{ (old("user") == $utilisateur->id ? "selected":"") }}>{{ $utilisateur->prenom }} {{ $utilisateur->nom }}</option>
-                    @endforeach
-                </select>
-
                 <label for="type_transactions">Types de transactions à ajouter</label>
                 <select name="type_transactions[]" id="type_transactions" multiple>
                     @foreach ($type_transactions as $type_transactions)
