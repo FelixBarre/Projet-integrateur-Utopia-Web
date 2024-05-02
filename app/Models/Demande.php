@@ -12,6 +12,16 @@ class Demande extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'date_demande',
+        'date_traitement',
+        'raison',
+        'montant',
+        'id_etat_demande',
+        'id_demandeur',
+        'id_type_demande'
+    ];
+
     public function etat_demande() : BelongsTo
     {
         return $this->belongsTo(EtatDemande::class, 'id_etat_demande');

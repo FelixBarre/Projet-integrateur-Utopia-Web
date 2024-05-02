@@ -44,9 +44,7 @@
         </div>
 
         <div class="text-center mt-5">
-            <select class="w-40 rounded-3xl" name="motif">
-                <option value="defaut">Motif du refus</option>
-            </select>
+            <input class="w-40 rounded-3xl" name="motif" type="text" placeholder="Motif du refus">
         </div>
 
     </form>
