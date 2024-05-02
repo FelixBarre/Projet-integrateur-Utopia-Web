@@ -94,7 +94,7 @@
             <div class="w-1/4">
                 <p class="mb-3 font-bold">Gestion de comptes</p>
                 <p><a href="{{ route('register')}}">Création des comptes utilisateurs</a></p>
-                <p><a href="">Modification de profil</a></p>
+                <p><a href="{{ route('profile.edit')}}">Modification de profil</a></p>
                 <p><a href="">Changement de mot de passe </a></p>
                 <p><a href="">Consultation des demandes de désactivation de compte </a></p>
                 <p><a href="">Modification des demandes de désactivation de compte </a></p>

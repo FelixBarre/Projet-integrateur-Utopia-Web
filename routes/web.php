@@ -22,39 +22,35 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
-});
 
-Route::controller(ProfileController::class)->group(function() {
-    Route::get('profile',  'show')->name('profile.show');
-    Route::get('profile/edit', 'edit')->name('profile.edit');
-});
+    Route::controller(TransactionController::class)->group(function(){
+        Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
+        Route::get('transaction/{id}', 'show')->name('transaction');
 
-Route::controller(TransactionController::class)->group(function(){
-    Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
-    Route::get('transaction/{id}', 'show')->name('transaction');
+        Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
+        Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
 
-    Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
-    Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
+    });
 
-});
+    Route::controller(RapportController::class)->group(function(){
+        Route::get('rapports', 'index')->name('rapports');
+        Route::get('nouveauRapport', 'create')->name('nouveauRapport');
+        Route::post('creationRapport', 'store')->name('creationRapport');
+    })->middleware(EnsureUserIsEmploye::class);
 
-Route::controller(RapportController::class)->group(function(){
-    Route::get('rapports', 'index')->name('rapports');
-    Route::get('nouveauRapport', 'create')->name('nouveauRapport');
-    Route::post('creationRapport', 'store')->name('creationRapport');
-})->middleware(EnsureUserIsEmploye::class);
-
-Route::controller(DemandeController::class)->group(function(){
-    Route::get('demandes_de_pret', 'index')->name('demandesPret');
-    Route::get('demandes_de_pret/filtre', 'index')->name('demandesPretFiltre');
+    Route::controller(DemandeController::class)->group(function(){
+        Route::get('demandesDePret', 'index')->name('demandesPret');
+        Route::get('demandesDePret/filtre', 'index')->name('demandesPretFiltre');
+    });
 });
 
 require __DIR__.'/auth.php';

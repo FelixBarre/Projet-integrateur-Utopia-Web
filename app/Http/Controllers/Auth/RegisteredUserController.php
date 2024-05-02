@@ -15,6 +15,7 @@ use Illuminate\View\View;
 use App\Models\Role;
 use App\Models\Ville;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class RegisteredUserController extends Controller
 {
@@ -32,21 +33,44 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'prenom' => ['required', 'string', 'max:255'],
-            'nom' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'telephone' => ['required', 'string', 'max:255'],
-            'noCivique' => ['required', 'string'],
-            'rue' => ['required', 'string', 'max:255'],
-            'ville' => ['required'],
-            'codePostal' => ['required'],
-            'roles' => ['required', 'array', 'min:1']
+        $validation = Validator::make($request->all(), [
+            'prenom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
+            'nom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
+            'email' => 'required|email|regex:/^[A-zÀ-ú\d]+[@]{1}[A-zÀ-ú\d]+[.]{1}[A-zÀ-ú]{2,}$/|unique:users,email',
+            'telephone' => 'required|regex:/^\d{3}[ ]?\d{3}[- ]?\d{4}$/',
+            'noCivique' => 'required|regex:/^\d{1,5}$/',
+            'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
+            'ville' => 'required',
+            'codePostal' => 'required|regex:/^[A-Z]{1}\d{1}[A-Z]{1}[ ]?\d{1}[A-Z]{1}\d{1}$/',
+            'appt' => 'regex:/^[A-Za-z\d]+$/',
+            'roles' => 'required|min:1'
+           ], [
+            'prenom.required' => 'Veuillez entrer le prénom.',
+            'prenom.regex' => 'Format de prénom invalide',
+            'nom.required' => 'Veuillez entrer le nom.',
+            'nom.regex' => 'Format de nom invalide',
+            'email.required' => 'Veuillez entrer l\'adresse courriel',
+            'email.regex' => 'Format de courriel invalide',
+            'email.unique' => 'Email non unique',
+            'telephone.required' => 'Veuillez entrer le numéro de téléphone',
+            'telephone.regex' => 'Format de téléphone invalide',
+            'noCivique.required' => 'Veuillez entrer le numéro civique',
+            'noCivique.regex' => 'Format de numéro civique invalide',
+            'rue.required' => 'Veuillez entrer le nom de la rue',
+            'rue.regex' => 'Format de rue invalide',
+            'ville.required' => 'Veuillez entrer la ville',
+            'codePostal.required' => 'Veuillez entrer le code postal',
+            'codePostal.regex' => 'Format de code postal invalide',
+            'appt.regex' => 'Format de numéro de porte invalide',
+            'roles.required' => 'Veuillez entrer le rôle de l\'utilisateur',
+            'roles.min' => 'Veuillez entrer au moins un rôle pour l\'utilisateur'
         ]);
+
+        if ($validation->fails())
+            return back()->withErrors($validation->errors())->withInput();
 
         $mdpTemp = $this->getTempMDP(10);
 
@@ -68,6 +92,10 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Mail::to($user)->send(new LoginsInscriptionUtilisateur($mdpTemp));
+
+        if (Mail::failures()) {
+            return back()->withErrors(Mail::failures())->withInput();
+        }
 
         return redirect(route('accueil', absolute: false));
     }
