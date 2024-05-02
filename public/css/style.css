@@ -19,8 +19,10 @@ form#nouveauRapport label {
 
 #table_demandePret {
     width: 95%;
+    text-align: center;
+    margin-top: 10px;
 }
 
 #table_demandePret th{
-    width: calc(100% / 7);
+    width: calc(100% / 8);
 }

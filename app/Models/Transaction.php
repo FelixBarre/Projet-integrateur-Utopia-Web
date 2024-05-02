@@ -10,9 +10,16 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    public function comptes() : BelongsTo
+    protected $fillable = ['id', 'montant', 'id_compte_envoyeur', 'id_compte_receveur', 'id_type_transaction', 'id_etat_transaction', 'created_at','updated_at'];
+
+    public function comptes_bancaire() : BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_compte_envoyeur');
+        return $this->belongsTo(CompteBancaire::class, 'id_compte_envoyeur');
+    }
+
+    public function comptes_bancaire_receveur() : BelongsTo
+    {
+        return $this->belongsTo(CompteBancaire::class, 'id_compte_receveur');
     }
 
     public function type_transactions() : BelongsTo
