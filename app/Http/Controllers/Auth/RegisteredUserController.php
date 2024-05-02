@@ -93,10 +93,6 @@ class RegisteredUserController extends Controller
 
         Mail::to($user)->send(new LoginsInscriptionUtilisateur($mdpTemp));
 
-        if (Mail::failures()) {
-            return back()->withErrors(Mail::failures())->withInput();
-        }
-
         return redirect(route('accueil', absolute: false));
     }
 

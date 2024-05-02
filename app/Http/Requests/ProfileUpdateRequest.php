@@ -23,8 +23,7 @@ class ProfileUpdateRequest extends FormRequest
             'noCivique' => ['required', 'string'],
             'rue' => ['required', 'string', 'max:255'],
             'ville' => ['required'],
-            'codePostal' => ['required'],
-            'roles' => ['required', 'array', 'min:1']
+            'codePostal' => ['required']
         ];
     }
 }

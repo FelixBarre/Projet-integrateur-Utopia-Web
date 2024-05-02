@@ -16,7 +16,7 @@
         <h3 class="text-4xl font-bold text-white">Édition du profil</h3>
     </div>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-10 w-1/2">
         @csrf
         @method('patch')
         <div class="flex space-x-5 justify-center">
@@ -36,12 +36,12 @@
 
         <!-- Telephone -->
         <div class="flex justify-center">
-            <x-text-input id="telephone" class="block mt-1 w-3/5 text-center" type="text" name="telephone" :value="old('telephone', $user->telephone)" required autofocus autocomplete="telephone" />
+            <x-text-input id="telephone" class="block mt-1 w-2/5 text-center" type="text" name="telephone" :value="old('telephone', $user->telephone)" required autofocus autocomplete="telephone" />
             <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
         </div>
 
         <!-- Adresse -->
-        <div class="flex justify-center space-x-5 max-w-full">
+        <div class="flex flex-wrap justify-center space-x-5 max-w-full">
             <div class="w-1/6">
                 <x-text-input id="appt" class="block mt-1 w-full" type="text" name="appt" :value="old('appt', $user->no_porte)" autofocus autocomplete="appt" placeholder="No. Appt" />
                 <x-input-error :messages="$errors->get('appt')" class="mt-2" />
@@ -52,30 +52,34 @@
                 <x-input-error :messages="$errors->get('noCivique')" class="mt-2" />
             </div>
 
-            <div class="w-2/5">
+            <div class="w-1/5">
                 <x-text-input id="rue" class="block mt-1 w-full" type="text" name="rue" :value="old('rue', $user->rue)" required autofocus autocomplete="rue" />
                 <x-input-error :messages="$errors->get('rue')" class="mt-2" />
             </div>
+
+            <div class="flex justify-center space-x-5 w-full">
+                <div class = "mt-4 w-1/3">
+                    <select name="ville" id="ville" class="block mt-1 w-full h-30" required>
+                        @foreach ($villes as $ville)
+                            <option value="{{ $ville->id }}"
+                            @if($ville->id == $user->id_ville)
+                                @selected(true)
+                            @endif
+                            >{{$ville->nom}}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class = "mt-4 1/5">
+                    <x-text-input id="codePostal" class="block mt-1 w-full" type="text" name="codePostal" :value="old('codePostal', $user->code_postal)" required autofocus autocomplete="codePostal" />
+                    <x-input-error :messages="$errors->get('codePostal')" class="mt-2" />
+                </div>
+            </div>
         </div>
 
-        <div class = "mt-4">
-            <x-input-label for="ville" :value="__('Ville')"/>
-            <select name="ville" id="ville" class="block mt-1 w-full h-30" required>
-                @foreach ($villes as $ville)
-                    <option value="{{ $ville->id }}">{{$ville->nom}}</option>
-                @endforeach
-            </select>
-        </div>
 
-        <div class = "mt-4">
-            <x-input-label for="codePostal" :value="__('Code postal')" />
-            <x-text-input id="codePostal" class="block mt-1 w-full" type="text" name="codePostal" :value="old('codePostal')" required autofocus autocomplete="codePostal" />
-            <x-input-error :messages="$errors->get('codePostal')" class="mt-2" />
-        </div>
-
-
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Sauvegarder') }}</x-primary-button>
+        <div class="flex justify-center items-center space-x-4">
+            <button class="bouton">Sauvegarder</button>
 
             @if (session('status') === 'profile-updated')
                 <p

@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\DemandeController;
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/mdp/changement', [PasswordController::class, 'show'])->name('password.change');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
@@ -34,11 +37,10 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(TransactionController::class)->group(function(){
         Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
-        Route::get('transaction/{id}', 'show')->name('transaction');
-
+        Route::get('transaction/{id_transaction}', 'show')->name('transaction');
         Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
-        Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
-
+        Route::get('transaction/view/{id}', 'show')->name('transactionView');
+        Route::post('transactions/filter', 'show')->name('transactionsFilter');
     });
 
     Route::controller(RapportController::class)->group(function(){
