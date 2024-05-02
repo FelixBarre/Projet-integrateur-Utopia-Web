@@ -62,10 +62,27 @@
 
 
 
+<<<<<<< HEAD
                 <p class="mb-5">
                     <label for="nom" class="w-32 text-xl text-white">Etat de la transaction :  </label><br>
                     <input type="text" name="nom" value="{{$transaction->etat_transactions->label}}" class="text-xl" disabled>
                 </p>
+=======
+    <div class="p-10 m_auto"><!-- Bloc du tableau des transactions -->
+        <table>
+            <thead>
+                <tr class=" bg-[#178CA4] text-white">
+                <th class="w-1/6 m-auto border-2 border-solid ">IdDemande</th>
+                <th class="w-1/6 m-auto border-2 border-solid">Tâche</th>
+                <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
+                <th class="w-1/6 m-auto border-2 border-solid">Téléphone</th>
+                <th class="w-1/6 m-auto border-2 border-solid">Date</th>
+                <th class="w-1/6 m-auto border-2 border-solid">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+>>>>>>> 884470d8c4bf8685f2830c5ad80fc98ff8a8d468
 
                 <p class="mb-5">
                     <label for="nom" class="w-32 text-xl text-white">Date de la transaction :  </label><br>

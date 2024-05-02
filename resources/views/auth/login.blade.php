@@ -1,9 +1,12 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    @auth
+        <h1>test</h1>
+    @endauth
 
-    <div class="w-1/2 text-left">
-        <h2 class="text-6xl font-bold text-white mx-9">Connexion</h2>
+    <div class="w-1/2 text-left mt-6">
+        <h2 class="text-6xl font-bold text-white mx-9">Banque Utopia - Connexion</h2>
     </div>
 
     <div class="flex justify-center flex-col flex-wrap items-center mt-44 space-y-5">
@@ -36,7 +39,7 @@
             </div>
 
             <div>
-                <button class="bouton">
+                <button class="bouton" type="submit">
                     {{ __('Se connecter') }}
                 </button>
             <div>
