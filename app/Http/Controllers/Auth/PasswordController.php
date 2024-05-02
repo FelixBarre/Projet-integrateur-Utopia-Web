@@ -26,4 +26,11 @@ class PasswordController extends Controller
 
         return back()->with('status', 'password-updated');
     }
+
+    public function show(Request $request)
+    {
+        return view('profile/updatePassword', [
+            'user' => $request->user(),
+        ]);
+    }
 }
