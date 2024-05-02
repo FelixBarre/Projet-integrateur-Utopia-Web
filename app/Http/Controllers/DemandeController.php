@@ -45,9 +45,13 @@ class DemandeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Demande $demande)
+    public function show(Request $request, Demande $demande)
     {
-        //
+        if ($request->routeIs('demandePret')) {
+            return view('demandePret/demandePret', [
+                'demande' => Demande::find($request['id_demande'])
+            ]);
+        }
     }
 
     /**

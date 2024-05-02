@@ -55,6 +55,7 @@ Route::controller(RapportController::class)->group(function(){
 Route::controller(DemandeController::class)->group(function(){
     Route::get('demandes_de_pret', 'index')->name('demandesPret');
     Route::get('demandes_de_pret/filtre', 'index')->name('demandesPretFiltre');
+    Route::get('demande_de_pret', 'show')->name('demandePret');
 });
 
 require __DIR__.'/auth.php';
