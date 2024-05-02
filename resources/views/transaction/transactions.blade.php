@@ -71,7 +71,7 @@
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->created_at}}</td>
+                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->created_at->format('d-M-Y')}}</td>
                 <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
                     @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
                         <td class="m-auto text-center border-none">
