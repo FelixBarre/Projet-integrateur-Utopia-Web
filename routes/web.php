@@ -39,10 +39,10 @@ Route::controller(ProfileController::class)->group(function() {
 
 Route::controller(TransactionController::class)->group(function(){
     Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
-    Route::get('transaction/{id}', 'show')->name('transaction');
-
+    Route::get('transaction/{id_transaction}', 'show')->name('transaction');
     Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
-    Route::get('transaction/view/{id_compte_envoyeur}', 'show')->name('transactionView');
+    Route::get('transaction/view/{id}', 'show')->name('transactionView');
+    Route::post('transactions/filter', 'show')->name('transactionsFilter');
 
 });
 

@@ -76,7 +76,7 @@
                     @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
                         <td class="m-auto text-center border-none">
                            <a class="bouton" href="{{
-                            route('transaction', ['id' => $transaction->id]) }}"> Détails </a>
+                            route('transaction', ['id_transaction' => $transaction->id]) }}"> Détails </a>
 
 
 

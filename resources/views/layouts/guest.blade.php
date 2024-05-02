@@ -7,9 +7,7 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
 
-        <link rel="stylesheet" href="css/style.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,8 +17,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased h-screen">
-        <div class="flex flex-row bg-gray-100 h-screen">
+    <body class="h-screen font-sans antialiased text-gray-900">
+        <div class="flex flex-row h-screen bg-gray-100">
             <!-- Page Content -->
             <main class="bg-[#18B7BE] h-screen w-screen">
                 {{ $slot }}

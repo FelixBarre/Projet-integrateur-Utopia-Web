@@ -15,18 +15,21 @@
 
         <link rel="stylesheet" href="css/style.css">
 
+        <script src="{{asset('js/script.js')}}"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     </head>
 
-    <body class="h-screen font-sans antialiased ">
+    <body class="h-screen bg-[#18B7BE] font-sans antialiased ">
 
-        <div class="flex flex-row h-screen bg-gray-100">
+        <div class="flex flex-rowbg-gray-100">
 
             @include('layouts.navigation')
 
             <!-- Page Content -->
-            <main class="bg-[#18B7BE] ml-24 w-screen p-4">
+            <main class="w-full p-4 ml-24 ">
 
                 <div class="m-8">
                     @include('messageFlash')

@@ -23,16 +23,18 @@
         </div> <!-- Fin du premier bloc -->
 
         <div><!--Section filter -->
-            <form action="#">
+            <form method="post" action="{{ route('transactionsFilter')}}" id="formSelect">
+                @csrf
                 <p class="my-5 mx-9">
                     <label for="filter" class="text-lg text-white">Filtrer par </label>
-                    <select name="typeTransaction" id="typeTransaction" class="w-64 p-3">
+                    <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
                         @foreach ($type_transactions as $type_transaction)
-                        <option value="{{$type_transaction->label}}">{{$type_transaction->label}}</option>
+                        <option value="{{$type_transaction->id}}" id="optionValue">{{$type_transaction->label}}</option>
                         @endforeach
-
                     </select>
+
                 </p>
+
 
             </form>
 
