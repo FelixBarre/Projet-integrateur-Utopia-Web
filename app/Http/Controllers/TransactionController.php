@@ -208,21 +208,21 @@ class TransactionController extends Controller
                 else
                     return response()->json(['ERREUR' => 'La modification de la transaction a échoué.'], 400);
 
-        }else if ($request->routeIs('deleteTransactionApi')) {
+        }else if ($request->routeIs('annulerTransactionApi')) {
             if (!Transaction::find($request['id'])) {
                 return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
-            } elseif (Transaction::where('id_etat_transaction', 4)->find($request['id'])) {
-                return response()->json(['ERREUR' => 'Cette transaction à déjà été supprimée.'], 400);
+            } elseif (Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction à déjà été Annuler.'], 400);
             }
 
             $transaction = Transaction::find($request['id']);
-            $transaction->id_etat_transaction = 4;
+            $transaction->id_etat_transaction = 3;
             $transaction->updated_at = now();
 
             if ($transaction->save())
-                return response()->json(['SUCCES' => 'La transaction è été supprimée avec succès.'], 200);
+                return response()->json(['SUCCES' => 'La transaction a été annulée avec succès.'], 200);
             else
-                return response()->json(['ERREUR' => 'La supression de la transaction a échoué.'], 400);
+                return response()->json(['ERREUR' => 'L\annulation de la transaction a échoué.'], 400);
         }
     }
 
