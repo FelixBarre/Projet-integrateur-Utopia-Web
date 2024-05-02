@@ -9,7 +9,7 @@
                 <div class="w-2/4 text-right text-white">
 
                     <div class="flex flex-row items-center space-x-3 place-content-end">
-                        <span class="text-2xl font-bold">Employé {{$employe->name}}</span><span><img class="size-14" src="{{ asset('img/profile.png') }}" alt="profile-img"></span>
+                        <span class="text-2xl font-bold">{{$employe->prenom}} {{ $employe->nom }}</span><span><img class="size-14" src="{{ asset('img/profile.png') }}" alt="profile-img"></span>
                     </div>
 
 
