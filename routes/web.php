@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsEmploye;
+use App\Http\Middleware\EnsureUserIsNotUtilisateur;
 use App\Models\Transaction;
 use App\Models\TypeTransaction;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,7 @@ Route::get('/', function () {
         return view('auth.login');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -47,11 +49,15 @@ Route::middleware('auth')->group(function () {
         Route::get('rapports', 'index')->name('rapports');
         Route::get('nouveauRapport', 'create')->name('nouveauRapport');
         Route::post('creationRapport', 'store')->name('creationRapport');
-    })->middleware(EnsureUserIsEmploye::class);
+    });
 
     Route::controller(DemandeController::class)->group(function(){
         Route::get('demandesDePret', 'index')->name('demandesPret');
         Route::get('demandesDePret/filtre', 'index')->name('demandesPretFiltre');
+    });
+
+    Route::controller(ConversationController::class)->group(function(){
+        Route::get('conversations', 'index')->name('conversations');
     });
 });
 
