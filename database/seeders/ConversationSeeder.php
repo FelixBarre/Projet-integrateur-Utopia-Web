@@ -15,7 +15,10 @@ class ConversationSeeder extends Seeder
     {
         DB::table('conversations')->insert([
             [
-                'ferme'=>true,
+                'ferme'=>false,
+            ],
+            [
+                'ferme'=>false,
             ],
             [
                 'ferme'=>false,

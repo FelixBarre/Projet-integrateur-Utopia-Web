@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Ville;
 
 class VilleSeeder extends Seeder
 {
@@ -13,8 +14,23 @@ class VilleSeeder extends Seeder
      */
     public function run(): void
     {
+        //Ville::truncate();
+        $dataCSV = fopen(base_path('database/csv/MUN.csv'), 'r');
+        $rangeeTitre = true;
+        while(($data = fgetcsv($dataCSV)) !== false) {
+            if (!$rangeeTitre) {
+                Ville::create([
+                    'nom' => $data['1']
+                ]);
+            }
+            $rangeeTitre = false;
+        }
+        fclose($dataCSV);
+
+        /*
         DB::table('villes')->insert([
             ['nom' => 'ville de test']
         ]);
+        */
     }
 }
