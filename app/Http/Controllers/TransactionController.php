@@ -44,7 +44,7 @@ class TransactionController extends Controller
         else{
             return view('accueil/accueil', [
                 'employe'=>$employe,
-                'transactions'=>Transaction::all(),
+                'transactions'=>Transaction::take(10)->get(),
                 'type_transactions'=>TypeTransaction::all(),
                 'date_time'=>$date_time
             ]);
@@ -91,19 +91,34 @@ class TransactionController extends Controller
                 }
 
                 $contenuDecode = $validation->validated();
+                $compteEnvoyeur = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                $compteReceveur = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+                $soldeCompteEnvoyeur = $compteEnvoyeur->solde;
+
+
+
+                if($soldeCompteEnvoyeur < $contenuDecode['montant']){
+                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
+                }
+
+                $compteEnvoyeur->solde -= $contenuDecode['montant'];
+                $compteReceveur->solde += $contenuDecode['montant'];
+                $compteEnvoyeur->save();
+                $compteReceveur->save();
 
                 try {
-                    Transaction::create([
-                    'montant' => $contenuDecode['montant'],
-                    'id_compte_envoyeur' => $contenuDecode['id_compte_envoyeur'],
-                    'id_compte_receveur' => $contenuDecode['id_compte_receveur'],
-                    'id_type_transaction' => $contenuDecode['id_type_transaction'],
-                    'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
-                    'created_at' => now(),
-                    'updated_at' => null
-                    ]);
 
-                    return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
+                        Transaction::create([
+                        'montant' => $contenuDecode['montant'],
+                        'id_compte_envoyeur' => $contenuDecode['id_compte_envoyeur'],
+                        'id_compte_receveur' => $contenuDecode['id_compte_receveur'],
+                        'id_type_transaction' => $contenuDecode['id_type_transaction'],
+                        'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
+                        'created_at' => now(),
+                        'updated_at' => null
+                        ]);
+
+                        return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
 
                 }catch (QueryException $erreur) {
                     report($erreur);

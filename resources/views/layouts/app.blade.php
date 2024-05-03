@@ -15,7 +15,7 @@
 
 
 
-        <script src="{{asset('js/script.js')}}"></script>
+        <script src="{{asset('js/script.js')}}" defer></script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
