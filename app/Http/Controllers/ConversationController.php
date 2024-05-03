@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,7 +33,9 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        //
+        return view('messagerie.nouvelleConversation', [
+            'destinataires' => User::where('id', '!=', Auth::id())->get()
+        ]);
     }
 
     /**
@@ -40,7 +43,7 @@ class ConversationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $this->index($request);
     }
 
     /**
