@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConversationController extends Controller
 {
@@ -12,7 +13,18 @@ class ConversationController extends Controller
      */
     public function index()
     {
-        //
+        return view('messagerie.conversations', [
+            'conversations' => Conversation::select('conversations.*')
+                ->distinct()
+                ->where('ferme', 0)
+                ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
+                ->join('users AS A', 'A.id', '=', 'messages.id_envoyeur')
+                ->join('users AS B', 'B.id', '=', 'messages.id_receveur')
+                ->where('A.id', Auth::id())
+                ->orWhere('B.id', Auth::id())
+                ->get(),
+            'AuthId' => Auth::id()
+        ]);
     }
 
     /**

@@ -4,7 +4,7 @@
         <a class="h-screen p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/receive-mail.png')}}" alt=""></a>
         <a class="h-screen p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/money-exchange.png')}}" alt=""></a>
         <a class="h-screen p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/info.png')}}" alt=""></a>
-        <a class="h-screen p-2 m-auto my-3 w-14" href=""><img src="{{asset('img/chat.png')}}" alt=""></a>
+        <a class="h-screen p-2 m-auto my-3 w-14" href="{{ route('conversations')}}"><img src="{{asset('img/chat.png')}}" alt=""></a>
 
         <a class="h-screen p-2 m-auto my-3 w-14" href="{{ route('profile.show')}}"><img src="{{asset('img/user.png')}}" alt=""></a>
 
