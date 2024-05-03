@@ -15,13 +15,15 @@ class MessageSeeder extends Seeder
     {
         DB::table('messages')->insert([
             [
-                'texte'=>true,
+                'created_at' => '2024-05-02 11:10:37',
+                'texte'=>'Bonjour!',
                 'id_envoyeur'=>1,
                 'id_receveur'=>2,
                 'id_conversation'=>1
             ],
             [
-                'texte'=>true,
+                'created_at' => '2024-05-02 20:14:37',
+                'texte'=>'Bonsoir',
                 'id_envoyeur'=>2,
                 'id_receveur'=>1,
                 'id_conversation'=>1

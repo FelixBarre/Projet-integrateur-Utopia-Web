@@ -75,6 +75,10 @@ class RapportController extends Controller
 
         $chemin = $this->genererRapport($contenuFormulaire);
 
+        if (empty($chemin)) {
+            return back()->withErrors(['msg' => 'Le rapport voulu ne contiendrait aucune donnée']);
+        }
+
         $rapport = Rapport::create([
             'titre' => $contenuFormulaire['titre'],
             'description' => $contenuFormulaire['description'],
@@ -104,6 +108,10 @@ class RapportController extends Controller
             $demandes = Demande::whereIn('id_type_demande', $contenuFormulaire['type_demandes'])
                                     ->whereBetween('date_demande', [$contenuFormulaire['date_debut'], $contenuFormulaire['date_fin']])
                                     ->get();
+        }
+
+        if (count($transactions) == 0 && count($demandes) == 0) {
+            return '';
         }
 
         $pdf = Pdf::loadView('rapport.rapport', [

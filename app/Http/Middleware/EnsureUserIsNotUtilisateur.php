@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserIsEmploye
+class EnsureUserIsNotUtilisateur
 {
     /**
      * Handle an incoming request.
@@ -20,13 +20,13 @@ class EnsureUserIsEmploye
 
         if ($utilisateur !== null)
         {
-            if ($utilisateur->roles()->where('role', 'like', 'Employé')->count() > 0)
+            if ($utilisateur->roles()->where('role', 'like', 'Utilisateur')->count() == 0)
             {
                 return $next($request);
             }
 
             if ($request->bearerToken() && $request->accepts('application/json')) {
-                return response()->json(['ERREUR' => 'Veuillez vous authentifier avec un compte employé'], 400);
+                return response()->json(['ERREUR' => 'Veuillez vous authentifier avec un compte autre qu\'utilisateur'], 400);
             }
 
             Auth::logout();
@@ -34,6 +34,6 @@ class EnsureUserIsEmploye
             $request->session()->regenerateToken();
         }
 
-        return redirect('/login')->with('alerte', 'Vous devez être authentifié avec un compte employé pour utiliser cette fonctionnalité.');
+        return redirect('/login')->with('alerte', 'Vous devez être authentifié avec un compte autre qu\'utilisateur pour utiliser cette fonctionnalité.');
     }
 }
