@@ -116,14 +116,61 @@ class DemandeController extends Controller
      */
     public function update(Request $request, Demande $demande)
     {
-        //
+        if ($request->routeIs('modificationDemandePretApi')) {
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+                'raison' => 'required',
+                'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+                'id_etat_demande' => 'required|regex:/^\d+$/'
+                ], [
+                'raison.required' => 'Veuillez entrer la raison de la demande.',
+                'montant.required' => 'Veuillez entrer la date de la demande.',
+                'montant.regex' => 'Veuillez inscrire un montant avec deux chiffres après la virgule.',
+                'id_etat_demande.required' => 'Veuillez spécifié l\état de la demande.',
+                'id_etat_demande.regex' => 'Le id doit être numérique.',
+                ]);
+                if ($validation->fails()) {
+                    return back()->withErrors($validation->errors())->withInput();
+                }
+
+            $contenuDecode = $validation->validated();
+
+            if (!Demande::find($contenuDecode['id'])) {
+                return response()->json(['ERREUR' => 'Cette demande n\'existe pas.'], 400);
+            } elseif (!EtatDemande::find($contenuDecode['id_etat_demande'])) {
+                return response()->json(['ERREUR' => 'Le nouvel état de cette demande n\'existe pas.'], 400);
+            }
+
+            $demande = Demande::find($contenuDecode['id']);
+            $demande->raison = $contenuDecode['raison'];
+            $demande->montant = $contenuDecode['montant'];
+            $demande->id_etat_demande = $contenuDecode['id_etat_demande'];
+
+
+            if ($demande->save())
+                return response()->json(['SUCCES' => 'La modification de la demande a bien fonctionné.'], 200);
+            else
+                return response()->json(['ERREUR' => 'La modification de la demande a échoué.'], 400);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Demande $demande)
+    public function destroy(Request $request, Demande $demande)
     {
-        //
+        if ($request->routeIs('annulationDemandePretApi')) {
+            if (!Demande::find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette demande n\'existe pas.'], 400);
+            }
+
+            $demande = Demande::find($request['id']);
+            $demande->id_etat_demande = 4;
+
+            if ($demande->save())
+                return response()->json(['SUCCES' => 'L\'annulation de la demande a bien fonctionné.'], 200);
+            else
+                return response()->json(['ERREUR' => 'L\'annulation de la demande a échoué.'], 400);
+        }
     }
 }
