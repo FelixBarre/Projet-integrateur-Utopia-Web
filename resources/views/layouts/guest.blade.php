@@ -23,6 +23,9 @@
         <div class="flex flex-row h-screen bg-gray-100">
             <!-- Page Content -->
             <main class="bg-[#18B7BE] h-screen w-screen">
+                <div class="m-8">
+                    @include('messageFlash')
+                </div>
                 {{ $slot }}
             </main>
         </div>

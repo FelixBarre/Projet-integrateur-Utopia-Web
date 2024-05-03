@@ -27,7 +27,7 @@ class EnsureUserIsAdmin
             // On fait appel à la relation "belongsToMany" de la classe "User", soit la méthode
             // "roles()" dans ce cas-ci, afin de récupérer tous les rôles de l’utilisateur et
             // vérifier si, parmi ceux-ci, se trouve le rôle "admin".
-            if ($utilisateur->roles()->where('role', 'like', 'admin')->count() > 0)
+            if ($utilisateur->roles()->where('role', 'like', 'Administrateur')->count() > 0)
             {
                 // La méthode "handle()" d’un "middleware" doit toujours retourner "$next($request)"
                 // lorsque la règle sur laquelle porte ce "middleware" est satisfaite. Ici, on
