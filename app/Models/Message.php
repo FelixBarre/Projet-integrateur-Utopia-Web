@@ -10,6 +10,16 @@ class Message extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'texte',
+        'chemin_du_fichier',
+        'date_heure_supprime',
+        'id_envoyeur',
+        'id_receveur',
+        'id_conversation'
+    ];
+
+
     public function envoyeur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_envoyeur');

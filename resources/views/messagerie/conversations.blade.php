@@ -23,7 +23,7 @@
                         $envoyeurMessage = false;
                     }
                 @endphp
-                <a href="" class="bouton block p-10">
+                <a href="" class="bouton block p-10 mb-5">
                     <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
                     <div class="pt-10 text-xl flex justify-between">
                         <div>

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ConversationController extends Controller
 {
@@ -23,6 +25,7 @@ class ConversationController extends Controller
                 ->join('users AS B', 'B.id', '=', 'messages.id_receveur')
                 ->where('A.id', Auth::id())
                 ->orWhere('B.id', Auth::id())
+                ->orderBy('messages.created_at', 'desc')
                 ->get(),
             'AuthId' => Auth::id()
         ]);
@@ -43,6 +46,39 @@ class ConversationController extends Controller
      */
     public function store(Request $request)
     {
+        $validation = Validator::make($request->all(), [
+                'destinataire' => 'required|regex:/^.+ - [0-9]+$/',
+                'message' => 'required|max:255'
+            ], [
+                'destinataire.required' => 'Veuillez entrer un destinataire.',
+                'destinataire.regex' => 'Veuillez choisir un destinataire présent dans la liste.',
+                'message.required' => 'Veuillez entrer un message.',
+                'message.max' => 'Votre message doit avoir 255 caractères ou moins.'
+            ]);
+
+        if ($validation->fails())
+            return back()->withErrors($validation->errors())->withInput();
+
+        $contenuFormulaire = $validation->validated();
+
+        $valeursDestinataire = explode('-', $contenuFormulaire['destinataire']);
+        $idDestinataire = intval(end($valeursDestinataire));
+
+        if ($idDestinataire == Auth::id()) {
+            return back()->withErrors(['msg' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.']);
+        }
+
+        $conversation = Conversation::create([
+            'ferme' => 0
+        ]);
+
+        $message = Message::create([
+            'texte' => $contenuFormulaire['message'],
+            'id_envoyeur' => Auth::id(),
+            'id_receveur' => $idDestinataire,
+            'id_conversation' => $conversation->id
+        ]);
+
         return $this->index($request);
     }
 
