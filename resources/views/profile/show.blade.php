@@ -23,7 +23,7 @@
 
         <div class="text-center text-white">
             @if (isset($user->no_porte))
-                <p class="w-full">{{ $user->no_porte}}-{{ $user->no_civique}}, rue {{ $user->rue }}</p>
+                <p class="w-full">{{ $user->no_porte}}-{{ $user->no_civique}}, {{ $user->rue }}</p>
                 <p class="w-full">{{ $ville->nom }}, QC, {{ $user->code_postal }}</p>
             @else
                 <p class="w-full">{{ $user->no_civique}}, rue {{ $user->rue }}</p>

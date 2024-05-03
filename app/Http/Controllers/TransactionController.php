@@ -40,6 +40,7 @@ class TransactionController extends Controller
 
             return new TransactionResource($transaction);
         }
+
         else{
             return view('accueil/accueil', [
                 'employe'=>$employe,
@@ -47,7 +48,6 @@ class TransactionController extends Controller
                 'type_transactions'=>TypeTransaction::all(),
                 'date_time'=>$date_time
             ]);
-
 
         }
 
@@ -116,18 +116,23 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $id)
+    public function show(Request $request)
     {
+        $id = $request['id_compte_envoyeur'];
         $transaction = Transaction::find($id);
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
-
+        $date_time = Carbon::now()->format('d-M-Y H:i');
+        $employe =Auth::user();
 
         if($request->routeIs('transactions')){
+            $id = $request['id_compte_envoyeur'];
+            $transaction = Transaction::find($id);
+            $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
             if(is_null($transaction)){
                 return abort(404);
             }
             return view('transaction/transactions', [
-                'employe'=>Auth::user(),
+                'employe'=>$employe,
                 'date_time'=>Carbon::now()->format('d-M-Y H:i'),
                 'transaction'=> $transaction,
                 'transactions'=>$transactions,
@@ -137,18 +142,32 @@ class TransactionController extends Controller
 
         }
         else if($request->routeIs('transaction')){
+            $id = $request['id_transaction'];
+            $transaction = Transaction::find($id);
             if(is_null($transaction)){
                 return abort(404);
             }
             return view('transaction/transaction', [
-                'employe'=>Auth::user(),
-                'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'employe'=>$employe,
+                'date_time'=>$date_time,
                 'transaction'=>$transaction,
                 'type_transactions'=>TypeTransaction::all()
 
             ]);
         }
 
+        else if($request->routeIs('transactionsFilter')){
+            $idTransaction = $request['id_type_Transaction'];
+
+            $employe = Auth::user();
+            $transactions = Transaction::where('id_type_transaction', $idTransaction)->get();
+            return view('accueil/accueil', [
+                'employe'=>$employe,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+        }
 
 
     }

@@ -14,12 +14,12 @@ class RolesUsersSeeder extends Seeder
     public function run(): void
     {
         DB::table('roles_users')->insert([
-            ['id_role' => 1,
+            ['id_role' => 3,
             'id_user' => 1],
             ['id_role' => 2,
-            'id_user' => 1],
-            ['id_role' => 3,
-            'id_user' => 1]
+            'id_user' => 2],
+            ['id_role' => 1,
+            'id_user' => 3]
         ]);
     }
 }

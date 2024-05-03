@@ -93,4 +93,7 @@
             </x-primary-button>
         </div>
     </form>
+    <div>
+        <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
+    </div>
 </x-guest-layout>
