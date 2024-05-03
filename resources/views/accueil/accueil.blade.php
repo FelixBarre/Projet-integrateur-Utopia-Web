@@ -114,8 +114,7 @@
                 <p><a href="">Virement</a></p>
                 <p><a href="">Transaction</a></p>
                 <p><a href="">Facture</a></p>
-                <p><a href="">Consulter une demande de prêt </a></p>
-                <p><a href="">Modifier une demande de prêt </a></p>
+                <p><a href="{{ route('demandesPret')}}">Consulter les demandes de prêt </a></p>
 
             </div>
 

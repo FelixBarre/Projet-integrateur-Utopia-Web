@@ -54,6 +54,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
     Route::controller(DemandeController::class)->group(function(){
         Route::get('demandesDePret', 'index')->name('demandesPret');
         Route::get('demandesDePret/filtre', 'index')->name('demandesPretFiltre');
+        Route::get('/demande_de_pret', 'show')->name('demandePret');
     });
 
     Route::controller(ConversationController::class)->group(function(){
