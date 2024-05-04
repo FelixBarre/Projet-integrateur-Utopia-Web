@@ -22,11 +22,11 @@
 
         </div> <!-- Fin du premier bloc -->
 
-        <div><!--Section filter -->
-            <form method="post" action="{{ route('transactionsFilter')}}" id="formSelect">
+        <div class="flex flex-row"><!--Section filter -->
+            <form method="post" action="{{ route('transactionsFilter')}}" id="formSelect" class="w-2/4">
                 @csrf
                 <p class="my-5 mx-9">
-                    <label for="filter" class="text-lg text-white">Filtrer par </label>
+                    <label for="filter" class="text-lg text-white">Trier par </label>
 
                     <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
                         <option value="none" id="optionValue">Sélectionner</option>
@@ -38,6 +38,19 @@
                 </p>
 
 
+            </form>
+
+            <form method="post" action="{{ route('transactionsFilterDate')}}" class="w-2/4 mr-20 text-right">
+                @csrf
+                <p class="my-5 mx-9" >
+                    <label for="filter" class="text-lg text-white">Filtrer de </label>
+                    <input type="date" name="date_debut">
+                    <label for="filter" class="text-lg text-white">à</label>
+                    <input type="date" name="date_fin">
+
+                </p>
+
+                <button type="submit">Filtrer</button>
             </form>
 
         </div><!-- Fin section filter -->

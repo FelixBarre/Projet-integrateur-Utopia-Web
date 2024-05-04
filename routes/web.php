@@ -43,6 +43,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
         Route::get('transaction/view/{id}', 'show')->name('transactionView');
         Route::post('transactions/filter', 'show')->name('transactionsFilter');
+        Route::post('transactions/filter/date', 'show')->name('transactionsFilterDate');
     });
 
     Route::controller(RapportController::class)->group(function(){
