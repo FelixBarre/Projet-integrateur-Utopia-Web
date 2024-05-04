@@ -114,9 +114,30 @@ class ConversationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Conversation $conversation)
+    public function show(Request $request, int $id)
     {
-        //
+        $messages = Message::where('id_conversation', $id)
+            ->orderBy('created_at')->get();
+
+        $premierMessage = $messages->first();
+
+        $interlocuteur = null;
+
+        if ($premierMessage->envoyeur->id == Auth::id()) {
+            $interlocuteur = $premierMessage->receveur;
+        }
+        else if ($premierMessage->receveur->id == Auth::id()) {
+            $interlocuteur = $premierMessage->envoyeur;
+        }
+        else {
+            return back()->withErrors(['msg' => 'Vous ne faites pas partie de cette conversation.']);
+        }
+
+        return view('messagerie.conversation', [
+            'messages' => $messages,
+            'interlocuteur' => $interlocuteur,
+            'AuthId' => Auth::id()
+        ]);
     }
 
     /**
