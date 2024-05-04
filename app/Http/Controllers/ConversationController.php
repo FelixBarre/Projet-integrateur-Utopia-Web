@@ -21,14 +21,31 @@ class ConversationController extends Controller
                 ->distinct()
                 ->where('ferme', 0)
                 ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
-                ->join('users AS A', 'A.id', '=', 'messages.id_envoyeur')
-                ->join('users AS B', 'B.id', '=', 'messages.id_receveur')
-                ->where('A.id', Auth::id())
-                ->orWhere('B.id', Auth::id())
+                ->where('messages.id_envoyeur', Auth::id())
+                ->orWhere('messages.id_receveur', Auth::id())
                 ->orderBy('messages.created_at', 'desc')
                 ->get(),
             'AuthId' => Auth::id()
         ]);
+    }
+
+    public function obtenirDestinatairesPossibles() {
+        return User::where('id', '!=', Auth::id())
+                    ->whereNotIn('id', function($query) {
+                        $query->select('id_envoyeur')
+                            ->from('messages')
+                            ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
+                            ->where('id_receveur', Auth::id())
+                            ->where('conversations.ferme', 0);
+                    })
+                    ->whereNotIn('id', function($query) {
+                        $query->select('id_receveur')
+                            ->from('messages')
+                            ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
+                            ->where('id_envoyeur', '=', Auth::id())
+                            ->where('conversations.ferme', 0);
+                    })
+                    ->get();
     }
 
     /**
@@ -36,8 +53,14 @@ class ConversationController extends Controller
      */
     public function create()
     {
+        $destinataires = $this->obtenirDestinatairesPossibles();
+
+        if (count($destinataires) == 0) {
+            return back()->with('alerte', 'Vous n\'avez aucun nouveau destinataire possible! Vous avez déjà une conversation ouverte avec chacun des usagers.');
+        }
+
         return view('messagerie.nouvelleConversation', [
-            'destinataires' => User::where('id', '!=', Auth::id())->get()
+            'destinataires' => $destinataires
         ]);
     }
 
@@ -66,6 +89,12 @@ class ConversationController extends Controller
 
         if ($idDestinataire == Auth::id()) {
             return back()->withErrors(['msg' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.']);
+        }
+
+        $destinatairesPossibles = $this->obtenirDestinatairesPossibles();
+
+        if (!$destinatairesPossibles->contains('id', $idDestinataire)) {
+            return back()->withErrors(['msg' => 'Ce destinataire ne fait pas partie des choix disponibles.']);
         }
 
         $conversation = Conversation::create([
