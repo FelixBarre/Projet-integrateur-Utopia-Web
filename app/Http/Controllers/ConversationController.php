@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ConversationController extends Controller
 {
@@ -18,13 +21,31 @@ class ConversationController extends Controller
                 ->distinct()
                 ->where('ferme', 0)
                 ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
-                ->join('users AS A', 'A.id', '=', 'messages.id_envoyeur')
-                ->join('users AS B', 'B.id', '=', 'messages.id_receveur')
-                ->where('A.id', Auth::id())
-                ->orWhere('B.id', Auth::id())
+                ->where('messages.id_envoyeur', Auth::id())
+                ->orWhere('messages.id_receveur', Auth::id())
+                ->orderBy('messages.created_at', 'desc')
                 ->get(),
             'AuthId' => Auth::id()
         ]);
+    }
+
+    public function obtenirDestinatairesPossibles() {
+        return User::where('id', '!=', Auth::id())
+                    ->whereNotIn('id', function($query) {
+                        $query->select('id_envoyeur')
+                            ->from('messages')
+                            ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
+                            ->where('id_receveur', Auth::id())
+                            ->where('conversations.ferme', 0);
+                    })
+                    ->whereNotIn('id', function($query) {
+                        $query->select('id_receveur')
+                            ->from('messages')
+                            ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
+                            ->where('id_envoyeur', '=', Auth::id())
+                            ->where('conversations.ferme', 0);
+                    })
+                    ->get();
     }
 
     /**
@@ -32,7 +53,15 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        //
+        $destinataires = $this->obtenirDestinatairesPossibles();
+
+        if (count($destinataires) == 0) {
+            return back()->with('alerte', 'Vous n\'avez aucun nouveau destinataire possible! Vous avez déjà une conversation ouverte avec chacun des usagers.');
+        }
+
+        return view('messagerie.nouvelleConversation', [
+            'destinataires' => $destinataires
+        ]);
     }
 
     /**
@@ -40,15 +69,75 @@ class ConversationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+                'destinataire' => 'required|regex:/^.+ - [0-9]+$/',
+                'message' => 'required|max:255'
+            ], [
+                'destinataire.required' => 'Veuillez entrer un destinataire.',
+                'destinataire.regex' => 'Veuillez choisir un destinataire présent dans la liste.',
+                'message.required' => 'Veuillez entrer un message.',
+                'message.max' => 'Votre message doit avoir 255 caractères ou moins.'
+            ]);
+
+        if ($validation->fails())
+            return back()->withErrors($validation->errors())->withInput();
+
+        $contenuFormulaire = $validation->validated();
+
+        $valeursDestinataire = explode('-', $contenuFormulaire['destinataire']);
+        $idDestinataire = intval(end($valeursDestinataire));
+
+        if ($idDestinataire == Auth::id()) {
+            return back()->withErrors(['msg' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.']);
+        }
+
+        $destinatairesPossibles = $this->obtenirDestinatairesPossibles();
+
+        if (!$destinatairesPossibles->contains('id', $idDestinataire)) {
+            return back()->withErrors(['msg' => 'Ce destinataire ne fait pas partie des choix disponibles.']);
+        }
+
+        $conversation = Conversation::create([
+            'ferme' => 0
+        ]);
+
+        $message = Message::create([
+            'texte' => $contenuFormulaire['message'],
+            'id_envoyeur' => Auth::id(),
+            'id_receveur' => $idDestinataire,
+            'id_conversation' => $conversation->id
+        ]);
+
+        return $this->index($request);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Conversation $conversation)
+    public function show(Request $request, int $id)
     {
-        //
+        $messages = Message::where('id_conversation', $id)
+            ->orderBy('created_at')->get();
+
+        $premierMessage = $messages->first();
+
+        $interlocuteur = null;
+
+        if ($premierMessage->envoyeur->id == Auth::id()) {
+            $interlocuteur = $premierMessage->receveur;
+        }
+        else if ($premierMessage->receveur->id == Auth::id()) {
+            $interlocuteur = $premierMessage->envoyeur;
+        }
+        else {
+            return back()->withErrors(['msg' => 'Vous ne faites pas partie de cette conversation.']);
+        }
+
+        return view('messagerie.conversation', [
+            'messages' => $messages,
+            'interlocuteur' => $interlocuteur,
+            'AuthId' => Auth::id()
+        ]);
     }
 
     /**
