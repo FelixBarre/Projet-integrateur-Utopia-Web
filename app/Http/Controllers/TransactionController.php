@@ -44,7 +44,7 @@ class TransactionController extends Controller
         else{
             return view('accueil/accueil', [
                 'employe'=>$employe,
-                'transactions'=>Transaction::take(10)->get(),
+                'transactions'=>Transaction::orderBy('created_at', 'desc')->take(10)->get(),
                 'type_transactions'=>TypeTransaction::all(),
                 'date_time'=>$date_time
             ]);
@@ -173,6 +173,24 @@ class TransactionController extends Controller
 
         else if($request->routeIs('transactionsFilter')){
             $idTransaction = $request['id_type_Transaction'];
+
+            $employe = Auth::user();
+            $transactions = Transaction::where('id_type_transaction', $idTransaction)->get();
+            return view('accueil/accueil', [
+                'employe'=>$employe,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+        }
+        else if($request->routeIs('transactionsFilterDate')){
+            $idTransaction = $request['id_type_Transaction'];
+            $dateDebut = $request->input('date_debut');
+            $dateFin = $request->input('date_fin');
+
+            $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
+            ->whereDate('created_at', '<=', $dateFin)
+            ->get();
 
             $employe = Auth::user();
             $transactions = Transaction::where('id_type_transaction', $idTransaction)->get();
