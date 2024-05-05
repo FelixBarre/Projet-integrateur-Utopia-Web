@@ -9,7 +9,7 @@
                 @php
                     $isEnvoyeur = $message->envoyeur->id == $AuthId;
                 @endphp
-                <div class="flex {{ $isEnvoyeur ? 'justify-end' : 'justify-start' }}">
+                <div id="{{ $message->id }}" class="flex {{ $isEnvoyeur ? 'justify-end' : 'justify-start' }}">
                     <div class="w-1/2 m-4">
                         <p class="{{ $isEnvoyeur ? 'text-right' : 'text-left' }}">{{ $message->created_at }}</p>
                         <p class="bg-[{{ $isEnvoyeur ? '#18B7BE' : '#178CA4' }}] p-6 rounded-xl text-white text-justify">{{$message->texte}}</p>

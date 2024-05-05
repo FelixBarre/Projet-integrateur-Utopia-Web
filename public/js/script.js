@@ -36,6 +36,36 @@ function pageConversation() {
             actionMessage();
         }
     });
+
+    getNewMessages();
+}
+
+async function getNewMessages() {
+    let divConversation = document.getElementById('divConversation');
+    let id_conversation = document.getElementById('id_conversation');
+    let id_envoyeur = document.getElementById('id_envoyeur');
+    let dernierMessage = divConversation.lastElementChild;
+
+    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessage.id, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['data']) {
+        data['data'].forEach(message => {
+            creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
+        });
+    }
+    else if (data['ÉCHEC']) {
+        alert(data['ÉCHEC']);
+    }
+
+    setTimeout(getNewMessages, 1000);
 }
 
 async function actionMessage(event) {
@@ -77,7 +107,7 @@ async function actionMessage(event) {
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, valeurTexte);
+            creerMessage(true, valeurTexte, data['id']);
         }
         else if (data['ÉCHEC']) {
             alert(data['ÉCHEC']);
@@ -93,7 +123,7 @@ async function actionMessage(event) {
     }
 }
 
-function creerMessage(isEnvoyeur, texte) {
+function creerMessage(isEnvoyeur, texte, idMessage) {
     let divConversation = document.getElementById('divConversation');
 
     if (!divConversation) {
@@ -101,6 +131,7 @@ function creerMessage(isEnvoyeur, texte) {
     }
 
     let divRow = document.createElement('div');
+    divRow.id = idMessage;
     divRow.classList.add('flex');
     if (isEnvoyeur) {
         divRow.classList.add('justify-end');
