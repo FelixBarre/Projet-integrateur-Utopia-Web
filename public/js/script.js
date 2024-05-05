@@ -124,6 +124,10 @@ async function actionMessage(event) {
 }
 
 function creerMessage(isEnvoyeur, texte, idMessage) {
+    if (document.getElementById(idMessage)) {
+        return;
+    }
+
     let divConversation = document.getElementById('divConversation');
 
     if (!divConversation) {
