@@ -1,12 +1,20 @@
-/*let formSelect = document.getElementById('formSelect');
-let selectValue = document.getElementById('selectValue');
-
-selectValue.addEventListener('change', function(){
-    formSelect.submit();
-});*/
-
 window.onload = function() {
+    pageAccueil();
     pageConversation();
+}
+
+function pageAccueil() {
+    let formSelect = document.getElementById('formSelect');
+
+    if(!formSelect) {
+        return;
+    }
+
+    let selectValue = document.getElementById('selectValue');
+
+    selectValue.addEventListener('change', function(){
+        formSelect.submit();
+    });
 }
 
 function pageConversation() {
