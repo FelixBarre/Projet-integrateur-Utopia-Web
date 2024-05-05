@@ -178,6 +178,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divMessage.insertAdjacentElement('afterbegin', pCreatedAt);
 
     let pMessage = document.createElement('p');
+    pMessage.classList.add('break-words');
     if (isEnvoyeur) {
         pMessage.classList.add('bg-[#18B7BE]');
     }
