@@ -40,6 +40,21 @@ function pageConversation() {
     getNewMessages();
 }
 
+function alertErreurs(data) {
+    if (!data['ERREUR']) {
+        return;
+    }
+
+    let erreurs = data['ERREUR'];
+    let messageErreurs = ''
+
+    for (let erreur in erreurs) {
+        messageErreurs += erreurs[erreur] + '\n';
+    }
+
+    alert(messageErreurs);
+}
+
 async function getNewMessages() {
     let divConversation = document.getElementById('divConversation');
     let id_conversation = document.getElementById('id_conversation');
@@ -61,8 +76,8 @@ async function getNewMessages() {
             creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
         });
     }
-    else if (data['ÉCHEC']) {
-        alert(data['ÉCHEC']);
+    else {
+        alertErreurs(data);
     }
 
     setTimeout(getNewMessages, 1000);
@@ -82,11 +97,9 @@ async function actionMessage(event) {
     texte.focus();
 
     if (action.value == 'POST') {
-        let valeurTexte = texte.value.trim();
+        texte.value = texte.value.trim();
 
-        texte.value = '';
-
-        if (valeurTexte == '') {
+        if (texte.value == '') {
             return;
         }
 
@@ -97,7 +110,7 @@ async function actionMessage(event) {
                 'Content-Type': 'application/json; charset=utf-8'
             },
             body: JSON.stringify({
-                'texte' : valeurTexte,
+                'texte' : texte.value,
                 'id_envoyeur' : id_envoyeur.value,
                 'id_receveur' : id_receveur.value,
                 'id_conversation' : id_conversation.value
@@ -107,18 +120,19 @@ async function actionMessage(event) {
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, valeurTexte, data['id']);
+            creerMessage(true, texte.value, data['id']);
+            texte.value = '';
         }
-        else if (data['ÉCHEC']) {
-            alert(data['ÉCHEC']);
+        else {
+            alertErreurs(data);
         }
     }
     else if (action.value == 'PUT') {
         if (data['SUCCÈS']) {
 
         }
-        else if (data['ÉCHEC']) {
-            alert(data['ÉCHEC']);
+        else {
+            alertErreurs(data);
         }
     }
 }
