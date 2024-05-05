@@ -32,6 +32,7 @@ function pageConversation() {
     let texte = document.getElementById('texte');
     texte.addEventListener("keypress", function(e) {
         if(e.key == 'Enter') {
+            e.preventDefault();
             actionMessage();
         }
     });
@@ -48,7 +49,17 @@ async function actionMessage(event) {
     let id_conversation = document.getElementById('id_conversation');
     let action = document.getElementById('action');
 
+    texte.focus();
+
     if (action.value == 'POST') {
+        let valeurTexte = texte.value.trim();
+
+        texte.value = '';
+
+        if (valeurTexte == '') {
+            return;
+        }
+
         let response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
@@ -56,7 +67,7 @@ async function actionMessage(event) {
                 'Content-Type': 'application/json; charset=utf-8'
             },
             body: JSON.stringify({
-                'texte' : texte.value,
+                'texte' : valeurTexte,
                 'id_envoyeur' : id_envoyeur.value,
                 'id_receveur' : id_receveur.value,
                 'id_conversation' : id_conversation.value
@@ -66,9 +77,7 @@ async function actionMessage(event) {
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, texte.value);
-
-            texte.value = '';
+            creerMessage(true, valeurTexte);
         }
         else if (data['ÉCHEC']) {
             alert(data['ÉCHEC']);
@@ -115,7 +124,7 @@ function creerMessage(isEnvoyeur, texte) {
     else {
         pCreatedAt.classList.add('text-left');
     }
-    pCreatedAt.innerHTML = '1970-01-01 01:01:01';
+    pCreatedAt.innerHTML = new Date().toLocaleString('sv-SE');
 
     divMessage.insertAdjacentElement('afterbegin', pCreatedAt);
 
