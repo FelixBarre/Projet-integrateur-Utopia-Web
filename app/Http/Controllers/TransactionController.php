@@ -142,7 +142,7 @@ class TransactionController extends Controller
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
             $transaction = Transaction::find($id);
-            $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
+            $transactions = Transaction::where('id_compte_envoyeur', $id)->orderBy('created_at', 'desc')->get();
             if(is_null($transaction)){
                 return abort(404);
             }
@@ -151,6 +151,7 @@ class TransactionController extends Controller
                 'date_time'=>Carbon::now()->format('d-M-Y H:i'),
                 'transaction'=> $transaction,
                 'transactions'=>$transactions,
+                'id_compte_envoyeur'=>$id,
                 'type_transactions'=>TypeTransaction::all()
 
             ]);
@@ -173,27 +174,49 @@ class TransactionController extends Controller
 
         else if($request->routeIs('transactionsFilter')){
             $idTransaction = $request['id_type_Transaction'];
-
             $employe = Auth::user();
-            $transactions = Transaction::where('id_type_transaction', $idTransaction)->get();
+            $transactions = Transaction::where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
             return view('accueil/accueil', [
                 'employe'=>$employe,
                 'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+        }
+        else if($request->routeIs('transactionsFilterUser')){
+            $idTransaction = $request['id_type_Transaction'];
+            $transaction = Transaction::find($idTransaction);
+            $id_compte= $request['id_compte_envoyeur'];
+            $employe = Auth::user();
+            $transactions = Transaction::where('id_type_transaction', $idTransaction)
+                                ->where('id_compte_envoyeur', $id_compte)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+
+            if(is_null($transaction)){
+                return abort(404);
+            }
+
+            return view('transaction/transactions', [
+                'employe'=>$employe,
+                'transaction'=>$transaction,
+                'transactions'=>$transactions,
+                'id_compte_envoyeur'=>$id_compte,
                 'type_transactions'=>TypeTransaction::all(),
                 'date_time'=>$date_time
             ]);
         }
         else if($request->routeIs('transactionsFilterDate')){
             $idTransaction = $request['id_type_Transaction'];
-            $dateDebut = $request->input('date_debut');
-            $dateFin = $request->input('date_fin');
 
+            $dateDebut = $request['date_debut'];
+            $dateFin = $request['date_fin'];
             $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
-            ->whereDate('created_at', '<=', $dateFin)
-            ->get();
+                            ->whereDate('created_at', '<=', $dateFin)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
 
             $employe = Auth::user();
-            $transactions = Transaction::where('id_type_transaction', $idTransaction)->get();
             return view('accueil/accueil', [
                 'employe'=>$employe,
                 'transactions'=>$transactions,
@@ -201,7 +224,24 @@ class TransactionController extends Controller
                 'date_time'=>$date_time
             ]);
         }
+        else if($request->routeIs('transactionsFilterDateUser')){
+            $idTransaction = $request['id_type_Transaction'];
 
+            $dateDebut = $request['date_debut'];
+            $dateFin = $request['date_fin'];
+            $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
+                            ->whereDate('created_at', '<=', $dateFin)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+            $employe = Auth::user();
+            return view('accueil/accueil', [
+                'employe'=>$employe,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+        }
 
     }
 

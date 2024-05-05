@@ -20,7 +20,7 @@ Route::controller(CompteBancaireController::class)->group(function() {
 });
 
 Route::controller(TransactionController::class)->group(function(){
-    Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
+    Route::get('transactionsApi/{id}', 'index')->name('transactionsApi'); 
     Route::get('transactionApi/{id}', 'index')->name('transactionApi');
     Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
     Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
