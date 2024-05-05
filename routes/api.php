@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,4 +34,8 @@ Route::controller(DemandeController::class)->group(function(){
     Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi');
     Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi');
     Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi');
+});
+
+Route::controller(MessageController::class)->group(function() {
+    Route::post('/messages', 'store')->name('envoiMessage');
 });

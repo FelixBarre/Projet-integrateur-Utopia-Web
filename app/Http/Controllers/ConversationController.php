@@ -136,7 +136,8 @@ class ConversationController extends Controller
         return view('messagerie.conversation', [
             'messages' => $messages,
             'interlocuteur' => $interlocuteur,
-            'AuthId' => Auth::id()
+            'AuthId' => Auth::id(),
+            'conversation' => Conversation::find($id)
         ]);
     }
 
