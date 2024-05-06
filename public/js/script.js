@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 let formSelect = document.getElementById('formSelect');
 let selectValue = document.getElementById('selectValue');
 let formDate = document.getElementById("formDate");
@@ -21,7 +20,8 @@ dateFin.addEventListener('change', function(event){
     }
 
 });
-=======
+
+
 window.onload = function() {
     pageAccueil();
     pageConversation();
@@ -56,9 +56,55 @@ function pageConversation() {
     let texte = document.getElementById('texte');
     texte.addEventListener("keypress", function(e) {
         if(e.key == 'Enter') {
+            e.preventDefault();
             actionMessage();
         }
     });
+
+    getNewMessages();
+}
+
+function alertErreurs(data) {
+    if (!data['ERREUR']) {
+        return;
+    }
+
+    let erreurs = data['ERREUR'];
+    let messageErreurs = ''
+
+    for (let erreur in erreurs) {
+        messageErreurs += erreurs[erreur] + '\n';
+    }
+
+    alert(messageErreurs);
+}
+
+async function getNewMessages() {
+    let divConversation = document.getElementById('divConversation');
+    let id_conversation = document.getElementById('id_conversation');
+    let id_envoyeur = document.getElementById('id_envoyeur');
+    let dernierMessage = divConversation.lastElementChild;
+
+    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessage.id, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['data']) {
+        data['data'].forEach(message => {
+            creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
+        });
+    }
+    else {
+        alertErreurs(data);
+    }
+
+    setTimeout(getNewMessages, 1000);
 }
 
 async function actionMessage(event) {
@@ -72,7 +118,15 @@ async function actionMessage(event) {
     let id_conversation = document.getElementById('id_conversation');
     let action = document.getElementById('action');
 
+    texte.focus();
+
     if (action.value == 'POST') {
+        texte.value = texte.value.trim();
+
+        if (texte.value == '') {
+            return;
+        }
+
         let response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
@@ -90,25 +144,28 @@ async function actionMessage(event) {
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, texte.value);
-
+            creerMessage(true, texte.value, data['id']);
             texte.value = '';
         }
-        else if (data['ÉCHEC']) {
-            alert(data['ÉCHEC']);
+        else {
+            alertErreurs(data);
         }
     }
     else if (action.value == 'PUT') {
         if (data['SUCCÈS']) {
 
         }
-        else if (data['ÉCHEC']) {
-            alert(data['ÉCHEC']);
+        else {
+            alertErreurs(data);
         }
     }
 }
 
-function creerMessage(isEnvoyeur, texte) {
+function creerMessage(isEnvoyeur, texte, idMessage) {
+    if (document.getElementById(idMessage)) {
+        return;
+    }
+
     let divConversation = document.getElementById('divConversation');
 
     if (!divConversation) {
@@ -116,6 +173,7 @@ function creerMessage(isEnvoyeur, texte) {
     }
 
     let divRow = document.createElement('div');
+    divRow.id = idMessage;
     divRow.classList.add('flex');
     if (isEnvoyeur) {
         divRow.classList.add('justify-end');
@@ -139,11 +197,12 @@ function creerMessage(isEnvoyeur, texte) {
     else {
         pCreatedAt.classList.add('text-left');
     }
-    pCreatedAt.innerHTML = '1970-01-01 01:01:01';
+    pCreatedAt.innerHTML = new Date().toLocaleString('sv-SE');
 
     divMessage.insertAdjacentElement('afterbegin', pCreatedAt);
 
     let pMessage = document.createElement('p');
+    pMessage.classList.add('break-words');
     if (isEnvoyeur) {
         pMessage.classList.add('bg-[#18B7BE]');
     }
@@ -160,4 +219,3 @@ function creerMessage(isEnvoyeur, texte) {
 
     divConversation.scrollTop = divConversation.scrollHeight;
 }
->>>>>>> 122eae3fc4d979a39dd4a21f55c089c8352e110c
