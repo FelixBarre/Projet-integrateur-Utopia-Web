@@ -15,6 +15,8 @@
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+        <link rel="icon" href="{{asset('favicon.ico')}}" type="image/x-icon">
+
         <script src="{{asset('js/script.js')}}" defer></script>
 
         <!-- Scripts -->
@@ -26,7 +28,7 @@
         @include('layouts.navigation')
 
         <!-- Page Content -->
-        <main class="p-4 h-full ml-24">
+        <main class="h-full p-4 ml-24">
 
             <div class="m-8">
                 @include('messageFlash')

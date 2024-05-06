@@ -1,4 +1,3 @@
-
 let formSelect = document.getElementById('formSelect');
 let selectValue = document.getElementById('selectValue');
 let formDate = document.getElementById("formDate");
@@ -7,19 +6,15 @@ let dateFin = document.getElementById("date_fin");
 let errorClass = document.getElementById('error-class');
 
 
+
 selectValue.addEventListener('change', function(){
     formSelect.submit();
 });
 
-dateFin.addEventListener('change', function(event){
-    if (!dateDebut.value) {
-        event.preventDefault();
-        errorClass.classList.remove('hidden');
-    }else{
+dateFin.addEventListener('change', function(){
         formDate.submit();
-    }
-
 });
+
 
 window.onload = function() {
     pageAccueil();
@@ -218,4 +213,3 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
 
     divConversation.scrollTop = divConversation.scrollHeight;
 }
-

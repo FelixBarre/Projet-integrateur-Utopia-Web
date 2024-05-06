@@ -2,6 +2,7 @@
 
 
 
+
         <div class="flex flex-row"><!-- Premier bloc contenant message, infos et datetime -->
 
                 <div class="w-2/4 text-left">
@@ -24,14 +25,19 @@
 
         </div> <!-- Fin du premier bloc -->
 
-
-        <div role="alert" class="flex items-center justify-center hidden" id="error-class">
-
-            <div class="p-2 text-red-700 bg-red-100 border border-t-0">
-            <div class="font-bold text-white bg-red-500">Erreur</div>
-            <p>Veuillez choisir la date de début</p>
+        @if (Session::has('error'))
+        <div class="flex justify-center w-full">
+            <div role="alert" class="flex flex-col justify-center w-96">
+                <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
+                    <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
+                        <p>{{ Session::get('error') }}</p>
+                    </div>
+                </div>
             </div>
+
         </div>
+
+        @endif
 
         <div class="flex flex-row"><!--Section filter -->
             <form method="post" action="{{ route('transactionsFilter')}}" id="formSelect" class="w-2/4">
