@@ -17,6 +17,8 @@
 
         <link rel="icon" href="{{asset('favicon.ico')}}" type="image/x-icon">
 
+        @include('messageFlash')
+
         <script src="{{asset('js/script.js')}}" defer></script>
 
         <!-- Scripts -->
@@ -29,7 +31,7 @@
 
         <!-- Page Content -->
         <main class="h-full p-4 ml-24">
-
+            @include('messageFlash')
             <div class="m-8">
                 @include('messageFlash')
             </div>

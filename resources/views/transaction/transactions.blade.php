@@ -114,7 +114,7 @@
     </div><!-- Fin du bloc du tableau des transactions -->
 
 
-    <div class="flex justify-start">
+    <div class="flex items-end justify-end">
         <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
     </div>
 
