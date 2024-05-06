@@ -29,7 +29,6 @@
 
         <!-- Page Content -->
         <main class="h-full p-4 ml-24">
-
             <div class="m-8">
                 @include('messageFlash')
             </div>
