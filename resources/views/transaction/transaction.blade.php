@@ -114,7 +114,9 @@
     </div>
 
 
-
+    <div class="flex justify-start">
+        <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
+    </div>
 
 
 

@@ -211,6 +211,16 @@ class TransactionController extends Controller
 
             $dateDebut = $request['date_debut'];
             $dateFin = $request['date_fin'];
+
+
+            if (empty($dateDebut)) {
+
+                return back()->with('error', 'Veuillez choisir une date de début.');
+            }
+
+            if (!empty($dateFin) && $dateFin < $dateDebut) {
+                return back()->with('error', 'La date de fin doit être ultérieure à la date de début.');
+            }
             $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
                             ->whereDate('created_at', '<=', $dateFin)
                             ->orderBy('created_at', 'desc')
