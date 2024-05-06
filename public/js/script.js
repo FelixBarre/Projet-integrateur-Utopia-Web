@@ -1,21 +1,3 @@
-let formSelect = document.getElementById('formSelect');
-let selectValue = document.getElementById('selectValue');
-let formDate = document.getElementById("formDate");
-let dateDebut = document.getElementById("date_debut");
-let dateFin = document.getElementById("date_fin");
-let errorClass = document.getElementById('error-class');
-
-
-
-selectValue.addEventListener('change', function(){
-    formSelect.submit();
-});
-
-dateFin.addEventListener('change', function(){
-        formDate.submit();
-});
-
-
 window.onload = function() {
     pageAccueil();
     pageConversation();
@@ -32,6 +14,14 @@ function pageAccueil() {
 
     selectValue.addEventListener('change', function(){
         formSelect.submit();
+    });
+
+    let formDate = document.getElementById("formDate");
+    let dateDebut = document.getElementById("date_debut");
+    let dateFin = document.getElementById("date_fin");
+
+    dateFin.addEventListener('change', function(){
+        formDate.submit();
     });
 }
 
