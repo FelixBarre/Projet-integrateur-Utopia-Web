@@ -114,6 +114,10 @@
     </div><!-- Fin du bloc du tableau des transactions -->
 
 
+    <div class="flex justify-start">
+        <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
+    </div>
+
 
 
 </x-app-layout>

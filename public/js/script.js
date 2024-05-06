@@ -11,14 +11,8 @@ selectValue.addEventListener('change', function(){
     formSelect.submit();
 });
 
-dateFin.addEventListener('change', function(event){
-    if (!dateDebut.value) {
-        event.preventDefault();
-        errorClass.classList.remove('hidden');
-    }else{
+dateFin.addEventListener('change', function(){
         formDate.submit();
-    }
-
 });
 
 
