@@ -22,24 +22,18 @@
 
     </head>
 
-    <body class="h-screen bg-[#18B7BE] font-sans antialiased ">
+    <body class="h-full bg-[#18B7BE] font-sans antialiased ">
+        @include('layouts.navigation')
 
-        <div class="flex flex-rowbg-gray-100">
+        <!-- Page Content -->
+        <main class="p-4 h-full ml-24">
 
-            @include('layouts.navigation')
+            <div class="m-8">
+                @include('messageFlash')
+            </div>
 
-            <!-- Page Content -->
-            <main class="w-full p-4 ml-24 ">
+            {{ $slot }}
 
-                <div class="m-8">
-                    @include('messageFlash')
-                </div>
-
-                {{ $slot }}
-
-            </main>
-
-
-        </div>
+        </main>
     </body>
 </html>
