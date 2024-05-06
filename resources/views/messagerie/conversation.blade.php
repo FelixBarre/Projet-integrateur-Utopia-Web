@@ -1,10 +1,10 @@
 <x-app-layout>
-    <div class="px-10 h-[70vh]">
+    <div class="px-10">
         <h2 class="text-3xl font-bold text-white mb-5">
             {{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}
         </h2>
 
-        <div id="divConversation" class="bg-[#F9F7F0] overflow-y-scroll p-5 h-full rounded-3xl border border-solid border-[#178CA4] border-4">
+        <div id="divConversation" class="bg-[#F9F7F0] overflow-y-scroll p-5 h-[70vh] rounded-3xl border border-solid border-[#178CA4] border-4">
             @foreach ($messages as $message)
                 @php
                     $isEnvoyeur = $message->envoyeur->id == $AuthId;
