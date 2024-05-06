@@ -12,6 +12,10 @@ class Conversation extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'ferme'
+    ];
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class, 'id_conversation', 'id');
