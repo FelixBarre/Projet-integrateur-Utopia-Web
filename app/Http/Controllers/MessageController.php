@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Http\Resources\MessageResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -53,7 +54,7 @@ class MessageController extends Controller
             $contenuMessage = $validation->validated();
 
             try {
-                Message::create([
+                $message = Message::create([
                     'texte' => $contenuMessage['texte'],
                     'id_envoyeur' => $contenuMessage['id_envoyeur'],
                     'id_receveur' => $contenuMessage['id_receveur'],
@@ -64,7 +65,15 @@ class MessageController extends Controller
                 return response()->json(['ERREUR' => 'Le message n\'a pas été créé.'], 500);
             }
 
-            return response()->json(['SUCCÈS' => 'Le message a bien été créé.'], 200);
+            return response()->json(['SUCCÈS' => 'Le message a bien été créé.', 'id' => $message->id ], 200);
+        }
+    }
+
+    public function getNewMessages(Request $request, int $id_conversation, int $id_dernier_message) {
+        if ($request->routeIs('getNewMessages')) {
+            return MessageResource::collection(Message::where('id_conversation', $id_conversation)
+                ->where('id', '>', $id_dernier_message)
+                ->get());
         }
     }
 
