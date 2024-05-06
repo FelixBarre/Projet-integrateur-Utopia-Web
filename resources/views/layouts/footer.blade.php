@@ -28,8 +28,8 @@
 
     <div class="w-1/4 p-3">
         <p class="mb-3 text-2xl font-bold"><span><i class="fas fa-clipboard"></i></span> <span>Gestion de rapports</span> </p>
-        <p><a href="">Création des rapports </a></p>
-        <p><a href="">Consultation des rapports </a></p>
+        <p><a href="{{ route('nouveauRapport')}}">Création des rapports </a></p>
+        <p><a href="{{ route('rapports')}}">Consultation des rapports </a></p>
 
     </div>
 
