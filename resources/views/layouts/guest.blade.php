@@ -19,15 +19,12 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="h-screen font-sans antialiased text-gray-900">
-        <div class="flex flex-row h-screen bg-gray-100">
-            <!-- Page Content -->
-            <main class="bg-[#18B7BE] h-screen w-screen">
-                <div class="m-8">
-                    @include('messageFlash')
-                </div>
-                {{ $slot }}
-            </main>
-        </div>
+    <body class="font-sans antialiased bg-[#18B7BE]">
+        <main>
+            <div class="m-8">
+                @include('messageFlash')
+            </div>
+            {{ $slot }}
+        </main>
     </body>
 </html>
