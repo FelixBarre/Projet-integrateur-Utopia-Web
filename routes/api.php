@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PretController;
 use App\Http\Controllers\ConversationController;
@@ -25,6 +26,7 @@ Route::controller(TransactionController::class)->group(function(){
     Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
     Route::get('transactionApi/{id}', 'index')->name('transactionApi');
     Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
+    Route::post('/virementApi/new', 'store')->name('newVirementApi');
     Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
     Route::post('/transactionApi/delete', 'update')->name('deleteTransactionApi');
 
@@ -56,3 +58,12 @@ Route::controller(ConversationController::class)->group(function() {
 Route::controller(PretController::class)->group(function() {
     Route::post('/creation/pret', 'store')->name('creationPretApi');
 });
+
+Route::controller(FactureController::class)->group(function() {
+    Route::get('/facturesApi/{id_fournisseur}', 'index')->name('facturesApi');
+    Route::get('/factureApi/{id}', 'index')->name('factureApi');
+    Route::post('/factureApi/new', 'store')->name('newFactureApi');
+    Route::post('/factureApi/update', 'update')->name('updateFactureApi');
+    Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
+});
+

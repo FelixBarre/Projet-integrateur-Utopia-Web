@@ -15,6 +15,8 @@ use App\Models\TypeTransaction;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\FournisseurController;
+use App\Models\Fournisseur;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -46,6 +48,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::post('transactions/filter/user/', 'show')->name('transactionsFilterUser');
         Route::post('transactions/filter/date', 'show')->name('transactionsFilterDate');
         Route::post('transactions/filter/date/user', 'show')->name('transactionsFilterDateUser');
+        Route::post('transactions/filter/email', 'show')->name('transactionsFilterEmail');
 
     });
 
@@ -66,6 +69,11 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('nouvelleConversation', 'create')->name('nouvelleConversation');
         Route::post('conversations', 'store')->name('creerConversation');
         Route::get('conversation/{id}', 'show')->name('conversation');
+    });
+
+    Route::controller(FournisseurController::class)->group(function(){
+        Route::get('fournisseurs', 'index')->name('fournisseurs');
+        Route::post('fournisseurs/filter', 'show')->name('FournisseurFilter');
     });
 });
 

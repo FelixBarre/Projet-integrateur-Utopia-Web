@@ -14,6 +14,7 @@ class CompteBancaire extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'nom',
         'solde',
         'taux_interet',

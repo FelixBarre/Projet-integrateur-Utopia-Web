@@ -35,16 +35,16 @@ class PretController extends Controller
         // cette méthode crée un compte bancaire qui va être le prêt rembourser au fil du temps
         // elle crée un prêt qui prend l'id du compte bancaire récemment crée et qui va rester généralement static
         // la requête prend en paramètre un id_demande, un taux_interet et une durée en mois
-        // la demande à partir de laquelle le prêt va être créé passe à l'état d'approuvée
+        // la demande à partir de laquelle le prêt va être créé passe à l'état d'approuvée et la date de traitement est entrée
         if ($request->routeIs('creationPretApi')) {
             $validation = Validator::make($request->all(), [
             'id_demande' => 'required',
-            'taux_interet' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+            'taux_interet' => 'required|regex:/^\d+$/',
             'duree' => 'required|regex:/^\d+$/',
             ], [
             'id_demande.required' => 'Veuillez entrer le id de la demande de prêt approuvée.',
             'taux_interet.required' => 'Veuillez entrer le taux d\'interêt du prêt.',
-            'taux_interet.regex' => 'Veuillez inscrire un taux d\'intérêt avec deux chiffres après la virgule.',
+            'taux_interet.regex' => 'Le taux d\'intérêt doit être numérique.',
             'duree.required' => 'Veuillez entrer la durée.',
             'duree.regex' => 'La durée doit être en mois.',
             ]);
@@ -54,13 +54,21 @@ class PretController extends Controller
 
             $contenuDecode = $validation->validated();
 
-            if (!Demande::where('id_etat_demande', 3)->find($contenuDecode['id_demande'])) {
-                return response()->json(['ERREUR' => 'Cette demande a déjà été traitée ou elle n\'existe pas.'], 400);
+            if (!Demande::find($contenuDecode['id_demande'])) {
+                return response()->json(['ERREUR' => "Cette demande n'existe pas."], 400);
             } else {
                 $demande = Demande::find($contenuDecode["id_demande"]);
+
+                if($demande->id_etat_demande == 1) {
+                    return response()->json(['NOTE' => "Cette demande a déjà approuvé."], 400);
+                }
             }
 
-           try {
+            try {
+                $date_debut = date('Y-m-d');
+                $date_echeance = date('Y-m-d', strtotime('+' . $contenuDecode['duree'] . ' month'));
+                $taux = $contenuDecode['taux_interet']/100;
+
                 $compteBancaire = CompteBancaire::create([
                     'nom' => $demande->raison,
                     'solde' => $demande->montant,
@@ -68,9 +76,6 @@ class PretController extends Controller
                     'id_user' => $demande->id_demandeur,
                     'est_valide' => 1
                 ]);
-
-                $date_debut = date('Y-m-d');
-                $date_echeance = date('Y-m-d', strtotime('+' . $contenuDecode['duree'] . ' month'));
 
                 Pret::create([
                     'nom' => $demande->raison,
@@ -81,12 +86,13 @@ class PretController extends Controller
                 ]);
 
                 $demande->id_etat_demande = 1;
+                $demande->date_traitement = now();
                 $demande->save();
 
-                return response()->json(['SUCCES' => 'La demande a été créé avec succès.'], 200);
+                return response()->json(['SUCCES' => 'Le prêt a été créé avec succès.'], 200);
             } catch (QueryException $erreur) {
                 report($erreur);
-                return response()->json(['ERREUR' => 'La demande n\'a pas été créé.'], 500);
+                return response()->json(['ERREUR' => 'Le prêt n\'a pas été créé.'], 500);
             }
         }
     }
