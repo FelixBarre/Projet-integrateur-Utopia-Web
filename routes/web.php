@@ -73,7 +73,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
 
     Route::controller(FournisseurController::class)->group(function(){
         Route::get('fournisseurs', 'index')->name('fournisseurs');
-        Route::get('fournisseurs/filter', 'index')->name('FournisseurFilter');
+        Route::post('fournisseurs/filter', 'show')->name('FournisseurFilter');
     });
 });
 

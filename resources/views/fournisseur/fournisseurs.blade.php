@@ -27,7 +27,7 @@
     </div> <!-- Fin du premier bloc -->
 
     @if (Session::has('error'))
-    <div class="flex justify-center w-full">
+    <div class="flex justify-center w-full mb-10">
         <div role="alert" class="flex flex-col justify-center w-96">
             <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
                 <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
@@ -47,7 +47,7 @@
     <div class="flex flex-row justify-center">
         <form action="{{route('FournisseurFilter')}}" method="post">
             @csrf
-            <input type="email" placeholder="Entrez le nom du Fournisseur" name="nom" class="w-96" required>
+            <input type="text" placeholder="Entrez le nom du Fournisseur" name="nom" class="w-96" required>
             <button class="bouton">Rechercher</button>
         </form>
     </div>
