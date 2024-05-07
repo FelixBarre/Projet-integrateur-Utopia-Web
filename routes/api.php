@@ -40,7 +40,10 @@ Route::controller(DemandeController::class)->group(function(){
 
 Route::controller(MessageController::class)->group(function() {
     Route::get('/messages/{id_conversation}/{id_dernier_message}', 'getNewMessages')->name('getNewMessages');
+    Route::get('/messages/updated/{id_conversation}/{date_derniere_update}', 'getUpdatedMessages')->name('getUpdatedMessages');
     Route::post('/messages', 'store')->name('envoiMessage');
+    Route::put('/messages/{id}', 'update')->name('modificationMessage');
+    Route::delete('/messages/{id}', 'destroy')->name('suppressionMessage');
 });
 
 Route::controller(PretController::class)->group(function() {
