@@ -19,9 +19,6 @@ class ConversationSeeder extends Seeder
             ],
             [
                 'ferme'=>false,
-            ],
-            [
-                'ferme'=>false,
             ]
         ]);
     }

@@ -173,7 +173,7 @@ async function getNewMessages() {
 
     if (data['data']) {
         data['data'].forEach((message) => {
-            creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
+            creerMessage(message.envoyeur.id == id_envoyeur.value, message.texte, message.id);
         });
     }
     else {
