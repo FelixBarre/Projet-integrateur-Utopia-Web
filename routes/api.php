@@ -7,6 +7,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PretController;
+use App\Http\Controllers\ConversationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -44,6 +45,12 @@ Route::controller(MessageController::class)->group(function() {
     Route::post('/messages', 'store')->name('envoiMessage');
     Route::put('/messages/{id}', 'update')->name('modificationMessage');
     Route::delete('/messages/{id}', 'destroy')->name('suppressionMessage');
+});
+
+Route::controller(ConversationController::class)->group(function() {
+    Route::get('conversations/user/{id_user}', 'index')->name('conversationsApi');
+    Route::post('conversations', 'store')->name('creerConversationApi');
+    Route::get('conversations/{id}', 'show')->name('conversationApi');
 });
 
 Route::controller(PretController::class)->group(function() {

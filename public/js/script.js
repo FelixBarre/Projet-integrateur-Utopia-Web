@@ -65,6 +65,26 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
+function pagePret() {
+    formPret = document.getElementById('formPret');
+
+    if (!formPret) {
+        return;
+    }
+
+    btnApprouver = document.getElementById('btnApprouver');
+    btnRefuser = document.getElementById('btnRefuser');
+
+    btnApprouver.addEventListener('click', function (e) {
+        approuverPret(e);
+    });
+
+    btnRefuser.addEventListener('click', function (e) {
+        refuserPret(e);
+    });
+
+}
+
 function envoyerMessage() {
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let id_message = document.getElementById('id_message');
@@ -112,26 +132,6 @@ function supprimerMessage(event) {
     }
 }
 
-function pagePret() {
-    formPret = document.getElementById('formPret');
-
-    if (!formPret) {
-        return;
-    }
-
-    btnApprouver = document.getElementById('btnApprouver');
-    btnRefuser = document.getElementById('btnRefuser');
-
-    btnApprouver.addEventListener('click', function (e) {
-        approuverPret(e);
-    });
-
-    btnRefuser.addEventListener('click', function (e) {
-        refuserPret(e);
-    });
-
-}
-
 function alertErreurs(data) {
     if (!data['ERREUR']) {
         return;
@@ -152,8 +152,16 @@ async function getNewMessages() {
     let id_conversation = document.getElementById('id_conversation');
     let id_envoyeur = document.getElementById('id_envoyeur');
     let dernierMessage = divConversation.lastElementChild;
+    let dernierMessageId;
 
-    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessage.id, {
+    if (dernierMessage) {
+        dernierMessageId = dernierMessage.id;
+    }
+    else {
+        dernierMessageId = 0;
+    }
+
+    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessageId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
@@ -291,6 +299,8 @@ async function actionMessage(event) {
                 'Content-Type': 'application/json; charset=utf-8'
             }
         });
+
+        envoyerMessage();
 
         let data = await response.json();
 
