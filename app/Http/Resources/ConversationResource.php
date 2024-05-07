@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\MessageResource;
 
 class ConversationResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class ConversationResource extends JsonResource
         return [
             'id' => $this->id,
             'ferme' => $this->ferme,
-            'messages' => $this->messages
+            'messages' => MessageResource::collection($this->messages)
         ];
     }
 }

@@ -65,7 +65,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('conversations', 'index')->name('conversations');
         Route::get('nouvelleConversation', 'create')->name('nouvelleConversation');
         Route::post('conversations', 'store')->name('creerConversation');
-        Route::get('conversations/{id}', 'show')->name('conversation');
+        Route::get('conversation/{id}', 'show')->name('conversation');
     });
 });
 
