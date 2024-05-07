@@ -27,6 +27,8 @@ Route::get('/', function () {
 Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profiles', [ProfileController::class, 'showUsers'])->name('users.show');
+    Route::get('/profile/user', [ProfileController::class, 'showUser'])->name('user.show');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

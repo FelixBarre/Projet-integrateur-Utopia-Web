@@ -1,6 +1,7 @@
 window.onload = function() {
     pageAccueil();
     pageConversation();
+    pageShowProfils();
 }
 
 function pageAccueil() {
@@ -46,6 +47,16 @@ function pageConversation() {
     });
 
     getNewMessages();
+}
+
+function pageShowProfils() {
+    let boutonFiltre = document.getElementById('boutonFiltreProfils');
+
+    if (!boutonFiltre) {
+        return;
+    }
+
+    boutonFiltre.addEventListener("click", filtrerProfils);
 }
 
 function alertErreurs(data) {
@@ -202,4 +213,42 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divMessage.insertAdjacentElement('beforeend', pMessage);
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+async function filtrerProfils(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    let courriel = document.getElementById('filtreCourrielProfiles');
+    let action = document.getElementById('action');
+
+    courriel.focus();
+
+    if (action.value == 'GET') {
+        courriel.value = courriel.value.trim();
+
+        if (courriel.value == '') {
+            return;
+        }
+
+        let response = await fetch ('/api/profiles', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+                'email' : courriel.value
+            })
+        });
+
+        let data = await response.json();
+
+        if (data['SUCCÈS']) {
+
+        } else {
+            alertErreurs(data);
+        }
+    }
 }
