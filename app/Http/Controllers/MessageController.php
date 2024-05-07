@@ -73,6 +73,15 @@ class MessageController extends Controller
         if ($request->routeIs('getNewMessages')) {
             return MessageResource::collection(Message::where('id_conversation', $id_conversation)
                 ->where('id', '>', $id_dernier_message)
+                ->whereNull('date_heure_supprime')
+                ->get());
+        }
+    }
+
+    public function getUpdatedMessages(Request $request, int $id_conversation, String $date_derniere_update) {
+        if ($request->routeIs('getUpdatedMessages')) {
+            return MessageResource::collection(Message::where('id_conversation', $id_conversation)
+                ->where('updated_at', '>=', $date_derniere_update)
                 ->get());
         }
     }
@@ -96,16 +105,52 @@ class MessageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Message $message)
+    public function update(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('modificationMessage')) {
+            $validation = Validator::make($request->all(), [
+                'texte' => 'required|max:255'
+            ], [
+                'texte.required' => 'Veuillez entrer un message.',
+                'texte.max' => 'Votre message ne peut pas dépasser 255 caractères.'
+            ]);
+
+            if ($validation->fails()) {
+                return response()->json(['ERREUR' => $validation->errors()], 400);
+            }
+
+            $contenuMessage = $validation->validated();
+
+            $message = Message::find($id);
+
+            if (is_null($message)) {
+                return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
+            }
+
+            $message->texte = $contenuMessage['texte'];
+
+            $message->save();
+
+            return response()->json(['SUCCÈS' => 'Le message a bien été modifié.'], 200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Message $message)
+    public function destroy(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('suppressionMessage')) {
+            $message = Message::find($id);
+
+            if (is_null($message)) {
+                return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
+            }
+
+            $message->date_heure_supprime = now();
+            $message->save();
+
+            return response()->json(['SUCCÈS' => 'Le message a bien été supprimé.'], 200);
+        }
     }
 }
