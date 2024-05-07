@@ -132,29 +132,35 @@ class ConversationController extends Controller
     {
         $conversation = Conversation::find($id);
 
-        $messages = $conversation->messages()
-            ->whereNull('date_heure_supprime')
-            ->orderBy('created_at')->get();
+        $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
+        $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
 
-        $premierMessage = $conversation->messages()->first();
+        $dernierMessage = null;
+
+        if (count($messagesNonSupprimes) > 0) {
+            $dernierMessage = $messagesNonSupprimes->first();
+        }
+        else {
+            $dernierMessage = $tousMessages->first();
+        }
 
         $interlocuteur = null;
 
-        if ($premierMessage->envoyeur->id == Auth::id()) {
-            $interlocuteur = $premierMessage->receveur;
+        if ($dernierMessage->envoyeur->id == Auth::id()) {
+            $interlocuteur = $dernierMessage->receveur;
         }
-        else if ($premierMessage->receveur->id == Auth::id()) {
-            $interlocuteur = $premierMessage->envoyeur;
+        else if ($dernierMessage->receveur->id == Auth::id()) {
+            $interlocuteur = $dernierMessage->envoyeur;
         }
         else {
             return back()->withErrors(['msg' => 'Vous ne faites pas partie de cette conversation.']);
         }
 
         return view('messagerie.conversation', [
-            'messages' => $messages,
+            'messages' => $messagesNonSupprimes,
             'interlocuteur' => $interlocuteur,
             'AuthId' => Auth::id(),
-            'conversation' => Conversation::find($id)
+            'conversation' => $conversation
         ]);
     }
 
