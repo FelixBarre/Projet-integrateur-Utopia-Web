@@ -10,16 +10,16 @@
         <h3 class="text-4xl text-center">{{$demande->user_demande->telephone}}</h3>
     </div>
 
-    <form action="">
-
+    <form action="{{ route('demandesPret')}}" method="GET" id="formPret">
+        @csrf
         <div class="flex justify-evenly w-3/4 m-auto mt-16">
             <div class="flex flex-col items-center">
                 <label class="text-3xl text-white mb-1" for="raison">Raison de la demande :</label>
-                <input class="w-80" name="raison" type="text" value="{{$demande->raison}}" readonly>
+                <input class="w-80" id="raison" name="raison" type="text" value="{{$demande->raison}}" readonly>
             </div>
             <div class="flex flex-col items-center">
                 <label class="text-3xl text-white mb-1" for="montant">Montant demandé :</label>
-                <input class="w-80" name="montant" type="text" value="{{$demande->montant}}$" readonly>
+                <input class="w-80" id="montant" name="montant" type="text" value="{{$demande->montant}}" readonly>
             </div>
         </div>
 
@@ -38,9 +38,10 @@
         </div>
 
         <div class="w-3/4 m-auto flex justify-evenly mt-20">
-            <button class="bouton w-40" value="approuver">Approuver</button>
-            <button class="bouton w-40" value="refuser">Refuser</button>
-            <button class="bouton w-40" value="retour">Retour</button>
+            <input type="hidden" id="id_demande" value="{{$demande->id}}">
+            <button class="bouton w-40" id="btnApprouver" name="actionPret" value="approuver">Approuver</button>
+            <button class="bouton w-40" id="btnRefuser" name="actionPret" value="refuser">Refuser</button>
+            <button class="bouton w-40" name="actionPret" value="retour">Retour</button>
         </div>
 
         <div class="text-center mt-5">

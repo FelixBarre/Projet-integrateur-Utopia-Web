@@ -3,6 +3,7 @@ var date_derniere_update = new Date().toLocaleString('sv-SE');
 window.onload = function() {
     pageAccueil();
     pageConversation();
+    pagePret();
 }
 
 function pageAccueil() {
@@ -62,6 +63,26 @@ function pageConversation() {
     getNewMessages();
 
     getUpdatedMessages();
+}
+
+function pagePret() {
+    formPret = document.getElementById('formPret');
+
+    if (!formPret) {
+        return;
+    }
+
+    btnApprouver = document.getElementById('btnApprouver');
+    btnRefuser = document.getElementById('btnRefuser');
+
+    btnApprouver.addEventListener('click', function (e) {
+        approuverPret(e);
+    });
+
+    btnRefuser.addEventListener('click', function (e) {
+        refuserPret(e);
+    });
+
 }
 
 function envoyerMessage() {
@@ -379,4 +400,68 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divMessage.insertAdjacentElement('beforeend', pMessage);
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+async function approuverPret(e) {
+    e.preventDefault();
+
+    let id = document.getElementById('id_demande').value;
+    let raison = document.getElementById('raison').value;
+    let montant = document.getElementById('montant').value;
+
+    let response = await fetch('/api/modification/demande_de_pret', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+            'id' : id,
+            'raison' : raison,
+            'montant' : montant,
+            'id_etat_demande' : 2
+        })
+    });
+
+    let data = await response.json();
+
+    if (!data['SUCCES']) {
+        alertErreurs(data);
+    }
+    else {
+        alert("La demande a été refusée.");
+        window.location.href = "/demandesDePret";
+    }
+}
+
+async function refuserPret(e) {
+    e.preventDefault();
+
+    let id = document.getElementById('id_demande').value;
+    let raison = document.getElementById('raison').value;
+    let montant = document.getElementById('montant').value;
+
+    let response = await fetch('/api/modification/demande_de_pret', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+            'id' : id,
+            'raison' : raison,
+            'montant' : montant,
+            'id_etat_demande' : 2
+        })
+    });
+
+    let data = await response.json();
+
+    if (!data['SUCCES']) {
+        alertErreurs(data);
+    }
+    else {
+        alert("La demande a été refusée.");
+        window.location.href = "/demandesDePret";
+    }
 }
