@@ -20,6 +20,7 @@ class MessageResource extends JsonResource
             'updated_at' => $this->updated_at,
             'texte' => $this->texte,
             'chemin_du_fichier' => $this->chemin_du_fichier,
+            'date_heure_supprime' => $this->date_heure_supprime,
             'id_envoyeur' => $this->id_envoyeur,
             'id_receveur' => $this->id_receveur,
             'id_conversation' => $this->id_conversation
