@@ -96,9 +96,34 @@ class MessageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Message $message)
+    public function update(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('modificationMessage')) {
+            $validation = Validator::make($request->all(), [
+                'texte' => 'required|max:255'
+            ], [
+                'texte.required' => 'Veuillez entrer un message.',
+                'texte.max' => 'Votre message ne peut pas dépasser 255 caractères.'
+            ]);
+
+            if ($validation->fails()) {
+                return response()->json(['ERREUR' => $validation->errors()], 400);
+            }
+
+            $contenuMessage = $validation->validated();
+
+            $message = Message::find($id);
+
+            if (is_null($message)) {
+                return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
+            }
+
+            $message->texte = $contenuMessage['texte'];
+
+            $message->save();
+
+            return response()->json(['SUCCÈS' => 'Le message a bien été modifié.'], 200);
+        }
     }
 
     /**

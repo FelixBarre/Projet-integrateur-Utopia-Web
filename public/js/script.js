@@ -45,7 +45,45 @@ function pageConversation() {
         }
     });
 
+    let boutonsModifierMessage = document.querySelectorAll('.boutonModifierMessage');
+
+    boutonsModifierMessage.forEach((bouton) => {
+        bouton.addEventListener('click', modifierMessage);
+    });
+
     getNewMessages();
+}
+
+function envoyerMessage() {
+    let boutonActionMessage = document.getElementById('boutonActionMessage');
+    let id_message = document.getElementById('id_message');
+    let texte = document.getElementById('texte');
+    let action = document.getElementById('action');
+
+    boutonActionMessage.innerHTML = 'Envoyer';
+    id_message.value = '';
+    texte.value = '';
+    texte.focus();
+    action.value = 'POST';
+}
+
+function modifierMessage(event) {
+    let boutonModifierMessage = event.currentTarget;
+    let divRow = boutonModifierMessage.parentElement.parentElement;
+    let pMessage = divRow.lastElementChild.lastElementChild;
+    let boutonActionMessage = document.getElementById('boutonActionMessage');
+    let texte = document.getElementById('texte');
+    let action = document.getElementById('action');
+    let id_message = document.getElementById('id_message');
+
+    boutonActionMessage.innerHTML = 'Modifier';
+
+    texte.value = pMessage.innerHTML;
+    texte.focus();
+
+    action.value = 'PUT';
+
+    id_message.value = divRow.id;
 }
 
 function alertErreurs(data) {
@@ -100,6 +138,7 @@ async function actionMessage(event) {
     let id_envoyeur = document.getElementById('id_envoyeur');
     let id_receveur = document.getElementById('id_receveur');
     let id_conversation = document.getElementById('id_conversation');
+    let id_message = document.getElementById('id_message');
     let action = document.getElementById('action');
 
     texte.focus();
@@ -136,8 +175,26 @@ async function actionMessage(event) {
         }
     }
     else if (action.value == 'PUT') {
-        if (data['SUCCÈS']) {
+        let response = await fetch('/api/messages/' + id_message.value, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+                'texte' : texte.value
+            })
+        });
 
+        let data = await response.json();
+
+        if (data['SUCCÈS']) {
+            let divRow = document.getElementById(id_message.value);
+            let pMessage = divRow.lastElementChild.lastElementChild;
+
+            pMessage.innerHTML = texte.value;
+
+            envoyerMessage();
         }
         else {
             alertErreurs(data);
@@ -159,6 +216,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     let divRow = document.createElement('div');
     divRow.id = idMessage;
     divRow.classList.add('flex');
+    divRow.classList.add('items-center');
     if (isEnvoyeur) {
         divRow.classList.add('justify-end');
     }
@@ -168,11 +226,35 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
 
     divConversation.insertAdjacentElement('beforeend', divRow);
 
+    if (isEnvoyeur) {
+        let divBoutons = document.createElement('div');
+        divBoutons.classList.add('grid');
+        divBoutons.classList.add('gap-4');
+
+        divRow.insertAdjacentElement('afterbegin', divBoutons);
+
+        let imgEdit = document.createElement('img');
+        imgEdit.classList.add('h-4');
+        imgEdit.classList.add('boutonModifierMessage');
+        imgEdit.src = 'http://localhost:8000/img/edit.svg';
+        imgEdit.alt = 'Modifier';
+        imgEdit.addEventListener('click', modifierMessage);
+
+        divBoutons.insertAdjacentElement('afterbegin', imgEdit);
+
+        let imgDelete = document.createElement('img');
+        imgDelete.classList.add('h-4');
+        imgDelete.src = 'http://localhost:8000/img/delete.svg';
+        imgDelete.alt = 'Supprimer';
+
+        divBoutons.insertAdjacentElement('beforeend', imgDelete);
+    }
+
     let divMessage = document.createElement('div');
     divMessage.classList.add('w-1/2');
     divMessage.classList.add('m-4');
 
-    divRow.insertAdjacentElement('afterbegin', divMessage);
+    divRow.insertAdjacentElement('beforeend', divMessage);
 
     let pCreatedAt = document.createElement('p');
     if (isEnvoyeur) {

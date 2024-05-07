@@ -9,7 +9,14 @@
                 @php
                     $isEnvoyeur = $message->envoyeur->id == $AuthId;
                 @endphp
-                <div id="{{ $message->id }}" class="flex {{ $isEnvoyeur ? 'justify-end' : 'justify-start' }}">
+                <div id="{{ $message->id }}" class="flex items-center {{ $isEnvoyeur ? 'justify-end' : 'justify-start' }}">
+                    @if ($isEnvoyeur)
+                        <div class="grid gap-4">
+                            <img class="h-4 boutonModifierMessage" src="{{asset('img/edit.svg')}}" alt="Modifier" />
+                            <img class="h-4" src="{{asset('img/delete.svg')}}" alt="Supprimer" />
+                        </div>
+                    @endif
+
                     <div class="w-1/2 m-4">
                         <p class="{{ $isEnvoyeur ? 'text-right' : 'text-left' }}">{{ $message->created_at }}</p>
                         <p class="break-words bg-[{{ $isEnvoyeur ? '#18B7BE' : '#178CA4' }}] p-6 rounded-xl text-white text-justify">{{$message->texte}}</p>
@@ -20,6 +27,7 @@
         <div class="bg-[#F9F7F0] flex justify-end items-center p-4 rounded-3xl mt-2">
             <img src="" alt="Pièce-jointe" class="w-40" />
             <textarea placeholder="{{ __('Entrez votre message ici') }}" maxlength="255" name="texte" id="texte" class="h-10 w-full resize-none rounded-3xl"></textarea>
+            <input type="hidden" id="id_message" />
             <input type="hidden" id="id_envoyeur" value="{{ $AuthId }}" />
             <input type="hidden" id="id_receveur" value="{{ $interlocuteur->id }}" />
             <input type="hidden" id="id_conversation" value="{{ $conversation->id }}" />

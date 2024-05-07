@@ -20,7 +20,7 @@ Route::controller(CompteBancaireController::class)->group(function() {
 });
 
 Route::controller(TransactionController::class)->group(function(){
-    Route::get('transactionsApi/{id}', 'index')->name('transactionsApi'); 
+    Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
     Route::get('transactionApi/{id}', 'index')->name('transactionApi');
     Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
     Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
@@ -39,4 +39,5 @@ Route::controller(DemandeController::class)->group(function(){
 Route::controller(MessageController::class)->group(function() {
     Route::get('/messages/{id_conversation}/{id_dernier_message}', 'getNewMessages')->name('getNewMessages');
     Route::post('/messages', 'store')->name('envoiMessage');
+    Route::put('/messages/{id}', 'update')->name('modificationMessage');
 });
