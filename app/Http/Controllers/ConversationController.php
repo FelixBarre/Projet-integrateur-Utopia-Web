@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use App\Http\Resources\ConversationResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,19 +15,30 @@ class ConversationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, int $id_user = null)
     {
-        return view('messagerie.conversations', [
-            'conversations' => Conversation::select('conversations.*')
-                ->distinct()
-                ->where('ferme', 0)
-                ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
-                ->where('messages.id_envoyeur', Auth::id())
-                ->orWhere('messages.id_receveur', Auth::id())
-                ->orderBy('messages.created_at', 'desc')
-                ->get(),
-            'AuthId' => Auth::id()
-        ]);
+        if (Auth::id()) {
+            $id_user = Auth::id();
+        }
+
+        $conversations = Conversation::select('conversations.*')
+            ->distinct()
+            ->where('ferme', 0)
+            ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
+            ->where('messages.id_envoyeur', $id_user)
+            ->orWhere('messages.id_receveur', $id_user)
+            ->orderBy('messages.created_at', 'desc')
+            ->get();
+
+        if ($request->routeIs('conversations')) {
+            return view('messagerie.conversations', [
+                'conversations' => $conversations,
+                'AuthId' => Auth::id()
+            ]);
+        }
+        else if ($request->routeIs('conversationsApi')) {
+            return ConversationResource::collection($conversations);
+        }
     }
 
     public function obtenirDestinatairesPossibles() {
