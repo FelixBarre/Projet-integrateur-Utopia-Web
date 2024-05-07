@@ -396,30 +396,32 @@ async function approuverPret(e) {
     e.preventDefault();
 
     let id = document.getElementById('id_demande').value;
-    let raison = document.getElementById('raison').value;
-    let montant = document.getElementById('montant').value;
+    let taux = document.getElementById('taux').value;
+    let duree = document.getElementById('duree').value;
 
-    let response = await fetch('/api/modification/demande_de_pret', {
+    let response = await fetch('/api/creation/pret', {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8'
         },
         body: JSON.stringify({
-            'id' : id,
-            'raison' : raison,
-            'montant' : montant,
-            'id_etat_demande' : 2
+            'id_demande' : id,
+            'taux_interet' : taux,
+            'duree' : duree,
         })
     });
 
     let data = await response.json();
 
     if (!data['SUCCES']) {
-        alertErreurs(data);
+        if (data['ERREUR'])
+            alertErreurs(data);
+        if (data['NOTE'])
+            alert("Cette demande a déjà été approuvée.")
     }
     else {
-        alert("La demande a été refusée.");
+        alert("La demande a été approuvée.");
         window.location.href = "/demandesDePret";
     }
 }
