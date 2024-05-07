@@ -25,8 +25,10 @@ class ConversationController extends Controller
             ->distinct()
             ->where('ferme', 0)
             ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
-            ->where('messages.id_envoyeur', $id_user)
-            ->orWhere('messages.id_receveur', $id_user)
+            ->where(function ($query) use ($id_user) {
+                   $query->where('messages.id_envoyeur', $id_user)
+                   ->orWhere('messages.id_receveur', $id_user);
+            })
             ->orderBy('messages.created_at', 'desc')
             ->get();
 
@@ -120,7 +122,7 @@ class ConversationController extends Controller
             'id_conversation' => $conversation->id
         ]);
 
-        return $this->index($request);
+        return redirect()->route('conversations');
     }
 
     /**
@@ -128,11 +130,13 @@ class ConversationController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $messages = Message::where('id_conversation', $id)
+        $conversation = Conversation::find($id);
+
+        $messages = $conversation->messages()
             ->whereNull('date_heure_supprime')
             ->orderBy('created_at')->get();
 
-        $premierMessage = $messages->first();
+        $premierMessage = $conversation->messages()->first();
 
         $interlocuteur = null;
 
