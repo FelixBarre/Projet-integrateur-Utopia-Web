@@ -27,13 +27,13 @@
             <div class="flex flex-col items-center items-center">
                 <label class="text-3xl text-white mb-1" for="taux">Taux d'intérêt :</label>
                 <div>
-                    <input class="w-52" name="taux" type="text">
+                    <input class="w-52" id="taux" name="taux" type="text">
                     <p class="inline text-white text-3xl ml-2">%</p>
                 </div>
             </div>
             <div class="flex flex-col items-center">
                 <label class="text-3xl text-white mb-1" for="duree">Durée :</label>
-                <input class="w-60" name="duree" type="text">
+                <input class="w-60" id="duree" name="duree" type="text">
             </div>
         </div>
 
