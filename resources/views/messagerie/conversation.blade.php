@@ -13,7 +13,7 @@
                     @if ($isEnvoyeur)
                         <div class="grid gap-4">
                             <img class="h-4 boutonModifierMessage" src="{{asset('img/edit.svg')}}" alt="Modifier" />
-                            <img class="h-4" src="{{asset('img/delete.svg')}}" alt="Supprimer" />
+                            <img class="h-4 boutonSupprimerMessage" src="{{asset('img/delete.svg')}}" alt="Supprimer" />
                         </div>
                     @endif
 

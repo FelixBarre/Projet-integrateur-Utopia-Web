@@ -73,6 +73,7 @@ class MessageController extends Controller
         if ($request->routeIs('getNewMessages')) {
             return MessageResource::collection(Message::where('id_conversation', $id_conversation)
                 ->where('id', '>', $id_dernier_message)
+                ->whereNull('date_heure_supprime')
                 ->get());
         }
     }
@@ -129,8 +130,19 @@ class MessageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Message $message)
+    public function destroy(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('suppressionMessage')) {
+            $message = Message::find($id);
+
+            if (is_null($message)) {
+                return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
+            }
+
+            $message->date_heure_supprime = now();
+            $message->save();
+
+            return response()->json(['SUCCÈS' => 'Le message a bien été supprimé.'], 200);
+        }
     }
 }

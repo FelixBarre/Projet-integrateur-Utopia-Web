@@ -117,6 +117,7 @@ class ConversationController extends Controller
     public function show(Request $request, int $id)
     {
         $messages = Message::where('id_conversation', $id)
+            ->whereNull('date_heure_supprime')
             ->orderBy('created_at')->get();
 
         $premierMessage = $messages->first();

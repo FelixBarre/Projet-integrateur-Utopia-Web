@@ -51,6 +51,12 @@ function pageConversation() {
         bouton.addEventListener('click', modifierMessage);
     });
 
+    let boutonsSupprimerMessage = document.querySelectorAll('.boutonSupprimerMessage');
+
+    boutonsSupprimerMessage.forEach((bouton) => {
+        bouton.addEventListener('click', supprimerMessage);
+    });
+
     getNewMessages();
 }
 
@@ -84,6 +90,21 @@ function modifierMessage(event) {
     action.value = 'PUT';
 
     id_message.value = divRow.id;
+}
+
+function supprimerMessage(event) {
+    if (confirm('Êtes-vous certains de vouloir supprimer ce message?')) {
+        let boutonSupprimerMessage = event.currentTarget;
+        let divRow = boutonSupprimerMessage.parentElement.parentElement;
+        let action = document.getElementById('action');
+        let id_message = document.getElementById('id_message');
+
+        action.value = 'DELETE';
+
+        id_message.value = divRow.id;
+
+        actionMessage();
+    }
 }
 
 function alertErreurs(data) {
@@ -200,6 +221,25 @@ async function actionMessage(event) {
             alertErreurs(data);
         }
     }
+    else if (action.value == 'DELETE') {
+        let response = await fetch('/api/messages/' + id_message.value, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        });
+
+        let data = await response.json();
+
+        if (data['SUCCÈS']) {
+            let divRow = document.getElementById(id_message.value);
+            divRow.remove();
+        }
+        else {
+            alertErreurs(data);
+        }
+    }
 }
 
 function creerMessage(isEnvoyeur, texte, idMessage) {
@@ -244,6 +284,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
 
         let imgDelete = document.createElement('img');
         imgDelete.classList.add('h-4');
+        imgDelete.classList.add('boutonSupprimerMessage');
         imgDelete.src = 'http://localhost:8000/img/delete.svg';
         imgDelete.alt = 'Supprimer';
 
