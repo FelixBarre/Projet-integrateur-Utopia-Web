@@ -10,4 +10,12 @@ class Pret extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+    protected $fillable = [
+        'nom',
+        'montant',
+        'date_debut',
+        'date_echeance',
+        'id_compte'
+    ];
 }

@@ -7,41 +7,53 @@
         <a href="{{ route('nouvelleConversation') }}" class="text-2xl inline-block mb-5 bouton">{{ __('+ Nouvelle conversation') }}</a>
 
         @foreach ($conversations as $conversation)
-            @if (isset($conversation->messages[0]))
-                @php
-                    $dernierMessage = $conversation->messages()->orderBy('created_at', 'desc')->first();
+            @php
+                $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
+                $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
 
-                    $interlocuteur = null;
-                    $envoyeurMessage = null;
+                $dernierMessage = null;
 
-                    if ($dernierMessage->envoyeur->id == $AuthId) {
-                        $interlocuteur = $dernierMessage->receveur;
-                        $envoyeurMessage = true;
-                    }
-                    else {
-                        $interlocuteur = $dernierMessage->envoyeur;
-                        $envoyeurMessage = false;
-                    }
-                @endphp
-                <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5">
-                    <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
-                    <div class="pt-10 text-xl flex justify-between">
-                        <div>
-                            @if ($envoyeurMessage)
-                                {{ __('Vous') }} :
-                            @else
-                                {{ $interlocuteur->prenom }} :
-                            @endif
+                if (count($messagesNonSupprimes) > 0) {
+                    $dernierMessage = $messagesNonSupprimes->first();
+                }
+                else {
+                    $dernierMessage = $tousMessages->first();
+                }
 
+                $interlocuteur = null;
+                $envoyeurMessage = null;
+
+                if ($dernierMessage->envoyeur->id == $AuthId) {
+                    $interlocuteur = $dernierMessage->receveur;
+                    $envoyeurMessage = true;
+                }
+                else {
+                    $interlocuteur = $dernierMessage->envoyeur;
+                    $envoyeurMessage = false;
+                }
+            @endphp
+            <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5">
+                <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
+                <div class="pt-10 text-xl flex justify-between">
+                    <div>
+                        @if ($envoyeurMessage)
+                            {{ __('Vous') }} :
+                        @else
+                            {{ $interlocuteur->prenom }} :
+                        @endif
+
+                        @if ($dernierMessage->date_heure_supprime)
+                            {{ __('Message supprimé') }}
+                        @else
                             {{ $dernierMessage->texte }}
-                        </div>
-
-                        <div>
-                            {{ $dernierMessage->created_at }}
-                        </div>
+                        @endif
                     </div>
-                </a>
-            @endif
+
+                    <div>
+                        {{ $dernierMessage->created_at }}
+                    </div>
+                </div>
+            </a>
         @endforeach
     </div>
 </x-app-layout>
