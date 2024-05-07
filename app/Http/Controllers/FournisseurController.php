@@ -4,15 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class FournisseurController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $date_time = Carbon::now()->format('d-M-Y H:i');
+        $employe =Auth::user();
+
+        if($request->routeIs('fournisseurs')){
+            return view('fournisseur/fournisseurs', ['fournisseurs'=>Fournisseur::all(),
+            'employe'=>$employe,
+            'date_time'=>$date_time]);
+        }
     }
 
     /**

@@ -14,6 +14,6 @@ class TypeTransactionSeeder extends Seeder
     public function run(): void
     {
         DB::table('type_transactions')->insert([
-            ['label' => 'Transaction'],['label' => 'Virement'],['label' => 'facture']]);
+            ['label' => 'Dépôt'], ['label' => 'Rétrait'], ['label' => 'Virement'], ['label' => 'Facture']]);
     }
 }

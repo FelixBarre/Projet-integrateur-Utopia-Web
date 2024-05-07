@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nom');
             $table->decimal('solde', 15, 2);
             $table->decimal('taux_interet', 5, 2);
-            $table->bigInteger('id_user')->unsigned();
+            $table->bigInteger('id_user')->nullable()->unsigned();
             $table->boolean('est_valide')->nullable()->default(false);
         });
 
