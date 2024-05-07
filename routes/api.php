@@ -6,6 +6,7 @@ use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PretController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,6 +34,7 @@ Route::controller(DemandeController::class)->group(function(){
     Route::get('/demande_de_pret', 'show')->name('demandePretApi');
     Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi');
     Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi');
+    Route::post('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi'); //fetch
     Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi');
 });
 
@@ -42,4 +44,8 @@ Route::controller(MessageController::class)->group(function() {
     Route::post('/messages', 'store')->name('envoiMessage');
     Route::put('/messages/{id}', 'update')->name('modificationMessage');
     Route::delete('/messages/{id}', 'destroy')->name('suppressionMessage');
+});
+
+Route::controller(PretController::class)->group(function() {
+    Route::post('/creation/pret', 'store')->name('creationPretApi');
 });
