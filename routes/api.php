@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
 
 Route::get('/user', function (Request $request) {
@@ -41,3 +42,12 @@ Route::controller(MessageController::class)->group(function() {
     Route::get('/messages/{id_conversation}/{id_dernier_message}', 'getNewMessages')->name('getNewMessages');
     Route::post('/messages', 'store')->name('envoiMessage');
 });
+
+Route::controller(FactureController::class)->group(function() {
+    Route::get('/facturesApi/{id_fournisseur}', 'index')->name('facturesApi');
+    Route::get('/factureApi/{id}', 'index')->name('factureApi');
+    Route::post('/factureApi/new', 'store')->name('newFactureApi');
+    Route::post('/factureApi/update', 'update')->name('updateFactureApi');
+    Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
+});
+
