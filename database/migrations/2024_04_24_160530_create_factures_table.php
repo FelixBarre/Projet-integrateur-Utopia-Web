@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('montant_defini', 15, 2);
             $table->integer('jour_du_mois');
             $table->bigInteger('id_fournisseur')->unsigned();
+
         });
 
         Schema::table('factures', function (Blueprint $table) {

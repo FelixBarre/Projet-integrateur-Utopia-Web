@@ -28,7 +28,7 @@ class TransactionController extends Controller
         if($request->routeIs('transactionsApi')){
 
             if ($transactions->isEmpty())
-                return response()->json(['ERREUR' => 'Aucune transaction n\'est liée à ce compte'], 400);
+                return response()->json(['ERREUR' => 'Aucune opération n\'est liée à ce compte'], 400);
 
             return TransactionResource::collection($transactions);
         }
@@ -36,7 +36,7 @@ class TransactionController extends Controller
 
 
             if (empty($transaction))
-                return response()->json(['ERREUR' => 'Aucune transaction n\'est liée à ce compte'], 400);
+                return response()->json(['ERREUR' => 'Aucune opération n\'est liée à ce compte'], 400);
 
             return new TransactionResource($transaction);
         }
@@ -74,51 +74,59 @@ class TransactionController extends Controller
         if($request->routeIs('newTransactionApi')){
             $validation = Validator::make($request->all(), [
                 'montant' => 'required|regex:/^\d+\.\d\d$/',
-                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
-                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/',
-                'id_type_transaction' => 'required|regex:/^[1-9]\d*$/',
-                'id_etat_transaction' => 'required|regex:/^[1-9]\d*$/',
+                'id_compte_envoyeur' => 'required',
+                'id_compte_receveur' => 'required',
+
                 ], [
-                'montant.required' => 'Veuillez entrer un chiffre valide',
+                'montant.required' => 'Veuillez entrer un montant valide',
                 'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
                 'id_compte_receveur.required' => 'Veuillez un numero de compte valide',
-                'id_type_transaction.required' => 'Veuillez entrer un chiffre validee',
-                'id_etat_transaction.required' => 'Veuillez entrer un chiffre valide',
-
                 ]);
                 if ($validation->fails()) {
                     return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
 
                 $contenuDecode = $validation->validated();
-                $compteEnvoyeur = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
-                $compteReceveur = CompteBancaire::find($contenuDecode['id_compte_receveur']);
-                $soldeCompteEnvoyeur = $compteEnvoyeur->solde;
 
-
-
-                if($soldeCompteEnvoyeur < $contenuDecode['montant']){
-                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
+                if($contenuDecode['id_compte_envoyeur']==0){
+                    $compteEnvoyeur = null;
+                    $compteReceveur = $contenuDecode['id_compte_receveur'];
+                    $typeTransaction = 2;
+                    $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+                    $soldeCompte = $compte->solde;
+                }elseif($contenuDecode['id_compte_receveur']==0){
+                    $compteReceveur= null;
+                    $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
+                    $typeTransaction = 1;
+                    $compte = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                    $soldeCompte = $compte->solde;
                 }
 
-                $compteEnvoyeur->solde -= $contenuDecode['montant'];
-                $compteReceveur->solde += $contenuDecode['montant'];
-                $compteEnvoyeur->save();
-                $compteReceveur->save();
 
+
+                if($typeTransaction == 2 && $soldeCompte < $contenuDecode['montant']){
+                    return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
+                }
                 try {
 
-                        Transaction::create([
-                        'montant' => $contenuDecode['montant'],
-                        'id_compte_envoyeur' => $contenuDecode['id_compte_envoyeur'],
-                        'id_compte_receveur' => $contenuDecode['id_compte_receveur'],
-                        'id_type_transaction' => $contenuDecode['id_type_transaction'],
-                        'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
-                        'created_at' => now(),
-                        'updated_at' => null
-                        ]);
+                    Transaction::create([
+                    'montant' => $contenuDecode['montant'],
+                    'id_compte_envoyeur' => $compteEnvoyeur,
+                    'id_compte_receveur' => $compteReceveur,
+                    'id_type_transaction' => $typeTransaction,
+                    'id_etat_transaction' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                    ]);
+                    if($typeTransaction == 2){
+                        $compte->solde -= $contenuDecode['montant'];
+                        $compte->save();
+                    }elseif($typeTransaction == 1){
+                        $compte->solde += $contenuDecode['montant'];
+                        $compte->save();
+                    }
 
-                        return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
+                    return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
 
                 }catch (QueryException $erreur) {
                     report($erreur);
@@ -126,6 +134,66 @@ class TransactionController extends Controller
                 }
 
         }
+        elseif($request->routeIs('newVirementApi')){
+            $validation = Validator::make($request->all(), [
+                'montant' => 'required|regex:/^\d+\.\d\d$/',
+                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
+                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/'
+                ], [
+                'montant.required' => 'Veuillez entrer un montant valide',
+                'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
+                'id_compte_receveur.required' => 'Veuillez un numero de compte valide'
+
+                ]);
+
+                if ($validation->fails()) {
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
+                }
+
+                $contenuDecode = $validation->validated();
+
+                $compteEnvoyeur = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                $compteReceveur = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+
+                if($compteEnvoyeur){
+                    $soldeCompteEnvoyeur = $compteEnvoyeur->solde;
+                }else{
+                    return response()->json(['ERREUR' => 'Le compte envoyeur n\'a pas été trouvé.'], 400);
+                }
+
+
+
+                if($soldeCompteEnvoyeur < $contenuDecode['montant']){
+                    return response()->json(['ERREUR' => 'Le Virement n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
+                }
+
+                try{
+                    Transaction::create([
+                    'montant' => $contenuDecode['montant'],
+                    'id_compte_envoyeur' => $contenuDecode['id_compte_envoyeur'],
+                    'id_compte_receveur' => $contenuDecode['id_compte_receveur'],
+                    'id_type_transaction' => 3,
+                    'id_etat_transaction' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                    ]);
+
+                    $compteEnvoyeur->solde -= $contenuDecode['montant'];
+                    $compteReceveur->solde += $contenuDecode['montant'];
+                    $compteEnvoyeur->save();
+                    $compteReceveur->save();
+
+                    return response()->json(['SUCCES' => 'Le virement a été effectuée avec succès.'], 200);
+
+                }catch (QueryException $erreur) {
+
+                    report($erreur->getMessage());
+                    return response()->json(['ERREUR' => 'Le virement n\'a pas pu être effectuée. Un des comptes est introuvable.'], 400);
+                }
+
+        }
+
+
     }
 
     /**
@@ -241,6 +309,26 @@ class TransactionController extends Controller
             $dateFin = $request['date_fin'];
             $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
                             ->whereDate('created_at', '<=', $dateFin)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+            $employe = Auth::user();
+            return view('accueil/accueil', [
+                'employe'=>$employe,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all(),
+                'date_time'=>$date_time
+            ]);
+        }
+        else if($request->routeIs('transactionsFilterEmail')){
+            $user = User::where('email', $request['email'])->first();
+            if($user){
+                $idUser = $user->id;
+            }else{
+                return back()->with('error', 'Aucune transaction n\'est liée à cette adresse.');
+            }
+
+            $transactions = Transaction::where('id_compte_envoyeur', $idUser)
                             ->orderBy('created_at', 'desc')
                             ->get();
 
