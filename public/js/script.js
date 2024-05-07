@@ -1,3 +1,5 @@
+var date_derniere_update = new Date().toLocaleString('sv-SE');
+
 window.onload = function() {
     pageAccueil();
     pageConversation();
@@ -58,6 +60,8 @@ function pageConversation() {
     });
 
     getNewMessages();
+
+    getUpdatedMessages();
 }
 
 function envoyerMessage() {
@@ -139,7 +143,7 @@ async function getNewMessages() {
     let data = await response.json();
 
     if (data['data']) {
-        data['data'].forEach(message => {
+        data['data'].forEach((message) => {
             creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
         });
     }
@@ -148,6 +152,43 @@ async function getNewMessages() {
     }
 
     setTimeout(getNewMessages, 1000);
+}
+
+async function getUpdatedMessages() {
+    let id_conversation = document.getElementById('id_conversation');
+
+    let response = await fetch('/api/messages/updated/' + id_conversation.value + '/' + date_derniere_update, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['data']) {
+        date_derniere_update = new Date().toLocaleString('sv-SE');
+
+        data['data'].forEach((message) => {
+            let divRowToUpdate = document.getElementById(message.id);
+
+            if (divRowToUpdate) {
+                if (message.date_heure_supprime) {
+                    divRowToUpdate.remove();
+                }
+                else {
+                    let pMessageToUpdate = divRowToUpdate.lastElementChild.lastElementChild;
+                    pMessageToUpdate.innerHTML = message.texte;
+                }
+            }
+        });
+    }
+    else {
+        alertErreurs(data);
+    }
+
+    setTimeout(getUpdatedMessages, 1000);
 }
 
 async function actionMessage(event) {
@@ -234,7 +275,9 @@ async function actionMessage(event) {
 
         if (data['SUCCÈS']) {
             let divRow = document.getElementById(id_message.value);
-            divRow.remove();
+            if (divRow) {
+                divRow.remove();
+            }
         }
         else {
             alertErreurs(data);
@@ -287,6 +330,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
         imgDelete.classList.add('boutonSupprimerMessage');
         imgDelete.src = 'http://localhost:8000/img/delete.svg';
         imgDelete.alt = 'Supprimer';
+        imgDelete.addEventListener('click', supprimerMessage);
 
         divBoutons.insertAdjacentElement('beforeend', imgDelete);
     }

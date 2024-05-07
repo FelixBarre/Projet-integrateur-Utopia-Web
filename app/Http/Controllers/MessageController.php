@@ -78,6 +78,14 @@ class MessageController extends Controller
         }
     }
 
+    public function getUpdatedMessages(Request $request, int $id_conversation, String $date_derniere_update) {
+        if ($request->routeIs('getUpdatedMessages')) {
+            return MessageResource::collection(Message::where('id_conversation', $id_conversation)
+                ->where('updated_at', '>=', $date_derniere_update)
+                ->get());
+        }
+    }
+
     /**
      * Display the specified resource.
      */
