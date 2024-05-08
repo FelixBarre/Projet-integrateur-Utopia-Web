@@ -67,7 +67,6 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
-<<<<<<< HEAD
 function pageShowProfils() {
     let boutonFiltre = document.getElementById('boutonFiltreProfiles');
 
@@ -76,7 +75,8 @@ function pageShowProfils() {
     }
 
     boutonFiltre.addEventListener("click", filtrerProfils);
-=======
+}
+
 function pageConversations() {
     let boutonsSupprimerConversation = document.querySelectorAll('.boutonSupprimerConversation');
 
@@ -117,7 +117,6 @@ function pagePret() {
             return;
     });
 
->>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }
 
 function envoyerMessage() {
@@ -556,7 +555,7 @@ async function updatePageProfiles(data, isAdmin) {
     } else {
         alert('Vous n\'êtes pas autorisé à voir ce profil.');
     }
-
+}
 
 async function supprimerConversation(event) {
     if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
