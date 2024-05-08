@@ -107,7 +107,7 @@ class ProfileController extends Controller
             'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
             'ville' => 'required',
             'codePostal' => 'required|regex:/^[A-Z]{1}\d{1}[A-Z]{1}[ ]?\d{1}[A-Z]{1}\d{1}$/',
-            'appt' => 'nullable|regex:/^[A-Za-z\d]+$/',
+            'appt' => 'nullable|max:11|regex:/^\d+$/',
            ], [
             'prenom.required' => 'Veuillez entrer le prénom.',
             'prenom.regex' => 'Format de prénom invalide',
@@ -123,6 +123,7 @@ class ProfileController extends Controller
             'codePostal.required' => 'Veuillez entrer le code postal',
             'codePostal.regex' => 'Format de code postal invalide',
             'appt.regex' => 'Format de numéro de porte invalide',
+            'appt.max' => 'Le numéro de porte doit contenir 11 caractères au maximum'
         ]);
 
         if ($validation->fails())

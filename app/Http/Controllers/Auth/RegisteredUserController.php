@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
             'ville' => 'required',
             'codePostal' => 'required|regex:/^[A-Z]{1}\d{1}[A-Z]{1}[ ]?\d{1}[A-Z]{1}\d{1}$/',
-            'appt' => 'regex:/^[A-Za-z\d]+$/',
+            'appt' => 'nullable|max:11|regex:/^[A-Za-z\d]+$/',
             'roles' => 'required|min:1'
            ], [
             'prenom.required' => 'Veuillez entrer le prénom.',
@@ -65,6 +65,7 @@ class RegisteredUserController extends Controller
             'codePostal.required' => 'Veuillez entrer le code postal',
             'codePostal.regex' => 'Format de code postal invalide',
             'appt.regex' => 'Format de numéro de porte invalide',
+            'appt.max' => 'Le numéro de porte doit-être de 11 numéros maximum',
             'roles.required' => 'Veuillez entrer le rôle de l\'utilisateur',
             'roles.min' => 'Veuillez entrer au moins un rôle pour l\'utilisateur'
         ]);
