@@ -89,7 +89,7 @@ class RapportController extends Controller
             'id_employe' => Auth::id()
         ]);
 
-        return $this->index($request);
+        return redirect()->route('rapports');
     }
 
     public function genererRapport($contenuFormulaire) {
@@ -125,7 +125,7 @@ class RapportController extends Controller
 
         Storage::put('public' . $chemin, $content);
 
-        return 'storage' . $chemin;
+        return '/storage' . $chemin;
     }
 
     /**

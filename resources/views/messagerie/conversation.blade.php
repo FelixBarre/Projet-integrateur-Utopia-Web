@@ -5,7 +5,10 @@
         </h2>
 
         <div id="divConversation" class="bg-[#F9F7F0] overflow-y-scroll p-5 h-[70vh] rounded-3xl border border-solid border-[#178CA4] border-4">
-            @foreach ($messages as $message)
+            @foreach ($conversation->messages as $message)
+                @if ($message->date_heure_supprime)
+                    @continue
+                @endif
                 @php
                     $isEnvoyeur = $message->envoyeur->id == $AuthId;
                 @endphp
@@ -19,13 +22,33 @@
 
                     <div class="w-1/2 m-4">
                         <p class="{{ $isEnvoyeur ? 'text-right' : 'text-left' }}">{{ $message->created_at }}</p>
-                        <p class="break-words bg-[{{ $isEnvoyeur ? '#18B7BE' : '#178CA4' }}] p-6 rounded-xl text-white text-justify">{{$message->texte}}</p>
+                        <div class="break-words bg-[{{ $isEnvoyeur ? '#18B7BE' : '#178CA4' }}] p-6 rounded-xl text-white text-justify">
+                            <p>{{$message->texte}}</p>
+
+                            @if ($message->chemin_du_fichier)
+                                @php
+                                    $explode = explode('/', $message->chemin_du_fichier);
+                                    $nomFichier = end($explode);
+
+                                    $explodeNomFichier = explode('.', $nomFichier);
+                                    $extension = end($explodeNomFichier);
+
+                                    $supportedImagesExtensions = [ 'jpg', 'jpeg', 'png' ];
+                                @endphp
+
+                                @if (in_array($extension, $supportedImagesExtensions))
+                                    <img class="max-h-80 mx-auto" src="{{ url($message->chemin_du_fichier) }}" alt="{{ $nomFichier }}">
+                                @else
+                                    <a class="block bg-white hover:bg-slate-100 text-black rounded p-4 mt-2" href="{{ url($message->chemin_du_fichier) }}" target="_blank">{{ $nomFichier }}</a>
+                                @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endforeach
         </div>
         <div class="bg-[#F9F7F0] flex justify-end items-center p-4 rounded-3xl mt-2">
-            <img src="" alt="Pièce-jointe" class="w-40" />
+            <input type="file" accept=".jpg, .jpeg, .png, .pdf, .docx" id="pieceJointe" />
             <textarea placeholder="{{ __('Entrez votre message ici') }}" maxlength="255" name="texte" id="texte" class="h-10 w-full resize-none rounded-3xl"></textarea>
             <input type="hidden" id="id_message" />
             <input type="hidden" id="id_envoyeur" value="{{ $AuthId }}" />

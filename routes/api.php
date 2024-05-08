@@ -65,6 +65,7 @@ Route::controller(ConversationController::class)->group(function() {
     Route::post('/conversations/{id_user}', 'store')->name('creerConversationApi')->middleware('auth:sanctum');
     Route::get('/conversation/{id}/{id_user}', 'show')->name('conversationApi')->middleware('auth:sanctum');
     Route::delete('/conversation/{id}', 'destroy')->name('fermerConversationApi')->middleware('auth:sanctum');
+    Route::get('/conversations/destinataires/{id_user}', 'obtenirDestinatairesPossibles')->name('conversationsApi')->middleware('auth:sanctum');
 });
 
 Route::controller(PretController::class)->group(function() {
