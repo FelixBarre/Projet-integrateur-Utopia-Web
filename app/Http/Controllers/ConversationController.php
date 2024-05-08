@@ -20,6 +20,9 @@ class ConversationController extends Controller
         if (Auth::id()) {
             $id_user = Auth::id();
         }
+        else if (!User::find($id_user)) {
+            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+        }
 
         $conversations = Conversation::select('conversations.*')
             ->distinct()
@@ -43,7 +46,14 @@ class ConversationController extends Controller
         }
     }
 
-    public function obtenirDestinatairesPossibles(int $id_user) {
+    public function obtenirDestinatairesPossibles(int $id_user = null) {
+        if (Auth::id()) {
+            $id_user = Auth::id();
+        }
+        else if (!User::find($id_user)) {
+            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+        }
+
         return User::where('id', '!=', $id_user)
                     ->whereNotIn('id', function($query) use ($id_user) {
                         $query->select('id_envoyeur')
@@ -67,7 +77,7 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        $destinataires = $this->obtenirDestinatairesPossibles(Auth::id());
+        $destinataires = $this->obtenirDestinatairesPossibles();
 
         if (count($destinataires) == 0) {
             return back()->with('alerte', 'Vous n\'avez aucun nouveau destinataire possible! Vous avez déjà une conversation ouverte avec chacun des usagers.');
@@ -87,6 +97,9 @@ class ConversationController extends Controller
 
         if (Auth::id()) {
             $id_user = Auth::id();
+        }
+        else if (!User::find($id_user)) {
+            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
         }
 
         $validation = Validator::make($request->all(), [
@@ -163,6 +176,9 @@ class ConversationController extends Controller
 
         if (Auth::id()) {
             $id_user = Auth::id();
+        }
+        else if (!User::find($id_user)) {
+            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
         }
 
         if (!$conversation) {
