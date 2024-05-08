@@ -102,8 +102,6 @@
                 <tbody id="detailsTransaction">
 
                     @foreach ($transactions as $transaction)
-
-
                         @if ($transaction->etat_transactions->label == "Terminé")
                             @php
                                 $class_value = " bg-green-500 text-white";

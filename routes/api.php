@@ -20,6 +20,7 @@ Route::get('/user', function (Request $request) {
 Route::controller(ProfileController::class)->group(function() {
     Route::get('/profilesApi/{email}', 'getUserByEmail')->name('users.getUsersAPI')->middleware('auth:sanctum');
     Route::get('/profileApi', 'show')->name('getUserApi')->middleware('auth:sanctum');
+    Route::put('/modification/profileApi', 'updateApi')->name('updateUserApi')->middleware('auth:sanctum');
 });
 
 Route::post('/token', [RegisteredUserController::class, 'show'])->name('token');

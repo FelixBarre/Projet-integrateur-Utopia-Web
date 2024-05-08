@@ -108,7 +108,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request)
     {
         $userSpecific = User::find($request->id_user);
 
@@ -161,8 +161,69 @@ class ProfileController extends Controller
         ]);
 
         $userSpecific->save();
-
         return Redirect::route('accueil')->with('status', 'profile-updated');
+    }
+
+    public function updateApi(Request $request, User $user) {
+        if ($request->routeIs('updateUserApi')) {
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+                'prenom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
+                'nom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
+                'telephone' => 'required|regex:/^\d{3}[ ]?\d{3}[- ]?\d{4}$/',
+                'noCivique' => 'required|regex:/^\d{1,5}$/',
+                'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
+                'id_ville' => 'required',
+                'codePostal' => 'required|regex:/^[A-Z]{1}\d{1}[A-Z]{1}[ ]?\d{1}[A-Z]{1}\d{1}$/',
+                'appt' => 'nullable|max:11|regex:/^\d+$/',
+            ], [
+                'id.required' => 'Veuillez entrer l\'ID',
+                'prenom.required' => 'Veuillez entrer le prénom.',
+                'prenom.regex' => 'Format de prénom invalide',
+                'nom.required' => 'Veuillez entrer le nom.',
+                'nom.regex' => 'Format de nom invalide',
+                'telephone.required' => 'Veuillez entrer le numéro de téléphone',
+                'telephone.regex' => 'Format de téléphone invalide',
+                'noCivique.required' => 'Veuillez entrer le numéro civique',
+                'noCivique.regex' => 'Format de numéro civique invalide',
+                'rue.required' => 'Veuillez entrer le nom de la rue',
+                'rue.regex' => 'Format de rue invalide',
+                'id_ville.required' => 'Veuillez entrer l\'ID de la ville',
+                'codePostal.required' => 'Veuillez entrer le code postal',
+                'codePostal.regex' => 'Format de code postal invalide',
+                'appt.regex' => 'Format de numéro de porte invalide',
+                'appt.max' => 'Le numéro de porte doit contenir 11 caractères au maximum'
+            ]);
+
+            if ($validation->fails()) {
+                return response()->json(['ERREUR' => $validation->errors()], 400);
+            }
+
+            $contenuDeCode = $validation->validated();
+
+            if (!User::find($contenuDeCode['id'])) {
+                return response()->json(['ERREUR' => 'Utilisateur introuvable'], 400);
+            }
+
+            if (!Ville::find($contenuDeCode['id_ville'])) {
+                return response()->json(['ERREUR' => 'Ville introuvable'], 400);
+            }
+
+            $user = User::find($contenuDeCode['id']);
+            $user->prenom = $contenuDeCode['prenom'];
+            $user->nom = $contenuDeCode['nom'];
+            $user->telephone = $contenuDeCode['telephone'];
+            $user->no_civique = $contenuDeCode['noCivique'];
+            $user->rue = $contenuDeCode['rue'];
+            $user->id_ville = $contenuDeCode['id_ville'];
+            $user->code_postal = $contenuDeCode['codePostal'];
+            $user->no_porte = $contenuDeCode['appt'];
+
+            if ($user->save())
+                return response()->json(['SUCCÈS' => 'La modification du profil a bien été effectuée'], 200);
+            else
+                return response()->json(['ERREUR' => 'La modification du profil a échouée'], 400);
+        }
     }
 
     /**
