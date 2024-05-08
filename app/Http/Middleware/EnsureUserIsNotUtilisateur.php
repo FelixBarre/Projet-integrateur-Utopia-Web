@@ -20,7 +20,7 @@ class EnsureUserIsNotUtilisateur
 
         if ($utilisateur !== null)
         {
-            if ($utilisateur->roles()->where('role', 'like', 'Utilisateur')->count() == 0)
+            if ($utilisateur->roles()->count() > 1 || $utilisateur->roles()->where('role', 'like', 'Utilisateur')->count() == 0)
             {
                 return $next($request);
             }
