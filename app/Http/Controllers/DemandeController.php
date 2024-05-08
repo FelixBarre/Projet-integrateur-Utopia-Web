@@ -22,10 +22,17 @@ class DemandeController extends Controller
             'etats' => EtatDemande::all()
             ]);
         } elseif ($request->routeIs('demandesPretFiltre')) {
-            return view('demandePret/demandesPret', [
-                'demandes' => Demande::where('id_type_demande', 1)->where('id_etat_demande', $request['filtre_demandePret'])->get(),
-                'etats' => EtatDemande::all()
-            ]);
+            if ($request['filtre_demandePret'] == "all") {
+                return view('demandePret/demandesPret', [
+                    'demandes' => Demande::where('id_type_demande', 1)->get(),
+                    'etats' => EtatDemande::all()
+                    ]);
+            } else {
+                return view('demandePret/demandesPret', [
+                    'demandes' => Demande::where('id_type_demande', 1)->where('id_etat_demande', $request['filtre_demandePret'])->get(),
+                    'etats' => EtatDemande::all()
+                ]);
+            }
         } elseif ($request->routeIs('demandesPretApi')) {
             return DemandePretResource::collection(Demande::where('id_demandeur', $request['id_user'])->get());
         }
