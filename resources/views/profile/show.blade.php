@@ -32,9 +32,12 @@
         </div>
 
         <div class="flex align-center space-x-4">
-            <div>
-                <a href="{{ route('profile.edit') }}"><button class="bouton">Modifier</button></a>
-            </div>
+            <form method="GET" action="{{ route('profile.edit') }}">
+                <div>
+                    <button type="submit" class="bouton">Modifier</button>
+                    <input name="id_user" type="hidden" value="{{ $user->id }}">
+                </div>
+            </form>
             <div>
                 <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
             </div>

@@ -3,6 +3,7 @@ var date_derniere_update = new Date().toLocaleString('sv-SE');
 window.onload = function() {
     pageAccueil();
     pageConversation();
+    pageShowProfils();
     pageConversations();
     pagePret();
 }
@@ -66,6 +67,16 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
+<<<<<<< HEAD
+function pageShowProfils() {
+    let boutonFiltre = document.getElementById('boutonFiltreProfiles');
+
+    if (!boutonFiltre) {
+        return;
+    }
+
+    boutonFiltre.addEventListener("click", filtrerProfils);
+=======
 function pageConversations() {
     let boutonsSupprimerConversation = document.querySelectorAll('.boutonSupprimerConversation');
 
@@ -96,6 +107,7 @@ function pagePret() {
         refuserPret(e);
     });
 
+>>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }
 
 function envoyerMessage() {
@@ -415,6 +427,129 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divConversation.scrollTop = divConversation.scrollHeight;
 }
 
+<<<<<<< HEAD
+async function filtrerProfils(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    let courriel = document.getElementById('filtreCourriel');
+    let action = document.getElementById('action');
+    let rolesUserLoggedIn = JSON.parse(document.getElementById('rolesUserLogged').value);
+
+    userIsAdmin = false;
+
+    rolesUserLoggedIn.forEach(function(role) {
+        if (userIsAdmin == false && role.role == "Administrateur") {
+            userIsAdmin = true
+        }
+    });
+
+    courriel.focus();
+
+    if (action.value == 'GET') {
+        courriel.value = courriel.value.trim();
+
+        if (courriel.value == '') {
+            return;
+        }
+
+        let response = await fetch ('/api/profilesApi/' + courriel.value, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        });
+
+        let data = await response.json();
+
+        if (!data['ERREUR']) {
+            updatePageProfiles(data, userIsAdmin);
+        } else {
+            alert('Aucun utilisateur avec ce courriel');
+        }
+    }
+}
+
+async function updatePageProfiles(data, isAdmin) {
+    let tbody = document.getElementById('tbodyProfiles');
+
+    if (data['data']['0'].roles['0'].role == "Administrateur" && isAdmin) {
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.lastChild);
+        }
+
+        ligne = document.createElement("tr");
+        ligne.classList.add("bg-[#FFFFFF]");
+        tbody.appendChild(ligne);
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].prenom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].nom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].email);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].telephone);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+
+        form = document.createElement("form");
+            form.setAttribute("method", "GET");
+            form.setAttribute("action", "http://localhost:8000/profile/user")
+            input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("value", data['data']['0'].id);
+                input.setAttribute("name", "id_user");
+            button = document.createElement("button");
+                button.classList.add("bouton");
+                    texteButton = document.createTextNode("Voir ce profil");
+                button.appendChild(texteButton);
+        form.appendChild(input);
+        form.appendChild(button);
+
+        colonne.appendChild(form);
+        ligne.appendChild(colonne);
+
+        tbody.appendChild(ligne);
+    } else {
+        alert('Vous n\'êtes pas autorisé à voir ce profil.');
+    }
+
+
+=======
 async function supprimerConversation(event) {
     if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
         return;
@@ -504,4 +639,5 @@ async function refuserPret(e) {
         alert("La demande a été refusée.");
         window.location.href = "/demandesDePret";
     }
+>>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }

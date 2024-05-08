@@ -1,7 +1,13 @@
 <x-app-layout>
-
-
-
+    @if (session('status') === 'profile-updated')
+        <p
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition
+            x-init="setTimeout(() => show = false, 2000)"
+            class="text-sm text-gray-600"
+        >{{ __('Profil sauvegardé.') }}</p>
+    @endif
 
         <div class="flex flex-row"><!-- Premier bloc contenant message, infos et datetime -->
 

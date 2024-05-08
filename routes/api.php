@@ -7,12 +7,17 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PretController;
 use App\Http\Controllers\ConversationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::controller(ProfileController::class)->group(function() {
+    Route::get('/profilesApi/{email}', 'getUserByEmail')->name('users.getUsersAPI');
+});
 
 Route::controller(CompteBancaireController::class)->group(function() {
     Route::get('/comptesBancaires', 'index')->name('comptesBancairesApi');
