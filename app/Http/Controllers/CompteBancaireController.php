@@ -75,6 +75,14 @@ class CompteBancaireController extends Controller
                         'id_user' => $contenuDecode['id_user'],
                         'est_valide' => 1
                     ]);
+                } elseif (!isset($contenuDecode['solde']) && !isset($contenuDecode['taux_interet'])) {
+                    CompteBancaire::create([
+                        'nom' => $contenuDecode['nom'],
+                        'solde' => 0.00,
+                        'taux_interet' => 0.01,
+                        'id_user' => $contenuDecode['id_user'],
+                        'est_valide' => 1
+                    ]);
                 } elseif (!isset($contenuDecode['solde'])) {
                     CompteBancaire::create([
                         'nom' => $contenuDecode['nom'],
@@ -86,7 +94,7 @@ class CompteBancaireController extends Controller
                 } elseif (!isset($contenuDecode['taux_interet'])) {
                     CompteBancaire::create([
                         'nom' => $contenuDecode['nom'],
-                        'solde' => 0.00,
+                        'solde' => $contenuDecode['solde'],
                         'taux_interet' => 0.01,
                         'id_user' => $contenuDecode['id_user'],
                         'est_valide' => 1
