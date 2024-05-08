@@ -4,8 +4,7 @@
 
     <div class="mt-6 text-center">
         <img src="{{asset('img/letter-u-lg.png')}}" alt="logo-utopia" class="inline-block w-32 p-1">
-        <h1 class="justify-center mx-5 font-bold text-white text-7xl">Banque Utopia</h1
-
+        <h1 class="justify-center mx-5 font-bold text-white text-7xl">Banque Utopia</h1>
     </div>
 
     <div class="w-1/3 p-2 m-auto mt-20 border-4 border-white border-double rounded-3xl">
