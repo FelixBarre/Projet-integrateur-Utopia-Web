@@ -65,6 +65,16 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
+function pageShowProfils() {
+    let boutonFiltre = document.getElementById('boutonFiltreProfiles');
+
+    if (!boutonFiltre) {
+        return;
+    }
+
+    boutonFiltre.addEventListener("click", filtrerProfils);
+}
+
 function envoyerMessage() {
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let id_message = document.getElementById('id_message');
@@ -110,16 +120,6 @@ function supprimerMessage(event) {
 
         actionMessage();
     }
-}
-
-function pageShowProfils() {
-    let boutonFiltre = document.getElementById('boutonFiltreProfils');
-
-    if (!boutonFiltre) {
-        return;
-    }
-
-    boutonFiltre.addEventListener("click", filtrerProfils);
 }
 
 function alertErreurs(data) {
@@ -387,8 +387,17 @@ async function filtrerProfils(event) {
         event.preventDefault();
     }
 
-    let courriel = document.getElementById('filtreCourrielProfiles');
+    let courriel = document.getElementById('filtreCourriel');
     let action = document.getElementById('action');
+    let rolesUserLoggedIn = JSON.parse(document.getElementById('rolesUserLogged').value);
+
+    userIsAdmin = false;
+
+    rolesUserLoggedIn.forEach(function(role) {
+        if (userIsAdmin == false && role.role == "Administrateur") {
+            userIsAdmin = true
+        }
+    });
 
     courriel.focus();
 
@@ -399,23 +408,99 @@ async function filtrerProfils(event) {
             return;
         }
 
-        let response = await fetch ('/api/profiles', {
+        let response = await fetch ('/api/profilesApi/' + courriel.value, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
                 'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-                'email' : courriel.value
-            })
+            }
         });
 
         let data = await response.json();
 
-        if (data['SUCCÈS']) {
-
+        if (!data['ERREUR']) {
+            updatePageProfiles(data, userIsAdmin);
         } else {
-            alertErreurs(data);
+            alert('Aucun utilisateur avec ce courriel');
         }
     }
+}
+
+async function updatePageProfiles(data, isAdmin) {
+    let tbody = document.getElementById('tbodyProfiles');
+
+    if (data['data']['0'].roles['0'].role == "Administrateur" && isAdmin) {
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.lastChild);
+        }
+
+        ligne = document.createElement("tr");
+        ligne.classList.add("bg-[#FFFFFF]");
+        tbody.appendChild(ligne);
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].prenom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].nom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].email);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].telephone);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+
+        form = document.createElement("form");
+            form.setAttribute("method", "GET");
+            form.setAttribute("action", "http://localhost:8000/profile/user")
+            input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("value", data['data']['0'].id);
+                input.setAttribute("name", "id_user");
+            button = document.createElement("button");
+                button.classList.add("bouton");
+                    texteButton = document.createTextNode("Voir ce profil");
+                button.appendChild(texteButton);
+        form.appendChild(input);
+        form.appendChild(button);
+
+        colonne.appendChild(form);
+        ligne.appendChild(colonne);
+
+        tbody.appendChild(ligne);
+    } else {
+        alert('Vous n\'êtes pas autorisé à voir ce profil.');
+    }
+
+
 }

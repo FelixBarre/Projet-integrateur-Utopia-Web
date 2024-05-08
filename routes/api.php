@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::controller(ProfileController::class)->group(function() {
-    Route::get('/profilesApi/parCourriel', 'getUserByEmail')->name('users.getUsersAPI');
+    Route::get('/profilesApi/{email}', 'getUserByEmail')->name('users.getUsersAPI');
 });
 
 Route::controller(CompteBancaireController::class)->group(function() {

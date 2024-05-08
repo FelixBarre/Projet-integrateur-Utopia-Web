@@ -17,10 +17,16 @@ use App\Http\Resources\ProfileResource;
 
 class ProfileController extends Controller
 {
-    public function getUserByEmail(string $email)
+    public function getUserByEmail(Request $request, string $email)
     {
-        return ProfileResource::collection(User::where('email', '='. $email)->get());
+        $user = User::where('email', $email)->get();
+
+        if ($user->isEmpty())
+            return response()->json(['ERREUR' => 'Aucun utilisateur n\'est lié à ce courriel'], 400);
+
+        return ProfileResource::collection($user);
     }
+
     public function show(Request $request): View
     {
         $ville = Ville::find($request->user()->id_ville);
@@ -41,17 +47,22 @@ class ProfileController extends Controller
         }
 
         if ($admin) {
-            $users = DB::select('SELECT * FROM users');
+            $users = DB::select('SELECT * FROM users
+                                ORDER BY created_at DESC
+                                LIMIT 5');
         } else {
             $users = DB::select('SELECT * FROM users
                                 INNER JOIN roles_users
                                 ON users.id = roles_users.id_user
-                                WHERE roles_users.id_role = 3');
+                                WHERE roles_users.id_role = 3
+                                ORDER BY created_at DESC
+                                LIMIT 5');
         }
 
         return view('profile.showUsers', [
             'roles' => Role::All(),
-            'users' => $users
+            'users' => $users,
+            'userLogged' => Auth::user()
         ]);
     }
 
