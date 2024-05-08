@@ -4,6 +4,8 @@ window.onload = function() {
     pageAccueil();
     pageConversation();
     pageShowProfils();
+    pageConversations();
+    pagePret();
 }
 
 function pageAccueil() {
@@ -65,6 +67,7 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
+<<<<<<< HEAD
 function pageShowProfils() {
     let boutonFiltre = document.getElementById('boutonFiltreProfiles');
 
@@ -73,6 +76,38 @@ function pageShowProfils() {
     }
 
     boutonFiltre.addEventListener("click", filtrerProfils);
+=======
+function pageConversations() {
+    let boutonsSupprimerConversation = document.querySelectorAll('.boutonSupprimerConversation');
+
+    if (!boutonsSupprimerConversation) {
+        return;
+    }
+
+    boutonsSupprimerConversation.forEach((bouton) => {
+        bouton.addEventListener('click', supprimerConversation);
+    });
+}
+
+function pagePret() {
+    formPret = document.getElementById('formPret');
+
+    if (!formPret) {
+        return;
+    }
+
+    btnApprouver = document.getElementById('btnApprouver');
+    btnRefuser = document.getElementById('btnRefuser');
+
+    btnApprouver.addEventListener('click', function (e) {
+        approuverPret(e);
+    });
+
+    btnRefuser.addEventListener('click', function (e) {
+        refuserPret(e);
+    });
+
+>>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }
 
 function envoyerMessage() {
@@ -142,8 +177,16 @@ async function getNewMessages() {
     let id_conversation = document.getElementById('id_conversation');
     let id_envoyeur = document.getElementById('id_envoyeur');
     let dernierMessage = divConversation.lastElementChild;
+    let dernierMessageId;
 
-    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessage.id, {
+    if (dernierMessage) {
+        dernierMessageId = dernierMessage.id;
+    }
+    else {
+        dernierMessageId = 0;
+    }
+
+    let response = await fetch('/api/messages/' + id_conversation.value + '/' + dernierMessageId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
@@ -155,7 +198,7 @@ async function getNewMessages() {
 
     if (data['data']) {
         data['data'].forEach((message) => {
-            creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
+            creerMessage(message.envoyeur.id == id_envoyeur.value, message.texte, message.id);
         });
     }
     else {
@@ -282,6 +325,8 @@ async function actionMessage(event) {
             }
         });
 
+        envoyerMessage();
+
         let data = await response.json();
 
         if (data['SUCCÈS']) {
@@ -382,6 +427,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divConversation.scrollTop = divConversation.scrollHeight;
 }
 
+<<<<<<< HEAD
 async function filtrerProfils(event) {
     if (event) {
         event.preventDefault();
@@ -503,4 +549,95 @@ async function updatePageProfiles(data, isAdmin) {
     }
 
 
+=======
+async function supprimerConversation(event) {
+    if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
+        return;
+    }
+
+    let conversation = event.currentTarget.parentElement;
+
+    let response = await fetch('/api/conversation/' + conversation.id, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['SUCCÈS']) {
+        conversation.remove();
+    }
+    else {
+        alertErreurs(data);
+    }
+}
+
+async function approuverPret(e) {
+    e.preventDefault();
+
+    let id = document.getElementById('id_demande').value;
+    let taux = document.getElementById('taux').value;
+    let duree = document.getElementById('duree').value;
+
+    let response = await fetch('/api/creation/pret', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+            'id_demande' : id,
+            'taux_interet' : taux,
+            'duree' : duree,
+        })
+    });
+
+    let data = await response.json();
+
+    if (!data['SUCCES']) {
+        if (data['ERREUR'])
+            alertErreurs(data);
+        if (data['NOTE'])
+            alert("Cette demande a déjà été approuvée.")
+    }
+    else {
+        alert("La demande a été approuvée.");
+        window.location.href = "/demandesDePret";
+    }
+}
+
+async function refuserPret(e) {
+    e.preventDefault();
+
+    let id = document.getElementById('id_demande').value;
+    let raison = document.getElementById('raison').value;
+    let montant = document.getElementById('montant').value;
+
+    let response = await fetch('/api/modification/demande_de_pret', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+            'id' : id,
+            'raison' : raison,
+            'montant' : montant,
+            'id_etat_demande' : 2
+        })
+    });
+
+    let data = await response.json();
+
+    if (!data['SUCCES']) {
+        alertErreurs(data);
+    }
+    else {
+        alert("La demande a été refusée.");
+        window.location.href = "/demandesDePret";
+    }
+>>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }

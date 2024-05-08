@@ -17,7 +17,7 @@ class EtatDemandeSeeder extends Seeder
             ['label' => 'Approuvée'],
             ['label' => 'Refusée'],
             ['label' => 'En attente'],
-            ['label' => 'Annulée']
+            ['label' => 'Annulée'],
         ]);
     }
 }

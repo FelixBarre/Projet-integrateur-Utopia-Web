@@ -5,8 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PretController;
+use App\Http\Controllers\ConversationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -28,6 +31,7 @@ Route::controller(TransactionController::class)->group(function(){
     Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
     Route::get('transactionApi/{id}', 'index')->name('transactionApi');
     Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
+    Route::post('/virementApi/new', 'store')->name('newVirementApi');
     Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
     Route::post('/transactionApi/delete', 'update')->name('deleteTransactionApi');
 
@@ -38,6 +42,7 @@ Route::controller(DemandeController::class)->group(function(){
     Route::get('/demande_de_pret', 'show')->name('demandePretApi');
     Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi');
     Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi');
+    Route::post('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi'); //fetch
     Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi');
 });
 
@@ -48,3 +53,23 @@ Route::controller(MessageController::class)->group(function() {
     Route::put('/messages/{id}', 'update')->name('modificationMessage');
     Route::delete('/messages/{id}', 'destroy')->name('suppressionMessage');
 });
+
+Route::controller(ConversationController::class)->group(function() {
+    Route::get('/conversations/{id_user}', 'index')->name('conversationsApi');
+    Route::post('/conversations/{id_user}', 'store')->name('creerConversationApi');
+    Route::get('/conversation/{id}/{id_user}', 'show')->name('conversationApi');
+    Route::delete('/conversation/{id}', 'destroy')->name('fermerConversationApi');
+});
+
+Route::controller(PretController::class)->group(function() {
+    Route::post('/creation/pret', 'store')->name('creationPretApi');
+});
+
+Route::controller(FactureController::class)->group(function() {
+    Route::get('/facturesApi/{id_fournisseur}', 'index')->name('facturesApi');
+    Route::get('/factureApi/{id}', 'index')->name('factureApi');
+    Route::post('/factureApi/new', 'store')->name('newFactureApi');
+    Route::post('/factureApi/update', 'update')->name('updateFactureApi');
+    Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
+});
+

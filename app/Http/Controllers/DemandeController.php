@@ -51,7 +51,7 @@ class DemandeController extends Controller
             'id_demandeur' => 'required|regex:/^\d+$/',
             ], [
             'raison.required' => 'Veuillez entrer la raison de la demande.',
-            'montant.required' => 'Veuillez entrer la date de la demande.',
+            'montant.required' => 'Veuillez entrer le montant de la demande.',
             'montant.regex' => 'Veuillez inscrire un montant avec deux chiffres après la virgule.',
             'id_demandeur.required' => 'L\auteur de la demande est introuvable.',
             'id_demandeur.regex' => 'Le id doit être numérique.',
@@ -130,7 +130,7 @@ class DemandeController extends Controller
                 'id_etat_demande.regex' => 'Le id doit être numérique.',
                 ]);
                 if ($validation->fails()) {
-                    return back()->withErrors($validation->errors())->withInput();
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
 
             $contenuDecode = $validation->validated();

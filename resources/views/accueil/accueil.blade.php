@@ -79,6 +79,14 @@
 
         </div><!-- Fin section filter -->
 
+        <div class="flex flex-row justify-center">
+            <form action="{{route('transactionsFilterEmail')}}" method="post">
+                @csrf
+                <input type="email" placeholder="Entrez l'email du client" name="email" class="w-96" required>
+                <button class="bouton">Rechercher</button>
+            </form>
+        </div>
+
 
 
         <div class="p-10 mb-12 m_auto"><!-- Bloc du tableau des transactions -->
@@ -98,6 +106,8 @@
 
                     @endphp
                     @foreach ($transactions as $transaction)
+
+
                         @if ($transaction->etat_transactions->label == "Terminé")
                             @php
                                 $class_value = " bg-green-500 text-white";
@@ -112,6 +122,7 @@
                             @endphp
                         @endif
                     <tr>
+
                     <td class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
                     <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>

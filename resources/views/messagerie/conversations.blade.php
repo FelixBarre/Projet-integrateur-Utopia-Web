@@ -7,23 +7,33 @@
         <a href="{{ route('nouvelleConversation') }}" class="text-2xl inline-block mb-5 bouton">{{ __('+ Nouvelle conversation') }}</a>
 
         @foreach ($conversations as $conversation)
-            @if (isset($conversation->messages[0]))
-                @php
-                    $dernierMessage = $conversation->messages()->orderBy('created_at', 'desc')->first();
+            @php
+                $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
+                $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
 
-                    $interlocuteur = null;
-                    $envoyeurMessage = null;
+                $dernierMessage = null;
 
-                    if ($dernierMessage->envoyeur->id == $AuthId) {
-                        $interlocuteur = $dernierMessage->receveur;
-                        $envoyeurMessage = true;
-                    }
-                    else {
-                        $interlocuteur = $dernierMessage->envoyeur;
-                        $envoyeurMessage = false;
-                    }
-                @endphp
-                <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5">
+                if (count($messagesNonSupprimes) > 0) {
+                    $dernierMessage = $messagesNonSupprimes->first();
+                }
+                else {
+                    $dernierMessage = $tousMessages->first();
+                }
+
+                $interlocuteur = null;
+                $envoyeurMessage = null;
+
+                if ($dernierMessage->envoyeur->id == $AuthId) {
+                    $interlocuteur = $dernierMessage->receveur;
+                    $envoyeurMessage = true;
+                }
+                else {
+                    $interlocuteur = $dernierMessage->envoyeur;
+                    $envoyeurMessage = false;
+                }
+            @endphp
+            <div class="flex items-center" id="{{ $conversation->id }}">
+                <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5 grow">
                     <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
                     <div class="pt-10 text-xl flex justify-between">
                         <div>
@@ -33,7 +43,11 @@
                                 {{ $interlocuteur->prenom }} :
                             @endif
 
-                            {{ $dernierMessage->texte }}
+                            @if ($dernierMessage->date_heure_supprime)
+                                {{ __('Message supprimé') }}
+                            @else
+                                {{ $dernierMessage->texte }}
+                            @endif
                         </div>
 
                         <div>
@@ -41,7 +55,8 @@
                         </div>
                     </div>
                 </a>
-            @endif
+                <button class="boutonSupprimerConversation bouton ml-4 mb-5 block">{{ __('Supprimer la conversation') }}</button>
+            </div>
         @endforeach
     </div>
 </x-app-layout>
