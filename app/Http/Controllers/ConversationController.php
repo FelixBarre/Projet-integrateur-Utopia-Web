@@ -21,7 +21,7 @@ class ConversationController extends Controller
             $id_user = Auth::id();
         }
         else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
         }
 
         $conversations = Conversation::select('conversations.*')
@@ -51,7 +51,7 @@ class ConversationController extends Controller
             $id_user = Auth::id();
         }
         else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
         }
 
         return User::where('id', '!=', $id_user)
@@ -99,7 +99,7 @@ class ConversationController extends Controller
             $id_user = Auth::id();
         }
         else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
         }
 
         $validation = Validator::make($request->all(), [
@@ -178,7 +178,7 @@ class ConversationController extends Controller
             $id_user = Auth::id();
         }
         else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspons à aucun utilisateur.'], 400);
+            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
         }
 
         if (!$conversation) {
