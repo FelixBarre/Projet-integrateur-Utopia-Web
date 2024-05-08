@@ -75,6 +75,14 @@ class CompteBancaireController extends Controller
                         'id_user' => $contenuDecode['id_user'],
                         'est_valide' => 1
                     ]);
+                } elseif (!isset($contenuDecode['solde']) && !isset($contenuDecode['taux_interet'])) {
+                    CompteBancaire::create([
+                        'nom' => $contenuDecode['nom'],
+                        'solde' => 0.00,
+                        'taux_interet' => 0.01,
+                        'id_user' => $contenuDecode['id_user'],
+                        'est_valide' => 1
+                    ]);
                 } elseif (!isset($contenuDecode['solde'])) {
                     CompteBancaire::create([
                         'nom' => $contenuDecode['nom'],
@@ -86,7 +94,7 @@ class CompteBancaireController extends Controller
                 } elseif (!isset($contenuDecode['taux_interet'])) {
                     CompteBancaire::create([
                         'nom' => $contenuDecode['nom'],
-                        'solde' => 0.00,
+                        'solde' => $contenuDecode['solde'],
                         'taux_interet' => 0.01,
                         'id_user' => $contenuDecode['id_user'],
                         'est_valide' => 1
@@ -138,18 +146,19 @@ class CompteBancaireController extends Controller
         // impossible de modifier le compte s'il a été désactivé
         if ($request->routeIs('modificationCompteBancaireApi')) {
             $validation = Validator::make($request->all(), [
-                'id' => 'required',
+                'id' => 'required|regex:/^\d+$/',
                 'nom' => 'required',
                 'solde' => 'regex:/^\d+(?:\.\d{2})?$/',
                 'taux_interet' => 'regex:/^\d+(?:\.\d{2})?$/',
                 ], [
                 'id.required' => 'Le compte est introuvable.',
+                'id.regex' => 'Le id du compte doit être numérique.',
                 'nom.required' => 'Veuillez mettre le nom du compte a modifié.',
                 'solde.regex' => 'Veuillez inscrire un solde avec deux chiffres après la virgule.',
                 'taux_interet.regex' => 'Veuillez inscrire un taux d\'intérêt avec deux chiffres après la virgule.',
                 ]);
                 if ($validation->fails()) {
-                    return back()->withErrors($validation->errors())->withInput();
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
 
             $contenuDecode = $validation->validated();

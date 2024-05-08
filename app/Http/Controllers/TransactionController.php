@@ -27,6 +27,7 @@ class TransactionController extends Controller
 
         if($request->routeIs('transactionsApi')){
 
+
             if ($transactions->isEmpty())
                 return response()->json(['ERREUR' => 'Aucune opération n\'est liée à ce compte'], 400);
 
@@ -53,9 +54,6 @@ class TransactionController extends Controller
 
 
 
-
-
-
     }
 
     /**
@@ -73,9 +71,11 @@ class TransactionController extends Controller
     {
         if($request->routeIs('newTransactionApi')){
             $validation = Validator::make($request->all(), [
-                'montant' => 'required|regex:/^\d+\.\d\d$/',
-                'id_compte_envoyeur' => 'required',
-                'id_compte_receveur' => 'required',
+                'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+
+                'id_compte_envoyeur' => 'required|regex:/^\d+$/',
+                'id_compte_receveur' => 'required|regex:/^\d+$/',
+
 
                 ], [
                 'montant.required' => 'Veuillez entrer un montant valide',
@@ -89,15 +89,17 @@ class TransactionController extends Controller
                 $contenuDecode = $validation->validated();
 
                 if($contenuDecode['id_compte_envoyeur']==0){
+
                     $compteEnvoyeur = null;
+
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
-                    $typeTransaction = 2;
+                    $typeTransaction = 1;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);
                     $soldeCompte = $compte->solde;
-                }elseif($contenuDecode['id_compte_receveur']==0){
+                }elseif($contenuDecode['id_compte_receveur']==0 ){
                     $compteReceveur= null;
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
-                    $typeTransaction = 1;
+                    $typeTransaction = 2;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
                     $soldeCompte = $compte->solde;
                 }
@@ -114,7 +116,7 @@ class TransactionController extends Controller
                     'id_compte_envoyeur' => $compteEnvoyeur,
                     'id_compte_receveur' => $compteReceveur,
                     'id_type_transaction' => $typeTransaction,
-                    'id_etat_transaction' => 1,
+                    'id_etat_transaction' => 3,
                     'created_at' => now(),
                     'updated_at' => now()
                     ]);
@@ -136,9 +138,11 @@ class TransactionController extends Controller
         }
         elseif($request->routeIs('newVirementApi')){
             $validation = Validator::make($request->all(), [
-                'montant' => 'required|regex:/^\d+\.\d\d$/',
-                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
-                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/'
+                'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+
+                'id_compte_envoyeur' => 'required|regex:/^\d+$/',
+                'id_compte_receveur' => 'required|regex:/^\d+$/'
+
                 ], [
                 'montant.required' => 'Veuillez entrer un montant valide',
                 'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
@@ -199,9 +203,9 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show(Request $request, int $id_type_transaction = null)
     {
-        $id = $request['id_compte_envoyeur'];
+        $id = $request['id_compte'];
         $transaction = Transaction::find($id);
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
         $date_time = Carbon::now()->format('d-M-Y H:i');
@@ -210,7 +214,8 @@ class TransactionController extends Controller
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
             $transaction = Transaction::find($id);
-            $transactions = Transaction::where('id_compte_envoyeur', $id)->orderBy('created_at', 'desc')->get();
+            $transactions = Transaction::where('id_compte_envoyeur', $id)
+                            ->orWhere('id_compte_receveur', $id)->orderBy('created_at', 'desc')->get();
             if(is_null($transaction)){
                 return abort(404);
             }
@@ -240,16 +245,19 @@ class TransactionController extends Controller
             ]);
         }
 
-        else if($request->routeIs('transactionsFilter')){
-            $idTransaction = $request['id_type_Transaction'];
+        else if($request->routeIs('transactionsFilterApi')){
+
+            $idTransaction = $id_type_transaction;
             $employe = Auth::user();
             $transactions = Transaction::where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
-            return view('accueil/accueil', [
-                'employe'=>$employe,
-                'transactions'=>$transactions,
-                'type_transactions'=>TypeTransaction::all(),
-                'date_time'=>$date_time
-            ]);
+            //return view('accueil/accueil', [
+            //    'employe'=>$employe,
+            //    'transactions'=>$transactions,
+            //    'type_transactions'=>TypeTransaction::all(),
+            //    'date_time'=>$date_time
+            //]);
+
+            return response()->json($transactions);
         }
         else if($request->routeIs('transactionsFilterUser')){
             $idTransaction = $request['id_type_Transaction'];
@@ -357,13 +365,14 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction)
     {
         if($request->routeIs('updateTransactionApi')){
+
             $validation = Validator::make($request->all(), [
                 'id' => 'required',
-                'montant' => 'required|regex:/^\d+\.\d\d$/',
-                'id_compte_envoyeur' => 'required|regex:/^[1-9]\d*$/',
-                'id_compte_receveur' => 'required|regex:/^[1-9]\d*$/',
-                'id_type_transaction' => 'required|regex:/^[1-9]\d*$/',
-                'id_etat_transaction' => 'required|regex:/^[1-9]\d*$/'
+                'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+                'id_compte_envoyeur' => 'required|regex:/^\d+$/',
+                'id_compte_receveur' => 'required|regex:/^\d+$/',
+                'id_type_transaction' => 'required|regex:/^\d+$/',
+                'id_etat_transaction' => 'required|regex:/^\d+$/'
 
                 ], [
                 'montant.required' => 'Veuillez entrer un chiffre valide',
@@ -379,9 +388,12 @@ class TransactionController extends Controller
 
                 $contenuDecode = $validation->validated();
 
+
+
                 if (!Transaction::find($contenuDecode['id'])) {
                     return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
-                } elseif (!Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($contenuDecode['id'])) {
+                } elseif (!Transaction::where('id_etat_transaction', 2)
+                                        ->where('id_etat_transaction', 3)->find($contenuDecode['id'])) {
                     return response()->json(['ERREUR' => 'Cette transaction est déjà finaliser, vous ne pouver pas la modifier.'], 400);
                 }
 
@@ -398,10 +410,30 @@ class TransactionController extends Controller
                 else
                     return response()->json(['ERREUR' => 'La modification de la transaction a échoué.'], 400);
 
-        }else if ($request->routeIs('annulerTransactionApi')) {
+
+        }else if ($request->routeIs('deleteTransactionAp')) {
             if (!Transaction::find($request['id'])) {
                 return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
-            } elseif (Transaction::where('id_etat_transaction', 2 || 'id_etat_transaction', 3)->find($request['id'])) {
+            } elseif (Transaction::where('id_etat_transaction', 2)
+                                ->orWhere('id_etat_transaction', 3)->find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction à déjà été Annuler.'], 400);
+            }
+
+            $transaction = Transaction::find($request['id']);
+            $transaction->id_etat_transaction = 3;
+            $transaction->updated_at = now();
+
+            if ($transaction->save())
+                return response()->json(['SUCCES' => 'La transaction a été annulée avec succès.'], 200);
+            else
+                return response()->json(['ERREUR' => 'L\annulation de la transaction a échoué.'], 400);
+
+         }else if ($request->routeIs('deleteTransactionApi')) {
+            if (!Transaction::find($request['id'])) {
+                return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
+            } elseif (Transaction::where('id_etat_transaction', 2)
+                                ->orWhere('id_etat_transaction', 3)->find($request['id'])) {
+
                 return response()->json(['ERREUR' => 'Cette transaction à déjà été Annuler.'], 400);
             }
 

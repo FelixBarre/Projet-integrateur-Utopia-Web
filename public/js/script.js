@@ -8,7 +8,7 @@ window.onload = function() {
     pagePret();
 }
 
-function pageAccueil() {
+async function pageAccueil() {
     let formSelect = document.getElementById('formSelect');
 
     if(!formSelect) {
@@ -17,9 +17,92 @@ function pageAccueil() {
 
     let selectValue = document.getElementById('selectValue');
 
-    selectValue.addEventListener('change', function(){
-        formSelect.submit();
+    selectValue.addEventListener('change', async function(){
+
+        const selectedValue = this.value;
+
+
+        try{
+            let response = await fetch("/api/transactions/filter/" + selectedValue , {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+
+            });
+
+            if(!response.ok){
+                throw new Error('Une erreur est survenue.');
+            }
+
+            let transactions = await response.json();
+
+            let detailsTransaction = document.getElementById('detailsTransaction');
+            if(detailsTransaction){
+               while(detailsTransaction.firstChild){
+                    detailsTransaction.removeChild(detailsTransaction.lastChild);
+               }
+            }
+
+
+
+            transactions.forEach(transaction => {
+
+            let tbody = document.getElementById("detailsTransaction");
+
+            let tr = document.createElement("tr")
+            tr.classList.add("w-full");
+
+            let tdID = document.createElement("td");
+            tdID.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdID.textContent = transaction.id;
+
+            let tdOperation = document.createElement("td");
+            tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdOperation.textContent = transaction.montant;
+
+            let tdNom = document.createElement("td");
+            tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            if(transaction.id_compte_envoyeur==null){
+                tdNom.textContent = transaction.id_compte_receveur;
+            }else{
+                tdNom.textContent = transaction.id_compte_envoyeur;
+            }
+
+
+            let tdEmail = document.createElement("td");
+            tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdEmail.textContent = "";
+
+            let tdDate = document.createElement("td");
+            tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdDate.textContent = transaction.created_at;
+
+            let tdStatus = document.createElement("td");
+            tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdStatus.textContent = transaction.id_etat_transaction;
+
+                tr.appendChild(tdID);
+                tr.appendChild(tdOperation);
+                tr.appendChild(tdNom);
+                tr.appendChild(tdEmail);
+                tr.appendChild(tdDate);
+                tr.appendChild(tdStatus);
+                tbody.appendChild(tr);
+
+
+            });
+
+
+        } catch(error){
+            console.log(error);
+            alert('une erreur est survenue lors de la requête.');
+        }
+
     });
+
+
 
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");

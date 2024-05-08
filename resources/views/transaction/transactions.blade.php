@@ -22,13 +22,19 @@
 
     </div> <!-- Fin du premier bloc -->
 
-    <div role="alert" class="flex items-center justify-center hidden" id="error-class">
+    @if (Session::has('error'))
+        <div class="flex justify-center w-full">
+            <div role="alert" class="flex flex-col justify-center w-96">
+                <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
+                    <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
+                        <p>{{ Session::get('error') }}</p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="p-2 text-red-700 bg-red-100 border border-t-0">
-        <div class="font-bold text-white bg-red-500">Erreur</div>
-        <p>Veuillez choisir la date de début</p>
         </div>
-    </div>
+
+        @endif
 
     <div class="flex flex-row"><!--Section filter -->
         <form method="post" action="{{ route('transactionsFilterUser')}}" id="formSelect" class="w-2/4">
@@ -77,24 +83,44 @@
                 </tr>
             </thead>
             <tbody">
-                @php
 
-                @endphp
-                @foreach ($transactions as $transaction)
-                    @if ($transaction->etat_transactions->label != "En cours")
-                        @php
-                            $class_value = " bg-green-500 ";
-                        @endphp
-                    @else
-                        @php
-                        $class_value = "bg-white";
-                        @endphp
-                    @endif
+                    @foreach ($transactions as $transaction)
+                        @if ($transaction->etat_transactions->label == "Terminé")
+                            @php
+                                {{$class_value = " bg-green-500 text-white";}}
+                            @endphp
+
+                        @elseif ($transaction->etat_transactions->label == "Annulé")
+                            @php
+                                {{$class_value = " bg-red-500 text-white";}}
+                            @endphp
+
+                        @else
+                            @php
+                                {{$class_value = "bg-white";}}
+                            @endphp
+
+                        @endif
                 <tr>
                 <td class="p-4 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
+                <td class="m-auto text-center bg-white border-2 border-solid">
+                    @if ($transaction->id_compte_envoyeur==null)
+                        {{$transaction->comptes_bancaire_receveur->comptes->nom}}
+                        {{$id_compte = $transaction->id_compte_receveur}}
+                    @else
+                        {{ $transaction->comptes_bancaire->comptes->nom}}
+                        {{$id_compte = $transaction->id_compte_envoyeur}}
+                    @endif
+
+                </td>
+                <td class="m-auto text-center bg-white border-2 border-solid">
+                    @if ($transaction->id_compte_envoyeur==null)
+                    {{$transaction->comptes_bancaire_receveur->comptes->email}}
+                    @else
+                        {{ $transaction->comptes_bancaire->comptes->email }}
+                    @endif
+                </td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
                 <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
                     @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")
