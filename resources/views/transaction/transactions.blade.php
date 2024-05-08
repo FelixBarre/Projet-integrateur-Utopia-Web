@@ -104,8 +104,23 @@
                 <tr>
                 <td class="p-4 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
-                <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
+                <td class="m-auto text-center bg-white border-2 border-solid">
+                    @if ($transaction->id_compte_envoyeur==null)
+                        {{$transaction->comptes_bancaire_receveur->comptes->nom}}
+                        {{$id_compte = $transaction->id_compte_receveur}}
+                    @else
+                        {{ $transaction->comptes_bancaire->comptes->nom}}
+                        {{$id_compte = $transaction->id_compte_envoyeur}}
+                    @endif
+
+                </td>
+                <td class="m-auto text-center bg-white border-2 border-solid">
+                    @if ($transaction->id_compte_envoyeur==null)
+                    {{$transaction->comptes_bancaire_receveur->comptes->email}}
+                    @else
+                        {{ $transaction->comptes_bancaire->comptes->email }}
+                    @endif
+                </td>
                 <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
                 <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
                     @if ($transaction->etat_transactions->label != "Terminer" && $transaction->etat_transactions->label != "Annuler")

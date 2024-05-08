@@ -120,17 +120,29 @@
                     <td id="transactionId" class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td id="transactionLabel"  class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
                     <td id="transactionNom" class="m-auto text-center bg-white border-2 border-solid">
-                            {{ $transaction->comptes_bancaire->comptes->nom }}
+                        @if ($transaction->id_compte_envoyeur==null)
+                            {{$transaction->comptes_bancaire_receveur->comptes->nom}}
+                            {{$id_compte = $transaction->id_compte_receveur}}
+                        @else
+                            {{ $transaction->comptes_bancaire->comptes->nom}}
+                            {{$id_compte = $transaction->id_compte_envoyeur}}
+                        @endif
+
 
                     </td>
                     <td id="transactionEmail" class="m-auto text-center bg-white border-2 border-solid">
+                        @if ($transaction->id_compte_envoyeur==null)
+                            {{$transaction->comptes_bancaire_receveur->comptes->email}}
+                        @else
                             {{ $transaction->comptes_bancaire->comptes->email }}
+                        @endif
+
                     </td>
                     <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
                     <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
 
                             <td id="transactionVoir" class="m-auto text-center border-none">
-                                <a href="{{ route('transactions', ['id_compte_envoyeur' => $transaction->id_compte_envoyeur]) }}" class="bouton">Voir</a>
+                                <a href="{{ route('transactions', ['id_compte_envoyeur' => $id_compte]) }}" class="bouton">Voir</a>
                             </td>
 
                     </tr>

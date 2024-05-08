@@ -45,35 +45,52 @@ async function pageAccueil() {
                }
             }
 
-            let thead = document.getElementById("transactionTable")
-            let tbody = document.createElement("tbody");
-            let tr = document.createElement("tr");
-            let tdID = document.createElement("td");
-            tdID.textContent="ID";
-            let tdOperation = document.createElement("td");
-            let tdNom = document.createElement("td");
-            let tdEmail = document.createElement("td");
-            let tdDate = document.createElement("td");
-            let tdStatus = document.createElement("td");
 
-            tdID.insertAdjacentElement("beforeend", tr);
-            tdOperation.insertAdjacentElement("beforeend", tr);
-            tdNom.insertAdjacentElement("beforeend", tr);
-            tdEmail.insertAdjacentElement("beforeend", tr);
-            tdDate.insertAdjacentElement("beforeend", tr);
-            tdStatus.insertAdjacentElement("beforeend", tr);
-            tr.insertAdjacentElement("beforeend", tbody);
-            tbody.insertAdjacentHTML("afterend", thead);
 
             transactions.forEach(transaction => {
-                console.log("ID:", transaction.id);
-                console.log("Montant:", transaction.montant);
-                console.log("ID Compte Envoyeur:", transaction.id_compte_envoyeur);
-                console.log("ID Compte Receveur:", transaction.id_compte_receveur);
-                console.log("ID Type Transaction:", transaction.id_type_transaction);
-                console.log("ID Etat Transaction:", transaction.id_etat_transaction);
-                console.log("Date de création:", transaction.created_at);
-                console.log("Date de mise à jour:", transaction.updated_at);
+
+            let tbody = document.getElementById("detailsTransaction");
+
+            let tr = document.createElement("tr")
+            tr.classList.add("w-full");
+
+            let tdID = document.createElement("td");
+            tdID.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdID.textContent = transaction.id;
+
+            let tdOperation = document.createElement("td");
+            tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdOperation.textContent = transaction.montant;
+
+            let tdNom = document.createElement("td");
+            tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            if(transaction.id_compte_envoyeur==null){
+                tdNom.textContent = transaction.id_compte_receveur;
+            }else{
+                tdNom.textContent = transaction.id_compte_envoyeur;
+            }
+
+
+            let tdEmail = document.createElement("td");
+            tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdEmail.textContent = "";
+
+            let tdDate = document.createElement("td");
+            tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdDate.textContent = transaction.created_at;
+
+            let tdStatus = document.createElement("td");
+            tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdStatus.textContent = transaction.id_etat_transaction;
+
+                tr.appendChild(tdID);
+                tr.appendChild(tdOperation);
+                tr.appendChild(tdNom);
+                tr.appendChild(tdEmail);
+                tr.appendChild(tdDate);
+                tr.appendChild(tdStatus);
+                tbody.appendChild(tr);
+
 
             });
 
