@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->decimal('limite', 15, 2);
+            $table->boolean('est_valide')->nullable()->default(true);
             $table->bigInteger('id_compte')->unsigned();
         });
 

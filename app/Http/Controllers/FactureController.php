@@ -130,7 +130,7 @@ class FactureController extends Controller
             'description' => 'required',
             'montant_defini' => 'required|regex:/^\d+(?:\.\d{2})?$/',
             'jour_du_mois' => 'required|regex:/^\d+$/',
-            'id_fournisseur' => 'required||regex:/^\d+$//'
+            'id_fournisseur' => 'required||regex:/^\d+$/'
 
             ], [
                 'id.required'=>'Veuillez entrer un id valide',
