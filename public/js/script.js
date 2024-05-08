@@ -473,34 +473,39 @@ function creerMessage(isEnvoyeur, message) {
     divContenuMessage.insertAdjacentElement('afterbegin', pMessage);
 
     if (message.chemin_du_fichier) {
-        let nomFichier = message.chemin_du_fichier.split('/').pop();
-        let extension = nomFichier.split('.').pop();
-        let supportedImagesExtensions = [ 'jpg', 'jpeg', 'png' ];
-
-        if (supportedImagesExtensions.includes(extension)) {
-            let imgPieceJointe = document.createElement('img');
-            imgPieceJointe.classList.add('max-h-80');
-            imgPieceJointe.classList.add('mx-auto');
-            imgPieceJointe.src = message.chemin_du_fichier;
-            imgPieceJointe.alt = nomFichier;
-            divContenuMessage.insertAdjacentElement('beforeend', imgPieceJointe);
-        }
-        else {
-            let aPieceJointe = document.createElement('a');
-            aPieceJointe.classList.add('block');
-            aPieceJointe.classList.add('bg-white');
-            aPieceJointe.classList.add('hover:bg-slate-100');
-            aPieceJointe.classList.add('text-black');
-            aPieceJointe.classList.add('rounded');
-            aPieceJointe.classList.add('p-4');
-            aPieceJointe.classList.add('mt-2');
-            aPieceJointe.href = message.chemin_du_fichier;
-            aPieceJointe.target = '_blank';
-            aPieceJointe.innerHTML = nomFichier;
-        }
+        divContenuMessage.insertAdjacentElement('beforeend', creerPieceJointe(message));
     }
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+function creerPieceJointe(message) {
+    let nomFichier = message.chemin_du_fichier.split('/').pop();
+    let extension = nomFichier.split('.').pop();
+    let supportedImagesExtensions = [ 'jpg', 'jpeg', 'png' ];
+
+    if (supportedImagesExtensions.includes(extension)) {
+        let imgPieceJointe = document.createElement('img');
+        imgPieceJointe.classList.add('max-h-80');
+        imgPieceJointe.classList.add('mx-auto');
+        imgPieceJointe.src = message.chemin_du_fichier;
+        imgPieceJointe.alt = nomFichier;
+        return imgPieceJointe;
+    }
+    else {
+        let aPieceJointe = document.createElement('a');
+        aPieceJointe.classList.add('block');
+        aPieceJointe.classList.add('bg-white');
+        aPieceJointe.classList.add('hover:bg-slate-100');
+        aPieceJointe.classList.add('text-black');
+        aPieceJointe.classList.add('rounded');
+        aPieceJointe.classList.add('p-4');
+        aPieceJointe.classList.add('mt-2');
+        aPieceJointe.href = message.chemin_du_fichier;
+        aPieceJointe.target = '_blank';
+        aPieceJointe.innerHTML = nomFichier;
+        return aPieceJointe;
+    }
 }
 
 async function filtrerProfils(event) {
