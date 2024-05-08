@@ -100,11 +100,21 @@ function pagePret() {
     btnRefuser = document.getElementById('btnRefuser');
 
     btnApprouver.addEventListener('click', function (e) {
-        approuverPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            approuverPret(e);
+        else
+            return;
     });
 
     btnRefuser.addEventListener('click', function (e) {
-        refuserPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            refuserPret(e);
+        else
+            return;
     });
 
 >>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
@@ -599,7 +609,7 @@ async function approuverPret(e) {
         if (data['ERREUR'])
             alertErreurs(data);
         if (data['NOTE'])
-            alert("Cette demande a déjà été approuvée.")
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été approuvée.");
@@ -631,7 +641,10 @@ async function refuserPret(e) {
     let data = await response.json();
 
     if (!data['SUCCES']) {
-        alertErreurs(data);
+        if (data['ERREUR'])
+            alertErreurs(data);
+        if (data['NOTE'])
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été refusée.");
