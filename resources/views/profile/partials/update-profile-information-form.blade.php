@@ -91,5 +91,7 @@
                 >{{ __('Sauvegardé.') }}</p>
             @endif
         </div>
+
+        <input type="hidden" name="id_user" id="id_user" value="{{$user->id}}">
     </form>
 </div>
