@@ -54,5 +54,9 @@ Route::controller(ConversationController::class)->group(function() {
 });
 
 Route::controller(PretController::class)->group(function() {
+    Route::get('/prets', 'index')->name('PretsApi');
+    Route::get('/pret', 'show')->name('PretApi');
     Route::post('/creation/pret', 'store')->name('creationPretApi');
+    Route::put('/modification/pret', 'update')->name('modificationPretApi');
+    Route::delete('/desactivation/pret', 'destroy')->name('desactivationPretApi');
 });

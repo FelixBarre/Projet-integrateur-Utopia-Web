@@ -16,6 +16,7 @@ class Pret extends Model
         'montant',
         'date_debut',
         'date_echeance',
+        'est_valide',
         'id_compte'
     ];
 }

@@ -5,18 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\Pret;
 use App\Models\Demande;
 use App\Models\CompteBancaire;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
+use App\Http\Resources\PretResource;
 
 class PretController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->routeIs('PretsApi')) {
+            if(isset($request['id_user']) && User::find($request['id_user'])) {
+                $pretArray = array();
+                $comptesBancaires = CompteBancaire::where('id_user', $request['id_user'])->get();
+
+                foreach ($comptesBancaires as $compteBancaire) {
+                    if ($pret = Pret::where('id_compte', $compteBancaire->id)->get())
+                        array_push($pretArray, $pret);
+                }
+                return PretResource::collection(collect($pretArray)->flatten());
+            } else {
+                return response()->json(['ERREUR' => "Veuillez entrer un id_user valide."], 400);
+            }
+        }
     }
 
     /**
@@ -72,7 +86,7 @@ class PretController extends Controller
                 $compteBancaire = CompteBancaire::create([
                     'nom' => $demande->raison,
                     'solde' => $demande->montant,
-                    'taux_interet' => $contenuDecode['taux_interet'],
+                    'taux_interet' => $taux,
                     'id_user' => $demande->id_demandeur,
                     'est_valide' => 1
                 ]);
@@ -82,6 +96,7 @@ class PretController extends Controller
                     'montant' => $demande->montant,
                     'date_debut' => $date_debut,
                     'date_echeance' => $date_echeance,
+                    'est_valide' => 1,
                     'id_compte' => $compteBancaire->id
                 ]);
 
@@ -100,9 +115,16 @@ class PretController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pret $pret)
+    public function show(Request $request, Pret $pret)
     {
-        //
+        if ($request->routeIs('PretApi')) {
+            $pret = Pret::find($request['id']);
+
+            if (empty($pret) || Pret::where('est_valide', 0)->find($request['id']))
+                return response()->json(['ERREUR' => 'Ce pret n\'existe pas ou a été désactivé.'], 400);
+
+            return new PretResource($pret);
+        }
     }
 
     /**
@@ -118,14 +140,58 @@ class PretController extends Controller
      */
     public function update(Request $request, Pret $pret)
     {
-        //
+        // le prêt est un objet pratiquement static le nom est le seul paramètre possible de modifié
+        if ($request->routeIs('modificationPretApi')) {
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+                'nom' => 'required',
+                ], [
+                'id.required' => 'Le prêt est introuvable.',
+                'nom.required' => 'Veuillez entrer le nouveau nom du prêt.'
+                ]);
+                if ($validation->fails()) {
+                    return back()->withErrors($validation->errors())->withInput();
+                }
+
+            $contenuDecode = $validation->validated();
+
+            if (!Pret::find($contenuDecode['id'])) {
+                return response()->json(['ERREUR' => 'Ce prêt n\'existe pas.'], 400);
+            } elseif (Pret::where('est_valide', 0)
+                ->find($contenuDecode['id'])) {
+                return response()->json(['ERREUR' => 'Ce prêt a été désactivé.'], 400);
+            }
+
+            $pret = Pret::find($contenuDecode['id']);
+            $pret->nom = $contenuDecode['nom'];
+
+            if ($pret->save())
+                return response()->json(['SUCCES' => 'La modification du prêt a bien fonctionné.'], 200);
+            else
+                return response()->json(['ERREUR' => 'La modification du prêt a échoué.'], 400);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Pret $pret)
+    public function destroy(Request $request, Pret $pret)
     {
-        //
+        if ($request->routeIs('desactivationPretApi')) {
+            if (!Pret::find($request['id'])) {
+                return response()->json(['ERREUR' => 'Ce prêt n\'existe pas.'], 400);
+            } elseif (Pret::where('est_valide', 0)
+                ->find($request['id'])) {
+                return response()->json(['ERREUR' => 'Ce prêt a été désactivé.'], 400);
+            }
+
+            $pret = Pret::find($request['id']);
+            $pret->est_valide = 0;
+
+            if ($pret->save())
+                return response()->json(['SUCCES' => 'La désactivation du prêt a bien fonctionné.'], 200);
+            else
+                return response()->json(['ERREUR' => 'La désactivation du prêt a échoué.'], 400);
+        }
     }
 }
