@@ -174,25 +174,34 @@ class ConversationController extends Controller
             }
         }
 
-        $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
-        $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
+        if ($conversation->ferme) {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Cette conversation est fermée.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Cette conversation est fermée.']);
+            }
+        }
 
-        $dernierMessage = null;
+        $tousMessages = $conversation->messages()->orderBy('created_at')->get();
+        $messagesNonSupprimes = $conversation->messages()->orderBy('created_at')->whereNull('date_heure_supprime')->get();
+
+        $premierMessage = null;
 
         if (count($messagesNonSupprimes) > 0) {
-            $dernierMessage = $messagesNonSupprimes->first();
+            $premierMessage = $messagesNonSupprimes->first();
         }
         else {
-            $dernierMessage = $tousMessages->first();
+            $premierMessage = $tousMessages->first();
         }
 
         $interlocuteur = null;
 
-        if ($dernierMessage->envoyeur->id == $id_user) {
-            $interlocuteur = $dernierMessage->receveur;
+        if ($premierMessage->envoyeur->id == $id_user) {
+            $interlocuteur = $premierMessage->receveur;
         }
-        else if ($dernierMessage->receveur->id == $id_user) {
-            $interlocuteur = $dernierMessage->envoyeur;
+        else if ($premierMessage->receveur->id == $id_user) {
+            $interlocuteur = $premierMessage->envoyeur;
         }
         else {
             if ($isApi) {
@@ -235,8 +244,19 @@ class ConversationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Conversation $conversation)
+    public function destroy(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('fermerConversationApi')) {
+            $conversation = Conversation::find($id);
+
+            if (is_null($conversation)) {
+                return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
+            }
+
+            $conversation->ferme = 1;
+            $conversation->save();
+
+            return response()->json(['SUCCÈS' => 'La conversation a bien été supprimée.'], 200);
+        }
     }
 }

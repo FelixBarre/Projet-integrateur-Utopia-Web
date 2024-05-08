@@ -3,6 +3,7 @@ var date_derniere_update = new Date().toLocaleString('sv-SE');
 window.onload = function() {
     pageAccueil();
     pageConversation();
+    pageConversations();
     pagePret();
 }
 
@@ -63,6 +64,18 @@ function pageConversation() {
     getNewMessages();
 
     getUpdatedMessages();
+}
+
+function pageConversations() {
+    let boutonsSupprimerConversation = document.querySelectorAll('.boutonSupprimerConversation');
+
+    if (!boutonsSupprimerConversation) {
+        return;
+    }
+
+    boutonsSupprimerConversation.forEach((bouton) => {
+        bouton.addEventListener('click', supprimerConversation);
+    });
 }
 
 function pagePret() {
@@ -400,6 +413,31 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divMessage.insertAdjacentElement('beforeend', pMessage);
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+async function supprimerConversation(event) {
+    if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
+        return;
+    }
+
+    let conversation = event.currentTarget.parentElement;
+
+    let response = await fetch('/api/conversation/' + conversation.id, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['SUCCÈS']) {
+        conversation.remove();
+    }
+    else {
+        alertErreurs(data);
+    }
 }
 
 async function approuverPret(e) {
