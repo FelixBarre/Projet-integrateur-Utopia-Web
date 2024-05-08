@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Credit;
+use App\Models\CompteBancaire;
 use Illuminate\Http\Request;
+use App\Http\Resources\CreditResource;
 
 class CreditController extends Controller
 {
@@ -12,7 +14,20 @@ class CreditController extends Controller
      */
     public function index()
     {
-        //
+        if ($request->routeIs('CreditsApi')) {
+            if(isset($request['id_user']) && User::find($request['id_user'])) {
+                $creditArray = array();
+                $comptesBancaires = CompteBancaire::where('id_user', $request['id_user'])->get();
+
+                foreach ($comptesBancaires as $compteBancaire) {
+                    if ($credit = Pret::where('id_compte', $compteBancaire->id)->get())
+                        array_push($creditArray, $credit);
+                }
+                return CreditResource::collection(collect($creditArray)->flatten());
+            } else {
+                return response()->json(['ERREUR' => "Veuillez entrer un id_user valide."], 400);
+            }
+        }
     }
 
     /**

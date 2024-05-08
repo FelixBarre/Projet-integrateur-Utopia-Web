@@ -9,6 +9,7 @@ use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PretController;
+use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ConversationController;
 
 Route::get('/user', function (Request $request) {
@@ -77,3 +78,10 @@ Route::controller(FactureController::class)->group(function() {
     Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
 });
 
+Route::controller(CreditController::class)->group(function() {
+    Route::get('/credits', 'index')->name('CreditsApi');
+    Route::get('/credit', 'show')->name('CreditApi');
+    Route::post('/creation/credit', 'store')->name('creationCreditApi');
+    Route::put('/modification/credit', 'update')->name('modificationCreditApi');
+    Route::delete('/desactivation/credit', 'destroy')->name('desactivationCreditApi');
+});
