@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('montant', 15, 2);
             $table->date('date_debut');
             $table->date('date_echeance');
+            $table->boolean('est_valide')->nullable()->default(false);
             $table->bigInteger('id_compte')->unsigned();
         });
 

@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\MessageResource;
 
-class ConversationResource extends JsonResource
+class PretResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +16,12 @@ class ConversationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'ferme' => $this->ferme,
-            'messages' => MessageResource::collection($this->messages)
+            'nom' => $this->nom,
+            'montant' => $this->montant,
+            'date_debut' => $this->date_debut,
+            'date_echeance' => $this->date_echeance,
+            'est_valide' => $this->est_valide,
+            'id_compte' => $this->id_compte
         ];
     }
 }

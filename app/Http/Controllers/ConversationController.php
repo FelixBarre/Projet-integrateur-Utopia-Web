@@ -43,20 +43,20 @@ class ConversationController extends Controller
         }
     }
 
-    public function obtenirDestinatairesPossibles() {
-        return User::where('id', '!=', Auth::id())
-                    ->whereNotIn('id', function($query) {
+    public function obtenirDestinatairesPossibles(int $id_user) {
+        return User::where('id', '!=', $id_user)
+                    ->whereNotIn('id', function($query) use ($id_user) {
                         $query->select('id_envoyeur')
                             ->from('messages')
                             ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
-                            ->where('id_receveur', Auth::id())
+                            ->where('id_receveur', $id_user)
                             ->where('conversations.ferme', 0);
                     })
-                    ->whereNotIn('id', function($query) {
+                    ->whereNotIn('id', function($query) use ($id_user) {
                         $query->select('id_receveur')
                             ->from('messages')
                             ->join('conversations', 'conversations.id', '=', 'messages.id_conversation')
-                            ->where('id_envoyeur', '=', Auth::id())
+                            ->where('id_envoyeur', '=', $id_user)
                             ->where('conversations.ferme', 0);
                     })
                     ->get();
@@ -67,7 +67,7 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        $destinataires = $this->obtenirDestinatairesPossibles();
+        $destinataires = $this->obtenirDestinatairesPossibles(Auth::id());
 
         if (count($destinataires) == 0) {
             return back()->with('alerte', 'Vous n\'avez aucun nouveau destinataire possible! Vous avez déjà une conversation ouverte avec chacun des usagers.');
@@ -81,8 +81,14 @@ class ConversationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, int $id_user = null)
     {
+        $isApi = $request->routeIs('creerConversationApi');
+
+        if (Auth::id()) {
+            $id_user = Auth::id();
+        }
+
         $validation = Validator::make($request->all(), [
                 'destinataire' => 'required|regex:/^.+ - [0-9]+$/',
                 'message' => 'required|max:255'
@@ -93,22 +99,38 @@ class ConversationController extends Controller
                 'message.max' => 'Votre message doit avoir 255 caractères ou moins.'
             ]);
 
-        if ($validation->fails())
-            return back()->withErrors($validation->errors())->withInput();
+        if ($validation->fails()) {
+            if ($isApi) {
+                return response()->json(['ERREUR' => $validation->errors()], 400);
+            }
+            else {
+                return back()->withErrors($validation->errors())->withInput();
+            }
+        }
 
         $contenuFormulaire = $validation->validated();
 
         $valeursDestinataire = explode('-', $contenuFormulaire['destinataire']);
         $idDestinataire = intval(end($valeursDestinataire));
 
-        if ($idDestinataire == Auth::id()) {
-            return back()->withErrors(['msg' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.']);
+        if ($idDestinataire == $id_user) {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Vous ne pouvez pas créer de conversation avec vous-mêmes.']);
+            }
         }
 
-        $destinatairesPossibles = $this->obtenirDestinatairesPossibles();
+        $destinatairesPossibles = $this->obtenirDestinatairesPossibles($id_user);
 
         if (!$destinatairesPossibles->contains('id', $idDestinataire)) {
-            return back()->withErrors(['msg' => 'Ce destinataire ne fait pas partie des choix disponibles.']);
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Ce destinataire ne fait pas partie des choix disponibles.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Ce destinataire ne fait pas partie des choix disponibles.']);
+            }
         }
 
         $conversation = Conversation::create([
@@ -117,51 +139,90 @@ class ConversationController extends Controller
 
         $message = Message::create([
             'texte' => $contenuFormulaire['message'],
-            'id_envoyeur' => Auth::id(),
+            'id_envoyeur' => $id_user,
             'id_receveur' => $idDestinataire,
             'id_conversation' => $conversation->id
         ]);
 
-        return redirect()->route('conversations');
+        if ($isApi) {
+            return response()->json(['SUCCÈS' => 'La conversation a bien été créée.' ], 200);
+        }
+        else {
+            return redirect()->route('conversations');
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $id)
+    public function show(Request $request, int $id, int $id_user = null)
     {
+        $isApi = $request->routeIs('conversationApi');
+
         $conversation = Conversation::find($id);
 
-        $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
-        $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
+        if (Auth::id()) {
+            $id_user = Auth::id();
+        }
 
-        $dernierMessage = null;
+        if (!$conversation) {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Cette conversation n\'existe pas.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Cette conversation n\'existe pas.']);
+            }
+        }
+
+        if ($conversation->ferme) {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Cette conversation est fermée.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Cette conversation est fermée.']);
+            }
+        }
+
+        $tousMessages = $conversation->messages()->orderBy('created_at')->get();
+        $messagesNonSupprimes = $conversation->messages()->orderBy('created_at')->whereNull('date_heure_supprime')->get();
+
+        $premierMessage = null;
 
         if (count($messagesNonSupprimes) > 0) {
-            $dernierMessage = $messagesNonSupprimes->first();
+            $premierMessage = $messagesNonSupprimes->first();
         }
         else {
-            $dernierMessage = $tousMessages->first();
+            $premierMessage = $tousMessages->first();
         }
 
         $interlocuteur = null;
 
-        if ($dernierMessage->envoyeur->id == Auth::id()) {
-            $interlocuteur = $dernierMessage->receveur;
+        if ($premierMessage->envoyeur->id == $id_user) {
+            $interlocuteur = $premierMessage->receveur;
         }
-        else if ($dernierMessage->receveur->id == Auth::id()) {
-            $interlocuteur = $dernierMessage->envoyeur;
+        else if ($premierMessage->receveur->id == $id_user) {
+            $interlocuteur = $premierMessage->envoyeur;
         }
         else {
-            return back()->withErrors(['msg' => 'Vous ne faites pas partie de cette conversation.']);
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
+            else {
+                return back()->withErrors(['msg' => 'Vous ne faites pas partie de cette conversation.']);
+            }
         }
 
-        return view('messagerie.conversation', [
-            'messages' => $messagesNonSupprimes,
-            'interlocuteur' => $interlocuteur,
-            'AuthId' => Auth::id(),
-            'conversation' => $conversation
-        ]);
+        if ($isApi) {
+            return new ConversationResource($conversation);
+        }
+        else {
+            return view('messagerie.conversation', [
+                'messages' => $messagesNonSupprimes,
+                'interlocuteur' => $interlocuteur,
+                'AuthId' => $id_user,
+                'conversation' => $conversation
+            ]);
+        }
     }
 
     /**
@@ -183,8 +244,19 @@ class ConversationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Conversation $conversation)
+    public function destroy(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('fermerConversationApi')) {
+            $conversation = Conversation::find($id);
+
+            if (is_null($conversation)) {
+                return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
+            }
+
+            $conversation->ferme = 1;
+            $conversation->save();
+
+            return response()->json(['SUCCÈS' => 'La conversation a bien été supprimée.'], 200);
+        }
     }
 }

@@ -1,14 +1,4 @@
-<x-guest-layout>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
+<x-app-layout>
     <div class="w-1/2 text-left mt-6">
         <h2 class="text-5xl font-bold text-white mx-9">Inscription d'usager</h2>
     </div>
@@ -104,13 +94,11 @@
             <p>Le nom d'utilisateur et un mot de passe temporaire sera envoyé à l'utilisateur</p>
 
             <div class="flex items-center justify-end mt-4">
-                <x-primary-button class="ms-4">
-                    {{ __('Inscription') }}
-                </x-primary-button>
+                <button class="bouton">Inscription</button>
             </div>
         </form>
         <div>
             <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
         </div>
     </div>
-</x-guest-layout>
+</x-app-layout>

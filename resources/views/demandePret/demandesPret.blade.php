@@ -7,6 +7,7 @@
     <div class="m-auto w-11/12 text-right">
         <form method="GET" action="{{ route('demandesPretFiltre') }}">
             <select class="mr-16 w-56" name="filtre_demandePret" id="filtre_demandePret">
+                <option value="all">Toutes</option>
                 @foreach ($etats as $etat)
                 <option value="{{$etat->id}}">{{$etat->label}}</option>
                 @endforeach

@@ -3,6 +3,8 @@ var date_derniere_update = new Date().toLocaleString('sv-SE');
 window.onload = function() {
     pageAccueil();
     pageConversation();
+    pageShowProfils();
+    pageConversations();
     pagePret();
 }
 
@@ -142,11 +144,73 @@ function pagePret() {
     btnRefuser = document.getElementById('btnRefuser');
 
     btnApprouver.addEventListener('click', function (e) {
-        approuverPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            approuverPret(e);
+        else
+            return;
     });
 
     btnRefuser.addEventListener('click', function (e) {
-        refuserPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            refuserPret(e);
+        else
+            return;
+    });
+
+}
+
+function pageShowProfils() {
+    let boutonFiltre = document.getElementById('boutonFiltreProfiles');
+
+    if (!boutonFiltre) {
+        return;
+    }
+
+    boutonFiltre.addEventListener("click", filtrerProfils);
+}
+
+function pageConversations() {
+    let boutonsSupprimerConversation = document.querySelectorAll('.boutonSupprimerConversation');
+
+    if (!boutonsSupprimerConversation) {
+        return;
+    }
+
+    boutonsSupprimerConversation.forEach((bouton) => {
+        bouton.addEventListener('click', supprimerConversation);
+    });
+}
+
+function pagePret() {
+    formPret = document.getElementById('formPret');
+
+    if (!formPret) {
+        return;
+    }
+
+    btnApprouver = document.getElementById('btnApprouver');
+    btnRefuser = document.getElementById('btnRefuser');
+
+    btnApprouver.addEventListener('click', function (e) {
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            approuverPret(e);
+        else
+            return;
+    });
+
+    btnRefuser.addEventListener('click', function (e) {
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            refuserPret(e);
+        else
+            return;
     });
 
 }
@@ -239,7 +303,7 @@ async function getNewMessages() {
 
     if (data['data']) {
         data['data'].forEach((message) => {
-            creerMessage(message.id_envoyeur == id_envoyeur.value, message.texte, message.id);
+            creerMessage(message.envoyeur.id == id_envoyeur.value, message.texte, message.id);
         });
     }
     else {
@@ -468,6 +532,160 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divConversation.scrollTop = divConversation.scrollHeight;
 }
 
+async function filtrerProfils(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    let courriel = document.getElementById('filtreCourriel');
+    let action = document.getElementById('action');
+    let rolesUserLoggedIn = JSON.parse(document.getElementById('rolesUserLogged').value);
+
+    userIsAdmin = false;
+
+    rolesUserLoggedIn.forEach(function(role) {
+        if (userIsAdmin == false && role.role == "Administrateur") {
+            userIsAdmin = true
+        }
+    });
+
+    courriel.focus();
+
+    if (action.value == 'GET') {
+        courriel.value = courriel.value.trim();
+
+        if (courriel.value == '') {
+            return;
+        }
+
+        let response = await fetch ('/api/profilesApi/' + courriel.value, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        });
+
+        let data = await response.json();
+
+        if (!data['ERREUR']) {
+            updatePageProfiles(data, userIsAdmin);
+        } else {
+            alert('Aucun utilisateur avec ce courriel');
+        }
+    }
+}
+
+async function updatePageProfiles(data, isAdmin) {
+    let tbody = document.getElementById('tbodyProfiles');
+
+    needAdmin = false;
+
+    data['data']['0'].roles.forEach(function(roles) {
+        if(needAdmin == false && (roles.role == "Administrateur" || roles.role == "Employé")) {
+            needAdmin = true;
+        }
+    });
+
+    if ((needAdmin && isAdmin) || !needAdmin) {
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.lastChild);
+        }
+
+        ligne = document.createElement("tr");
+        ligne.classList.add("bg-[#FFFFFF]");
+        tbody.appendChild(ligne);
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].prenom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].nom);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].email);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+        texteColonne = document.createTextNode(data['data']['0'].telephone);
+        colonne.appendChild(texteColonne);
+        ligne.appendChild(colonne)
+
+        colonne = document.createElement("td");
+        colonne.classList.add("pt-5");
+        colonne.classList.add("pb-5");
+        colonne.classList.add("border-2");
+        colonne.classList.add("border-solid");
+
+        form = document.createElement("form");
+            form.setAttribute("method", "GET");
+            form.setAttribute("action", "http://localhost:8000/profile/user")
+            input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("value", data['data']['0'].id);
+                input.setAttribute("name", "id_user");
+            button = document.createElement("button");
+                button.classList.add("bouton");
+                    texteButton = document.createTextNode("Voir ce profil");
+                button.appendChild(texteButton);
+        form.appendChild(input);
+        form.appendChild(button);
+
+        colonne.appendChild(form);
+        ligne.appendChild(colonne);
+
+        tbody.appendChild(ligne);
+    } else {
+        alert('Vous n\'êtes pas autorisé à voir ce profil.');
+    }
+}
+
+async function supprimerConversation(event) {
+    if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
+        return;
+    }
+
+    let conversation = event.currentTarget.parentElement;
+
+    let response = await fetch('/api/conversation/' + conversation.id, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+    });
+
+    let data = await response.json();
+
+    if (data['SUCCÈS']) {
+        conversation.remove();
+    }
+    else {
+        alertErreurs(data);
+    }
+}
+
 async function approuverPret(e) {
     e.preventDefault();
 
@@ -494,7 +712,7 @@ async function approuverPret(e) {
         if (data['ERREUR'])
             alertErreurs(data);
         if (data['NOTE'])
-            alert("Cette demande a déjà été approuvée.")
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été approuvée.");
@@ -526,7 +744,10 @@ async function refuserPret(e) {
     let data = await response.json();
 
     if (!data['SUCCES']) {
-        alertErreurs(data);
+        if (data['ERREUR'])
+            alertErreurs(data);
+        if (data['NOTE'])
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été refusée.");
