@@ -27,13 +27,26 @@ class ProfileController extends Controller
         return ProfileResource::collection($user);
     }
 
-    public function show(Request $request): View
+    public function show(Request $request)
     {
-        $ville = Ville::find($request->user()->id_ville);
-        return view('profile.show', [
-            'user' => $request->user(),
-            'ville' => $ville
-        ]);
+        if ($request->routeIs('getUserApi')) {
+            if (isset($request['id'])) {
+                $user = User::where('id', $request['id'])->get();
+
+                if ($user->isEmpty())
+                    return response()->json(['ERREUR' => 'Aucun utilisateur n\'est lié à cet ID'], 400);
+
+                return ProfileResource::collection($user);
+            } else {
+                return response()->json(['ERREUR' => 'Veuillez spécifier l\'ID'], 400);
+            }
+        } else {
+            $ville = Ville::find($request->user()->id_ville);
+            return view('profile.show', [
+                'user' => $request->user(),
+                'ville' => $ville
+            ]);
+        }
     }
 
     public function showUsers(Request $request): View
