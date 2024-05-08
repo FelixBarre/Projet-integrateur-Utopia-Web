@@ -54,9 +54,6 @@ class TransactionController extends Controller
 
 
 
-
-
-
     }
 
     /**
@@ -92,7 +89,9 @@ class TransactionController extends Controller
                 $contenuDecode = $validation->validated();
 
                 if($contenuDecode['id_compte_envoyeur']==0){
+
                     $compteEnvoyeur = null;
+
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $typeTransaction = 1;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);

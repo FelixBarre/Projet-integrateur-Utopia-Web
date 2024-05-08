@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Validator;
 
 class NewPasswordController extends Controller
 {
@@ -33,6 +34,11 @@ class NewPasswordController extends Controller
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'token.required' => 'Un token d\'identification est requis',
+            'email.required' => 'Veuillez entrer l\'adresse courriel',
+            'password.required' => 'Veuillez entrer le mot de passe',
+            'password.confirmed' => 'Les mots de passes ne correspondent pas'
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
