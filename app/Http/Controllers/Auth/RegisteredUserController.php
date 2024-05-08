@@ -30,6 +30,33 @@ class RegisteredUserController extends Controller
         ]);
     }
 
+    public function show(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+            'token_name' => 'required'
+        ], [
+            'email.required' => 'Veuillez entrer l\'adresse courriel',
+            'email.email' => 'Le courriel n\'est pas valide.',
+            'password.required' => 'Veuillez entrer le mot de passe',
+            'token_name.required' => 'Veuillez inscrire le nom souhaité pour le token'
+        ]);
+
+        if ($validation->fails())
+            return response()->json(['ERREUR' => $validation->errors()], 400);
+
+        $contenuDecode = $validation->validated();
+        $utilisateur = User::where('email', '=', $contenuDecode['email'])->first();
+
+        if (($utilisateur === null) || !Hash::check($contenuDecode['password'], $utilisateur->password))
+            return response()->json(['ERREUR' => 'Informations d\'authentification invalides'], 500);
+
+        return response()->json(
+            ['SUCCÈS' => $utilisateur->createToken($contenuDecode['token_name'])->plainTextToken], 200
+        );
+    }
+
     /**
      * Handle an incoming registration request.
      *
