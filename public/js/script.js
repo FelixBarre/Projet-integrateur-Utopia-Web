@@ -513,7 +513,15 @@ async function filtrerProfils(event) {
 async function updatePageProfiles(data, isAdmin) {
     let tbody = document.getElementById('tbodyProfiles');
 
-    if (data['data']['0'].roles['0'].role == "Administrateur" && isAdmin) {
+    needAdmin = false;
+
+    data['data']['0'].roles.forEach(function(roles) {
+        if(needAdmin == false && (roles.role == "Administrateur" || roles.role == "Employé")) {
+            needAdmin = true;
+        }
+    });
+
+    if ((needAdmin && isAdmin) || !needAdmin) {
         while (tbody.firstChild) {
             tbody.removeChild(tbody.lastChild);
         }
