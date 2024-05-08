@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
             'ville' => 'required',
             'codePostal' => 'required|regex:/^[A-Z]{1}\d{1}[A-Z]{1}[ ]?\d{1}[A-Z]{1}\d{1}$/',
-            'appt' => 'regex:/^[A-Za-z\d]+$/',
+            'appt' => 'nullable|regex:/^[A-Za-z\d]+$/',
             'roles' => 'required|min:1'
            ], [
             'prenom.required' => 'Veuillez entrer le prénom.',
