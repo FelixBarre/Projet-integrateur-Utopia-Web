@@ -76,11 +76,20 @@ function pagePret() {
     btnRefuser = document.getElementById('btnRefuser');
 
     btnApprouver.addEventListener('click', function (e) {
-        approuverPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            approuverPret(e);
+        else
+            return;
     });
 
     btnRefuser.addEventListener('click', function (e) {
-        refuserPret(e);
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+        if (confirmation)
+            refuserPret(e);
+        else
+            return;
     });
 
 }
