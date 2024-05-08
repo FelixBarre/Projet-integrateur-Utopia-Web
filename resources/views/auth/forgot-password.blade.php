@@ -23,7 +23,6 @@
                                 :value="old('email')"
                                 required autofocus autocomplete="email"
                                 placeholder="Courriel" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
@@ -32,5 +31,8 @@
                 </button>
             </div>
         </form>
+        <div>
+            <a href="{{ route('accueil') }}"><button class="bouton">Retour</button></a>
+        </div>
     </div>
 </x-guest-layout>

@@ -4,7 +4,7 @@
         <p class="mb-3 text-2xl font-bold"><span><i class="fas fa-wallet"></i> </span> <span>Gestion de comptes d'utilisateurs</span> </p>
         <p><a href="{{ route('register')}}">Création de comptes</a></p>
         <p><a href="{{ route('users.show')}}">Modification de profil</a></p>
-        <p><a href="}">Changement de mot de passe </a></p>
+        <p><a href="{{ route('password.request')}}">Changement de mot de passe </a></p>
         <p><a href="">Consultation des demandes de désactivation de compte </a></p>
         <p><a href="">Modification des demandes de désactivation de compte </a></p>
     </div>
