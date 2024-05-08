@@ -23,7 +23,7 @@ class PretController extends Controller
                 $comptesBancaires = CompteBancaire::where('id_user', $request['id_user'])->get();
 
                 foreach ($comptesBancaires as $compteBancaire) {
-                    if ($pret = Pret::where('id_compte', $compteBancaire->id)->get())
+                    if ($pret = Pret::where('id_compte', $compteBancaire->id)->where('est_valide', 1)->get())
                         array_push($pretArray, $pret);
                 }
                 return PretResource::collection(collect($pretArray)->flatten());
@@ -52,11 +52,12 @@ class PretController extends Controller
         // la demande à partir de laquelle le prêt va être créé passe à l'état d'approuvée et la date de traitement est entrée
         if ($request->routeIs('creationPretApi')) {
             $validation = Validator::make($request->all(), [
-            'id_demande' => 'required',
+            'id_demande' => 'required|regex:/^\d+$/',
             'taux_interet' => 'required|regex:/^\d+$/',
             'duree' => 'required|regex:/^\d+$/',
             ], [
             'id_demande.required' => 'Veuillez entrer le id de la demande de prêt approuvée.',
+            'id_demande.regex' => 'Le id de la demande doit être numérique.',
             'taux_interet.required' => 'Veuillez entrer le taux d\'interêt du prêt.',
             'taux_interet.regex' => 'Le taux d\'intérêt doit être numérique.',
             'duree.required' => 'Veuillez entrer la durée.',
@@ -188,8 +189,10 @@ class PretController extends Controller
 
             $pret = Pret::find($request['id']);
             $pret->est_valide = 0;
+            $comptePret = CompteBancaire::find($pret->id_compte);
+            $comptePret->est_valide = 0;
 
-            if ($pret->save())
+            if ($pret->save() && $comptePret->save())
                 return response()->json(['SUCCES' => 'La désactivation du prêt a bien fonctionné.'], 200);
             else
                 return response()->json(['ERREUR' => 'La désactivation du prêt a échoué.'], 400);

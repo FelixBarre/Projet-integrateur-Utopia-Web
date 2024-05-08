@@ -157,7 +157,7 @@ class CompteBancaireController extends Controller
                 'taux_interet.regex' => 'Veuillez inscrire un taux d\'intérêt avec deux chiffres après la virgule.',
                 ]);
                 if ($validation->fails()) {
-                    return back()->withErrors($validation->errors())->withInput();
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
 
             $contenuDecode = $validation->validated();

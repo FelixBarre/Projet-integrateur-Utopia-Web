@@ -90,7 +90,7 @@ class TransactionController extends Controller
 
                 $contenuDecode = $validation->validated();
 
-                if($contenuDecode['id_compte_envoyeur']==0 || $contenuDecode['id_compte_envoyeur']==1){
+                if($contenuDecode['id_compte_envoyeur']==0){
                     $compteEnvoyeur = 1;
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $typeTransaction = 2;
