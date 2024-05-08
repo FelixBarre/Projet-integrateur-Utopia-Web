@@ -146,6 +146,10 @@ class DemandeController extends Controller
             $demande->montant = $contenuDecode['montant'];
             $demande->id_etat_demande = $contenuDecode['id_etat_demande'];
 
+            // si la demande est refusée on lui assigne une date de traitement
+            if ($contenuDecode['id_etat_demande'] == 2)
+                $demande->date_traitement = now();
+
 
             if ($demande->save())
                 return response()->json(['SUCCES' => 'La modification de la demande a bien fonctionné.'], 200);

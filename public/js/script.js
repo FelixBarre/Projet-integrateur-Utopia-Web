@@ -65,6 +65,35 @@ function pageConversation() {
     getUpdatedMessages();
 }
 
+function pagePret() {
+    formPret = document.getElementById('formPret');
+
+    if (!formPret) {
+        return;
+    }
+
+    btnApprouver = document.getElementById('btnApprouver');
+    btnRefuser = document.getElementById('btnRefuser');
+
+    btnApprouver.addEventListener('click', function (e) {
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
+        if (confirmation)
+            approuverPret(e);
+        else
+            return;
+    });
+
+    btnRefuser.addEventListener('click', function (e) {
+        let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+        if (confirmation)
+            refuserPret(e);
+        else
+            return;
+    });
+
+}
+
 function pageShowProfils() {
     let boutonFiltre = document.getElementById('boutonFiltreProfiles');
 
