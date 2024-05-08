@@ -6,7 +6,7 @@ window.onload = function() {
     pagePret();
 }
 
-function pageAccueil() {
+async function pageAccueil() {
     let formSelect = document.getElementById('formSelect');
 
     if(!formSelect) {
@@ -15,9 +15,75 @@ function pageAccueil() {
 
     let selectValue = document.getElementById('selectValue');
 
-    selectValue.addEventListener('change', function(){
-        formSelect.submit();
+    selectValue.addEventListener('change', async function(){
+
+        const selectedValue = this.value;
+
+
+        try{
+            let response = await fetch("/api/transactions/filter/" + selectedValue , {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+
+            });
+
+            if(!response.ok){
+                throw new Error('Une erreur est survenue.');
+            }
+
+            let transactions = await response.json();
+
+            let detailsTransaction = document.getElementById('detailsTransaction');
+            if(detailsTransaction){
+               while(detailsTransaction.firstChild){
+                    detailsTransaction.removeChild(detailsTransaction.lastChild);
+               }
+            }
+
+            let thead = document.getElementById("transactionTable")
+            let tbody = document.createElement("tbody");
+            let tr = document.createElement("tr");
+            let tdID = document.createElement("td");
+            tdID.textContent="ID";
+            let tdOperation = document.createElement("td");
+            let tdNom = document.createElement("td");
+            let tdEmail = document.createElement("td");
+            let tdDate = document.createElement("td");
+            let tdStatus = document.createElement("td");
+
+            tdID.insertAdjacentElement("beforeend", tr);
+            tdOperation.insertAdjacentElement("beforeend", tr);
+            tdNom.insertAdjacentElement("beforeend", tr);
+            tdEmail.insertAdjacentElement("beforeend", tr);
+            tdDate.insertAdjacentElement("beforeend", tr);
+            tdStatus.insertAdjacentElement("beforeend", tr);
+            tr.insertAdjacentElement("beforeend", tbody);
+            tbody.insertAdjacentHTML("afterend", thead);
+
+            transactions.forEach(transaction => {
+                console.log("ID:", transaction.id);
+                console.log("Montant:", transaction.montant);
+                console.log("ID Compte Envoyeur:", transaction.id_compte_envoyeur);
+                console.log("ID Compte Receveur:", transaction.id_compte_receveur);
+                console.log("ID Type Transaction:", transaction.id_type_transaction);
+                console.log("ID Etat Transaction:", transaction.id_etat_transaction);
+                console.log("Date de création:", transaction.created_at);
+                console.log("Date de mise à jour:", transaction.updated_at);
+
+            });
+
+
+        } catch(error){
+            console.log(error);
+            alert('une erreur est survenue lors de la requête.');
+        }
+
     });
+
+
 
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
