@@ -427,7 +427,6 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     divConversation.scrollTop = divConversation.scrollHeight;
 }
 
-<<<<<<< HEAD
 async function filtrerProfils(event) {
     if (event) {
         event.preventDefault();
@@ -549,7 +548,6 @@ async function updatePageProfiles(data, isAdmin) {
     }
 
 
-=======
 async function supprimerConversation(event) {
     if(!confirm('Êtes-vous certains de vouloir supprimer cette conversation?')) {
         return;
@@ -639,5 +637,4 @@ async function refuserPret(e) {
         alert("La demande a été refusée.");
         window.location.href = "/demandesDePret";
     }
->>>>>>> d00927d360df274c884a1d4dcb23bb95a9c0faeb
 }
