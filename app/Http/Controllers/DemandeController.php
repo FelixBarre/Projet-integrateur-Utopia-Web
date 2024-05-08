@@ -142,6 +142,12 @@ class DemandeController extends Controller
             }
 
             $demande = Demande::find($contenuDecode['id']);
+
+            // si la demande a déjà été approuvée ou refusée la modifiaction ne fonctionnera pas
+            if($demande->id_etat_demande == 1 || $demande->id_etat_demande == 2) {
+                return response()->json(['NOTE' => "Cette demande a déjà traitée."], 400);
+            }
+
             $demande->raison = $contenuDecode['raison'];
             $demande->montant = $contenuDecode['montant'];
             $demande->id_etat_demande = $contenuDecode['id_etat_demande'];

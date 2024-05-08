@@ -73,8 +73,9 @@ class PretController extends Controller
             } else {
                 $demande = Demande::find($contenuDecode["id_demande"]);
 
-                if($demande->id_etat_demande == 1) {
-                    return response()->json(['NOTE' => "Cette demande a déjà approuvé."], 400);
+                // si la demande a déjà été approuvée ou refusée l'ajout ne fonctionnera pas
+                if($demande->id_etat_demande == 1 || $demande->id_etat_demande == 2) {
+                    return response()->json(['NOTE' => "Cette demande a déjà traitée."], 400);
                 }
             }
 

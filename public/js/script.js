@@ -428,7 +428,7 @@ async function approuverPret(e) {
         if (data['ERREUR'])
             alertErreurs(data);
         if (data['NOTE'])
-            alert("Cette demande a déjà été approuvée.")
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été approuvée.");
@@ -460,7 +460,10 @@ async function refuserPret(e) {
     let data = await response.json();
 
     if (!data['SUCCES']) {
-        alertErreurs(data);
+        if (data['ERREUR'])
+            alertErreurs(data);
+        if (data['NOTE'])
+            alert("Cette demande a déjà été traitée.")
     }
     else {
         alert("La demande a été refusée.");
