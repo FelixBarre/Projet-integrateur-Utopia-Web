@@ -50,10 +50,10 @@ Route::controller(MessageController::class)->group(function() {
 });
 
 Route::controller(ConversationController::class)->group(function() {
-    Route::get('conversations/{id_user}', 'index')->name('conversationsApi');
-    Route::post('conversations/{id_user}', 'store')->name('creerConversationApi');
-    Route::get('conversation/{id}/{id_user}', 'show')->name('conversationApi');
-    Route::delete('conversation/{id}', 'destroy')->name('fermerConversationApi');
+    Route::get('/conversations/{id_user}', 'index')->name('conversationsApi');
+    Route::post('/conversations/{id_user}', 'store')->name('creerConversationApi');
+    Route::get('/conversation/{id}/{id_user}', 'show')->name('conversationApi');
+    Route::delete('/conversation/{id}', 'destroy')->name('fermerConversationApi');
 });
 
 Route::controller(PretController::class)->group(function() {
