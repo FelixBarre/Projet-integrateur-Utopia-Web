@@ -1,14 +1,4 @@
 <x-guest-layout>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <div class="w-1/2 text-left mt-6">
         <h2 class="text-5xl font-bold text-white mx-9">Inscription d'usager</h2>
     </div>
