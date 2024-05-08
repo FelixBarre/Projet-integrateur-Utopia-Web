@@ -48,7 +48,6 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('transaction/{id_transaction}', 'show')->name('transaction');
         Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
         Route::get('transaction/view/{id}', 'show')->name('transactionView');
-        Route::post('transactions/filter', 'show')->name('transactionsFilter');
         Route::post('transactions/filter/user/', 'show')->name('transactionsFilterUser');
         Route::post('transactions/filter/date', 'show')->name('transactionsFilterDate');
         Route::post('transactions/filter/date/user', 'show')->name('transactionsFilterDateUser');

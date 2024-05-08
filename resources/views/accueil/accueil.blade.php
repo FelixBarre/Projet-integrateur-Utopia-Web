@@ -46,12 +46,10 @@
         @endif
 
         <div class="flex flex-row"><!--Section filter -->
-            <form method="post" action="{{ route('transactionsFilter')}}" id="formSelect" class="w-2/4">
+            <form method="get" id="formSelect" class="w-2/4">
                 @csrf
-
                 <p class="my-5 mx-9">
                     <label for="filter" class="text-lg text-white">Trier par </label>
-
                     <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
                         <option value="none" id="optionValue">Sélectionner</option>
                         @foreach ($type_transactions as $type_transaction)
@@ -91,7 +89,7 @@
 
         <div class="p-10 mb-12 m_auto"><!-- Bloc du tableau des transactions -->
             <table>
-                <thead>
+                <thead id="transactionTable">
                     <tr class=" bg-[#178CA4] text-white">
                     <th class="w-1/6 p-4 m-auto border-2 border-solid">ID_Opération</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Opération</th>
@@ -101,10 +99,8 @@
                     <th class="w-1/6 m-auto border-2 border-solid">Status</th>
                     </tr>
                 </thead>
-                <tbody">
-                    @php
+                <tbody id="detailsTransaction">
 
-                    @endphp
                     @foreach ($transactions as $transaction)
 
 
@@ -121,16 +117,21 @@
                             $class_value = "bg-white";
                             @endphp
                         @endif
-                    <tr>
+                    <tr">
 
-                    <td class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->nom}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->comptes_bancaire->comptes->email}}</td>
-                    <td class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
-                    <td class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
+                    <td id="transactionId" class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
+                    <td id="transactionLabel"  class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
+                    <td id="transactionNom" class="m-auto text-center bg-white border-2 border-solid">
+                            {{ $transaction->comptes_bancaire->comptes->nom }}
 
-                            <td class="m-auto text-center border-none">
+                    </td>
+                    <td id="transactionEmail" class="m-auto text-center bg-white border-2 border-solid">
+                            {{ $transaction->comptes_bancaire->comptes->email }}
+                    </td>
+                    <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
+                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$transaction->etat_transactions->label}}</td>
+
+                            <td id="transactionVoir" class="m-auto text-center border-none">
                                 <a href="{{ route('transactions', ['id_compte_envoyeur' => $transaction->id_compte_envoyeur]) }}" class="bouton">Voir</a>
                             </td>
 

@@ -35,6 +35,7 @@ Route::controller(TransactionController::class)->group(function(){
     Route::post('/virementApi/new', 'store')->name('newVirementApi');
     Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
     Route::post('/transactionApi/delete', 'update')->name('deleteTransactionApi');
+    Route::get('/transactions/filter/{id_type_transaction}', 'show')->name('transactionsFilterApi');
 
 });
 

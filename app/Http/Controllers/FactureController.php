@@ -125,12 +125,12 @@ class FactureController extends Controller
     public function update(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'id' => 'required',
+            'id' => 'required|regex:/^\d+$/',
             'nom' => 'required',
             'description' => 'required',
             'montant_defini' => 'required|regex:/^\d+(?:\.\d{2})?$/',
-            'jour_du_mois' => 'required',
-            'id_fournisseur' => 'required|regex:/^[1-9]\d*$/'
+            'jour_du_mois' => 'required|regex:/^\d+$/',
+            'id_fournisseur' => 'required||regex:/^\d+$//'
 
             ], [
                 'id.required'=>'Veuillez entrer un id valide',
@@ -151,6 +151,8 @@ class FactureController extends Controller
                 return response()->json(['ERREUR' => 'Cette facture n\'existe pas.'], 400);
             } elseif ($contenuDecode['jour_du_mois']<1 || $contenuDecode['jour_du_mois']>30) {
                 return response()->json(['ERREUR' => 'le jour du mois n\'est pas valide.'], 400);
+            }elseif(!Fournisseur::find($request['id_fournisseur'])){
+                return response()->json(['ERREUR' => 'le fournisseur n\'a pas été trouvé.'], 400);
             }
 
             $facture = Facture::find($contenuDecode['id']);
