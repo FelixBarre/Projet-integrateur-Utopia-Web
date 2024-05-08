@@ -53,15 +53,17 @@ class PretController extends Controller
         if ($request->routeIs('creationPretApi')) {
             $validation = Validator::make($request->all(), [
             'id_demande' => 'required|regex:/^\d+$/',
-            'taux_interet' => 'required|regex:/^\d+$/',
-            'duree' => 'required|regex:/^\d+$/',
+            'taux_interet' => 'required|regex:/^\d+$/|max_digits:3',
+            'duree' => 'required|regex:/^\d+$/|max_digits:5',
             ], [
             'id_demande.required' => 'Veuillez entrer le id de la demande de prêt approuvée.',
             'id_demande.regex' => 'Le id de la demande doit être numérique.',
             'taux_interet.required' => 'Veuillez entrer le taux d\'interêt du prêt.',
             'taux_interet.regex' => 'Le taux d\'intérêt doit être numérique.',
+            'taux_interet.max_digits' => 'Le taux d\'intérêt ne doit pas dépassé 3 chiffres.',
             'duree.required' => 'Veuillez entrer la durée.',
             'duree.regex' => 'La durée doit être en mois.',
+            'duree.max_digits' => 'La durée ne doit pas dépassé 5 chiffres.',
             ]);
             if ($validation->fails()) {
                 return response()->json(['ERREUR' => $validation->errors()], 400);
@@ -145,14 +147,15 @@ class PretController extends Controller
         // le prêt est un objet pratiquement static le nom est le seul paramètre possible de modifié
         if ($request->routeIs('modificationPretApi')) {
             $validation = Validator::make($request->all(), [
-                'id' => 'required',
+                'id' => 'required|regex:/^\d+$/',
                 'nom' => 'required',
                 ], [
                 'id.required' => 'Le prêt est introuvable.',
+                'id.regex' => 'Le id du prêt doit être numérique',
                 'nom.required' => 'Veuillez entrer le nouveau nom du prêt.'
                 ]);
                 if ($validation->fails()) {
-                    return back()->withErrors($validation->errors())->withInput();
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
 
             $contenuDecode = $validation->validated();
