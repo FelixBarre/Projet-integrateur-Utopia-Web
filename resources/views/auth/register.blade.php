@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     <div class="w-1/2 text-left mt-6">
         <h2 class="text-5xl font-bold text-white mx-9">Inscription d'usager</h2>
     </div>
@@ -101,4 +101,4 @@
             <a href="{{ route('accueil') }}"><button class="bouton">Retour à l'accueil</button></a>
         </div>
     </div>
-</x-guest-layout>
+</x-app-layout>
