@@ -32,28 +32,31 @@
                     $envoyeurMessage = false;
                 }
             @endphp
-            <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5">
-                <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
-                <div class="pt-10 text-xl flex justify-between">
-                    <div>
-                        @if ($envoyeurMessage)
-                            {{ __('Vous') }} :
-                        @else
-                            {{ $interlocuteur->prenom }} :
-                        @endif
+            <div class="flex items-center" id="{{ $conversation->id }}">
+                <a href="{{ route('conversation', ['id' => $conversation->id]) }}" class="bouton block p-10 mb-5 grow">
+                    <h3 class="text-3xl">{{ $interlocuteur->prenom }} {{ $interlocuteur->nom }}</h3>
+                    <div class="pt-10 text-xl flex justify-between">
+                        <div>
+                            @if ($envoyeurMessage)
+                                {{ __('Vous') }} :
+                            @else
+                                {{ $interlocuteur->prenom }} :
+                            @endif
 
-                        @if ($dernierMessage->date_heure_supprime)
-                            {{ __('Message supprimé') }}
-                        @else
-                            {{ $dernierMessage->texte }}
-                        @endif
-                    </div>
+                            @if ($dernierMessage->date_heure_supprime)
+                                {{ __('Message supprimé') }}
+                            @else
+                                {{ $dernierMessage->texte }}
+                            @endif
+                        </div>
 
-                    <div>
-                        {{ $dernierMessage->created_at }}
+                        <div>
+                            {{ $dernierMessage->created_at }}
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+                <button class="boutonSupprimerConversation bouton ml-4 mb-5 block">{{ __('Supprimer la conversation') }}</button>
+            </div>
         @endforeach
     </div>
 </x-app-layout>

@@ -244,8 +244,19 @@ class ConversationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Conversation $conversation)
+    public function destroy(Request $request, int $id)
     {
-        //
+        if ($request->routeIs('fermerConversationApi')) {
+            $conversation = Conversation::find($id);
+
+            if (is_null($conversation)) {
+                return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
+            }
+
+            $conversation->ferme = 1;
+            $conversation->save();
+
+            return response()->json(['SUCCÈS' => 'La conversation a bien été supprimée.'], 200);
+        }
     }
 }
