@@ -74,8 +74,10 @@ class TransactionController extends Controller
         if($request->routeIs('newTransactionApi')){
             $validation = Validator::make($request->all(), [
                 'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+
                 'id_compte_envoyeur' => 'required|regex:/^\d+$/',
                 'id_compte_receveur' => 'required|regex:/^\d+$/',
+
 
                 ], [
                 'montant.required' => 'Veuillez entrer un montant valide',
@@ -143,8 +145,10 @@ class TransactionController extends Controller
         elseif($request->routeIs('newVirementApi')){
             $validation = Validator::make($request->all(), [
                 'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+
                 'id_compte_envoyeur' => 'required|regex:/^\d+$/',
                 'id_compte_receveur' => 'required|regex:/^\d+$/'
+
                 ], [
                 'montant.required' => 'Veuillez entrer un montant valide',
                 'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
@@ -408,6 +412,7 @@ class TransactionController extends Controller
                 else
                     return response()->json(['ERREUR' => 'La modification de la transaction a échoué.'], 400);
 
+
         }else if ($request->routeIs('deleteTransactionAp')) {
             if (!Transaction::find($request['id'])) {
                 return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
@@ -430,6 +435,7 @@ class TransactionController extends Controller
                 return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
             } elseif (Transaction::where('id_etat_transaction', 2)
                                 ->orWhere('id_etat_transaction', 3)->find($request['id'])) {
+
                 return response()->json(['ERREUR' => 'Cette transaction à déjà été Annuler.'], 400);
             }
 
