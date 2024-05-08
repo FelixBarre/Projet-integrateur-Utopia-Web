@@ -86,6 +86,7 @@ function pagePret() {
 
     btnRefuser.addEventListener('click', function (e) {
         let confirmation = confirm("Êtes-vous sûr de vouloir continuer ?\nLa demande ne pourra plus être modifiée.");
+
         if (confirmation)
             refuserPret(e);
         else
