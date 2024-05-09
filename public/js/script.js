@@ -656,46 +656,31 @@ async function updatePageProfiles(data, isAdmin) {
         tbody.appendChild(ligne);
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].prenom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].nom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].email);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].telephone);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
 
         form = document.createElement("form");
             form.setAttribute("method", "GET");
