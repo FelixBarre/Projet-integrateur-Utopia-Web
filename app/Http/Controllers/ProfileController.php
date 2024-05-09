@@ -142,9 +142,6 @@ class ProfileController extends Controller
         if ($validation->fails())
             return back()->withErrors($validation->errors())->withInput();
 
-        if ($validation->fails())
-            return back()->withErrors($validation->errors())->withInput();
-
         if ($userSpecific->isDirty('email')) {
             $userSpecific->email_verified_at = null;
         }
