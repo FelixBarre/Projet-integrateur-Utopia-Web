@@ -44,12 +44,17 @@ Route::controller(TransactionController::class)->group(function(){
 });
 
 Route::controller(DemandeController::class)->group(function(){
-    Route::get('/demandes_de_pret', 'index')->name('demandesPretApi')->middleware('auth:sanctum');
-    Route::get('/demande_de_pret', 'show')->name('demandePretApi')->middleware('auth:sanctum');
-    Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi')->middleware('auth:sanctum');
-    Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi')->middleware('auth:sanctum');
-    Route::post('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi')->middleware('auth:sanctum'); //fetch
-    Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi')->middleware('auth:sanctum');
+    Route::get('/demandes_de_pret', 'index')->name('demandesPretApi');
+    Route::get('/demande_de_pret', 'show')->name('demandePretApi');
+    Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi');
+    Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi');
+    Route::post('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi'); //fetch
+    Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi');
+    Route::get('/demandes_de_desactivation', 'index')->name('demandesDesactivationApi');
+    Route::get('/demande_de_desactivation', 'show')->name('demandeDesactivationApi');
+    Route::post('/creation/demande_de_desactivation', 'store')->name('creationDemandeDesactivationApi');
+    Route::put('/modification/demande_de_desactivation', 'update')->name('modificationDemandeDesactivationApi');
+    Route::delete('/annulation/demande_de_desactivation', 'destroy')->name('annulationDemandeDesactivationApi');
 });
 
 Route::controller(MessageController::class)->group(function() {
