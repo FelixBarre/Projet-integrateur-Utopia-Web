@@ -76,11 +76,11 @@ Route::controller(PretController::class)->group(function() {
 });
 
 Route::controller(FactureController::class)->group(function() {
-    Route::get('/facturesApi/{id_fournisseur}', 'index')->name('facturesApi')->middleware('auth:sanctum');
-    Route::get('/factureApi/{id}', 'index')->name('factureApi')->middleware('auth:sanctum');
-    Route::post('/factureApi/new', 'store')->name('newFactureApi')->middleware('auth:sanctum');
-    Route::post('/factureApi/update', 'update')->name('updateFactureApi')->middleware('auth:sanctum');
-    Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi')->middleware('auth:sanctum');
+    Route::get('/facturesApi/{id_fournisseur}', 'index')->name('facturesApi');
+    Route::get('/factureApi/{id}', 'index')->name('factureApi');
+    Route::post('/factureApi/new', 'store')->name('newFactureApi');
+    Route::post('/factureApi/update', 'update')->name('updateFactureApi');
+    Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
 });
 
 Route::controller(CreditController::class)->group(function() {

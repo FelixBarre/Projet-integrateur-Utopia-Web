@@ -21,7 +21,6 @@ async function pageAccueil() {
 
         const selectedValue = this.value;
 
-
         try{
             let response = await fetch("/api/transactions/filter/" + selectedValue , {
                 method: 'GET',
