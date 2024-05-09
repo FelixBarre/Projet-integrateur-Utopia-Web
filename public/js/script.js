@@ -45,35 +45,52 @@ async function pageAccueil() {
                }
             }
 
-            let thead = document.getElementById("transactionTable")
-            let tbody = document.createElement("tbody");
-            let tr = document.createElement("tr");
-            let tdID = document.createElement("td");
-            tdID.textContent="ID";
-            let tdOperation = document.createElement("td");
-            let tdNom = document.createElement("td");
-            let tdEmail = document.createElement("td");
-            let tdDate = document.createElement("td");
-            let tdStatus = document.createElement("td");
 
-            tdID.insertAdjacentElement("beforeend", tr);
-            tdOperation.insertAdjacentElement("beforeend", tr);
-            tdNom.insertAdjacentElement("beforeend", tr);
-            tdEmail.insertAdjacentElement("beforeend", tr);
-            tdDate.insertAdjacentElement("beforeend", tr);
-            tdStatus.insertAdjacentElement("beforeend", tr);
-            tr.insertAdjacentElement("beforeend", tbody);
-            tbody.insertAdjacentHTML("afterend", thead);
 
             transactions.forEach(transaction => {
-                console.log("ID:", transaction.id);
-                console.log("Montant:", transaction.montant);
-                console.log("ID Compte Envoyeur:", transaction.id_compte_envoyeur);
-                console.log("ID Compte Receveur:", transaction.id_compte_receveur);
-                console.log("ID Type Transaction:", transaction.id_type_transaction);
-                console.log("ID Etat Transaction:", transaction.id_etat_transaction);
-                console.log("Date de création:", transaction.created_at);
-                console.log("Date de mise à jour:", transaction.updated_at);
+
+            let tbody = document.getElementById("detailsTransaction");
+
+            let tr = document.createElement("tr")
+            tr.classList.add("w-full");
+
+            let tdID = document.createElement("td");
+            tdID.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdID.textContent = transaction.id;
+
+            let tdOperation = document.createElement("td");
+            tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdOperation.textContent = transaction.montant;
+
+            let tdNom = document.createElement("td");
+            tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            if(transaction.id_compte_envoyeur==null){
+                tdNom.textContent = transaction.id_compte_receveur;
+            }else{
+                tdNom.textContent = transaction.id_compte_envoyeur;
+            }
+
+
+            let tdEmail = document.createElement("td");
+            tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdEmail.textContent = "";
+
+            let tdDate = document.createElement("td");
+            tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdDate.textContent = transaction.created_at;
+
+            let tdStatus = document.createElement("td");
+            tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdStatus.textContent = transaction.id_etat_transaction;
+
+                tr.appendChild(tdID);
+                tr.appendChild(tdOperation);
+                tr.appendChild(tdNom);
+                tr.appendChild(tdEmail);
+                tr.appendChild(tdDate);
+                tr.appendChild(tdStatus);
+                tbody.appendChild(tr);
+
 
             });
 
@@ -218,12 +235,14 @@ function pagePret() {
 function envoyerMessage() {
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let id_message = document.getElementById('id_message');
+    let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
     let action = document.getElementById('action');
 
     boutonActionMessage.innerHTML = 'Envoyer';
     id_message.value = '';
     texte.value = '';
+    pieceJointe.value = '';
     texte.focus();
     action.value = 'POST';
 }
@@ -231,7 +250,7 @@ function envoyerMessage() {
 function modifierMessage(event) {
     let boutonModifierMessage = event.currentTarget;
     let divRow = boutonModifierMessage.parentElement.parentElement;
-    let pMessage = divRow.lastElementChild.lastElementChild;
+    let pMessage = divRow.lastElementChild.lastElementChild.firstElementChild;
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let texte = document.getElementById('texte');
     let action = document.getElementById('action');
@@ -303,7 +322,7 @@ async function getNewMessages() {
 
     if (data['data']) {
         data['data'].forEach((message) => {
-            creerMessage(message.envoyeur.id == id_envoyeur.value, message.texte, message.id);
+            creerMessage(message.envoyeur.id == id_envoyeur.value, message);
         });
     }
     else {
@@ -337,7 +356,7 @@ async function getUpdatedMessages() {
                     divRowToUpdate.remove();
                 }
                 else {
-                    let pMessageToUpdate = divRowToUpdate.lastElementChild.lastElementChild;
+                    let pMessageToUpdate = divRowToUpdate.lastElementChild.lastElementChild.firstElementChild;
                     pMessageToUpdate.innerHTML = message.texte;
                 }
             }
@@ -355,6 +374,7 @@ async function actionMessage(event) {
         event.preventDefault();
     }
 
+    let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
     let id_envoyeur = document.getElementById('id_envoyeur');
     let id_receveur = document.getElementById('id_receveur');
@@ -371,25 +391,28 @@ async function actionMessage(event) {
             return;
         }
 
+        let messageData = new FormData();
+
+        if (pieceJointe.files.length > 0) {
+            messageData.append('pieceJointe', pieceJointe.files[0]);
+        }
+
+        messageData.append('texte', texte.value);
+        messageData.append('id_envoyeur', id_envoyeur.value);
+        messageData.append('id_receveur', id_receveur.value);
+        messageData.append('id_conversation', id_conversation.value);
+
         let response = await fetch('/api/messages', {
             method: 'POST',
-            headers: {
-                'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-                'texte' : texte.value,
-                'id_envoyeur' : id_envoyeur.value,
-                'id_receveur' : id_receveur.value,
-                'id_conversation' : id_conversation.value
-            })
+            body: messageData
         });
 
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, texte.value, data['id']);
+            creerMessage(true, data['message']);
             texte.value = '';
+            pieceJointe.value = '';
         }
         else {
             alertErreurs(data);
@@ -411,7 +434,7 @@ async function actionMessage(event) {
 
         if (data['SUCCÈS']) {
             let divRow = document.getElementById(id_message.value);
-            let pMessage = divRow.lastElementChild.lastElementChild;
+            let pMessage = divRow.lastElementChild.lastElementChild.firstElementChild;
 
             pMessage.innerHTML = texte.value;
 
@@ -446,8 +469,8 @@ async function actionMessage(event) {
     }
 }
 
-function creerMessage(isEnvoyeur, texte, idMessage) {
-    if (document.getElementById(idMessage)) {
+function creerMessage(isEnvoyeur, message) {
+    if (document.getElementById(message.id)) {
         return;
     }
 
@@ -458,7 +481,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     }
 
     let divRow = document.createElement('div');
-    divRow.id = idMessage;
+    divRow.id = message.id;
     divRow.classList.add('flex');
     divRow.classList.add('items-center');
     if (isEnvoyeur) {
@@ -513,23 +536,59 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
 
     divMessage.insertAdjacentElement('afterbegin', pCreatedAt);
 
-    let pMessage = document.createElement('p');
-    pMessage.classList.add('break-words');
+    let divContenuMessage = document.createElement('div');
+    divContenuMessage.classList.add('break-words');
     if (isEnvoyeur) {
-        pMessage.classList.add('bg-[#18B7BE]');
+        divContenuMessage.classList.add('bg-[#18B7BE]');
     }
     else {
-        pMessage.classList.add('bg-[#178CA4]');
+        divContenuMessage.classList.add('bg-[#178CA4]');
     }
-    pMessage.classList.add('p-6');
-    pMessage.classList.add('rounded-xl');
-    pMessage.classList.add('text-white');
-    pMessage.classList.add('text-justify');
-    pMessage.innerHTML = texte;
+    divContenuMessage.classList.add('p-6');
+    divContenuMessage.classList.add('rounded-xl');
+    divContenuMessage.classList.add('text-white');
+    divContenuMessage.classList.add('text-justify');
 
-    divMessage.insertAdjacentElement('beforeend', pMessage);
+    divMessage.insertAdjacentElement('beforeend', divContenuMessage);
+
+    let pMessage = document.createElement('p');
+    pMessage.innerHTML = message.texte;
+    divContenuMessage.insertAdjacentElement('afterbegin', pMessage);
+
+    if (message.chemin_du_fichier) {
+        divContenuMessage.insertAdjacentElement('beforeend', creerPieceJointe(message));
+    }
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+function creerPieceJointe(message) {
+    let nomFichier = message.chemin_du_fichier.split('/').pop();
+    let extension = nomFichier.split('.').pop();
+    let supportedImagesExtensions = [ 'jpg', 'jpeg', 'png' ];
+
+    if (supportedImagesExtensions.includes(extension)) {
+        let imgPieceJointe = document.createElement('img');
+        imgPieceJointe.classList.add('max-h-80');
+        imgPieceJointe.classList.add('mx-auto');
+        imgPieceJointe.src = message.chemin_du_fichier;
+        imgPieceJointe.alt = nomFichier;
+        return imgPieceJointe;
+    }
+    else {
+        let aPieceJointe = document.createElement('a');
+        aPieceJointe.classList.add('block');
+        aPieceJointe.classList.add('bg-white');
+        aPieceJointe.classList.add('hover:bg-slate-100');
+        aPieceJointe.classList.add('text-black');
+        aPieceJointe.classList.add('rounded');
+        aPieceJointe.classList.add('p-4');
+        aPieceJointe.classList.add('mt-2');
+        aPieceJointe.href = message.chemin_du_fichier;
+        aPieceJointe.target = '_blank';
+        aPieceJointe.innerHTML = nomFichier;
+        return aPieceJointe;
+    }
 }
 
 async function filtrerProfils(event) {

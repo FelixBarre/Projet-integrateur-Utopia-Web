@@ -27,6 +27,7 @@ class TransactionController extends Controller
 
         if($request->routeIs('transactionsApi')){
 
+
             if ($transactions->isEmpty())
                 return response()->json(['ERREUR' => 'Aucune opération n\'est liée à ce compte'], 400);
 
@@ -50,9 +51,6 @@ class TransactionController extends Controller
             ]);
 
         }
-
-
-
 
 
 
@@ -91,20 +89,20 @@ class TransactionController extends Controller
                 $contenuDecode = $validation->validated();
 
                 if($contenuDecode['id_compte_envoyeur']==0){
-                    $compteEnvoyeur = 1;
+
+                    $compteEnvoyeur = null;
+
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
-                    $typeTransaction = 2;
+                    $typeTransaction = 1;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);
                     $soldeCompte = $compte->solde;
-                }elseif($contenuDecode['id_compte_receveur']==0 || $contenuDecode['id_compte_receveur']==1){
-                    $compteReceveur= 1;
+                }elseif($contenuDecode['id_compte_receveur']==0 ){
+                    $compteReceveur= null;
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
-                    $typeTransaction = 1;
+                    $typeTransaction = 2;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
                     $soldeCompte = $compte->solde;
                 }
-
-                $compteBank = CompteBancaire::find(1);
 
 
 
@@ -124,14 +122,10 @@ class TransactionController extends Controller
                     ]);
                     if($typeTransaction == 2){
                         $compte->solde -= $contenuDecode['montant'];
-                        $compteBank->solde += $contenuDecode['montant'];
                         $compte->save();
-                        $compteBank->save();
                     }elseif($typeTransaction == 1){
                         $compte->solde += $contenuDecode['montant'];
-                        $compteBank->solde -= $contenuDecode['montant'];
                         $compte->save();
-                        $compteBank->save();
                     }
 
                     return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
@@ -211,7 +205,7 @@ class TransactionController extends Controller
      */
     public function show(Request $request, int $id_type_transaction = null)
     {
-        $id = $request['id_compte_envoyeur'];
+        $id = $request['id_compte'];
         $transaction = Transaction::find($id);
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
         $date_time = Carbon::now()->format('d-M-Y H:i');
@@ -220,7 +214,8 @@ class TransactionController extends Controller
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
             $transaction = Transaction::find($id);
-            $transactions = Transaction::where('id_compte_envoyeur', $id)->orderBy('created_at', 'desc')->get();
+            $transactions = Transaction::where('id_compte_envoyeur', $id)
+                            ->orWhere('id_compte_receveur', $id)->orderBy('created_at', 'desc')->get();
             if(is_null($transaction)){
                 return abort(404);
             }
@@ -370,6 +365,7 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction)
     {
         if($request->routeIs('updateTransactionApi')){
+
             $validation = Validator::make($request->all(), [
                 'id' => 'required',
                 'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
@@ -391,6 +387,8 @@ class TransactionController extends Controller
                 }
 
                 $contenuDecode = $validation->validated();
+
+
 
                 if (!Transaction::find($contenuDecode['id'])) {
                     return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);

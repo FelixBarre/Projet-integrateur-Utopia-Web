@@ -13,8 +13,6 @@
         <p class="mb-3 text-2xl font-bold"><span></span><i class="fas fa-address-card"></i> <span> Gestion de profils</span></p>
         <p><a href="{{ route('profile.edit')}}">Modification des informations personnelles</a></p>
         <p><a href="{{ route('password.change')}}">Changement de son mot de passe</a></p>
-        <p><a href="">Gestion des préférences </a></p>
-
     </div>
 
     <div class="w-1/4 p-3">

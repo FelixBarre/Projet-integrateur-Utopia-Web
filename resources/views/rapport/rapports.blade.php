@@ -28,7 +28,7 @@
                             <td class="border-solid border-2">{{ $rapport->date_fin }}</td>
                             <td class="border-solid border-2">{{ $rapport->date_creation }}</td>
                             <td class="border-solid border-2">{{ $rapport->employe->prenom }} {{ $rapport->employe->nom }}</td>
-                            <td class="border-solid border-2"><a class="bouton" href="{{ $rapport->chemin_du_fichier }}">Voir</a></td>
+                            <td class="border-solid border-2"><a class="bouton" href="{{ url($rapport->chemin_du_fichier) }}">Voir</a></td>
                         </tr>
                     @endforeach
                 </tbody>
