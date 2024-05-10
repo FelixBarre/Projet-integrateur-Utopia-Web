@@ -91,7 +91,6 @@ class TransactionController extends Controller
                 if($contenuDecode['id_compte_envoyeur']==0){
 
                     $compteEnvoyeur = null;
-
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $typeTransaction = 1;
                     $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);
@@ -249,7 +248,8 @@ class TransactionController extends Controller
 
             $idTransaction = $id_type_transaction;
             $employe = Auth::user();
-            $transactions = Transaction::where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
+            $transactions = Transaction::with(['comptes','comptes_bancaire', 'comptes_bancaire_receveur', 'type_transactions', 'etat_transactions'])
+                                        ->where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
             //return view('accueil/accueil', [
             //    'employe'=>$employe,
             //    'transactions'=>$transactions,
