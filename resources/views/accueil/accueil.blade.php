@@ -1,14 +1,4 @@
 <x-app-layout>
-    @if (session('status') === 'profile-updated')
-        <p
-            x-data="{ show: true }"
-            x-show="show"
-            x-transition
-            x-init="setTimeout(() => show = false, 2000)"
-            class="text-sm text-gray-600"
-        >{{ __('Profil sauvegardé.') }}</p>
-    @endif
-
         <div class="flex flex-row"><!-- Premier bloc contenant message, infos et datetime -->
 
                 <div class="w-2/4 text-left">
@@ -40,9 +30,29 @@
                     </div>
                 </div>
             </div>
-
         </div>
+        @endif
 
+        @if (session('status') === 'profile-updated')
+        <div class="flex justify-center w-full"
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition
+            x-init="setTimeout(() => show = false, 2000)">
+            <div class="flex flex-col justify-center w-96">
+                <div class="px-4 py-2 font-bold text-white bg-green-500 rounded-t">Réussite</div>
+                    <div class="px-4 py-3 text-green-700 bg-green-100 border border-t-0 border-green-400 rounded-b">
+                        <p
+                            x-data="{ show: true }"
+                            x-show="show"
+                            x-transition
+                            x-init="setTimeout(() => show = false, 2000)"
+                            class="text-sm text-green-700"
+                        >{{ __('Profil sauvegardé.') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         @endif
 
         <div class="flex flex-row"><!--Section filter -->

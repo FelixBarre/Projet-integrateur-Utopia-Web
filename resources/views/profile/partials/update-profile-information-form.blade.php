@@ -73,16 +73,6 @@
 
         <div class="flex justify-center items-center space-x-4">
             <button class="bouton">Sauvegarder</button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Sauvegardé.') }}</p>
-            @endif
         </div>
 
         <input type="hidden" name="id_user" id="id_user" value="{{$user->id}}">
