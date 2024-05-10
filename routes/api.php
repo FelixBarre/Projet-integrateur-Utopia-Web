@@ -17,6 +17,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('/token', [RegisteredUserController::class, 'show'])->name('token');
+
 Route::middleware('auth:sanctum')->group(function() {
     Route::controller(ProfileController::class)->group(function() {
         Route::get('/profilesApi/{email}', 'getUserByEmail')->name('users.getUsersAPI');
@@ -95,5 +97,3 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::delete('/desactivation/credit', 'destroy')->name('desactivationCreditApi');
     });
 });
-
-Route::post('/token', [RegisteredUserController::class, 'show'])->name('token');
