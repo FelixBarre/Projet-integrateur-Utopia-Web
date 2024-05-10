@@ -49,16 +49,18 @@ class CreditController extends Controller
             $validation = Validator::make($request->all(), [
             'id_user' => 'required|regex:/^\d+$/',
             'nom' => 'required',
-            'limite' => 'required|regex:/^\d+(?:\.\d{2})?$/',
-            'taux_interet' => 'required|regex:/^\d+(?:\.\d{2})?$/',
+            'limite' => 'required|regex:/^\d+(?:\.\d{2})?$/|max_digits:10',
+            'taux_interet' => 'required|regex:/^\d+(?:\.\d{2})?$/|max_digits:3',
             ], [
             'id_user.required' => 'Veuillez entrer le id du user propriétaire du crédit.',
             'id_user.regex' => 'Le id du user doit être numérique.',
             'nom.required' => 'Veuillez entrer le nom du compte crédit.',
             'limite.required' => 'Veuillez entrer la limite du crédit.',
             'limite.regex' => 'La limite doit avoir un format avec deux chiffres après la virgule.',
+            'limite.max_digits' => 'La limite ne doit pas dépasser 10 chiffres.',
             'taux_interet.required' => 'Veuillez inscrire un taux d\'intérêt avec deux chiffres après la virgule.',
             'taux_interet.regex' => 'Le taux d\'intérêt doit être numérique.',
+            'taux_interet.max_digits' => 'Le taux d\'intérêt ne doit pas dépasser 3 chiffres.'
             ]);
             if ($validation->fails()) {
                 return response()->json(['ERREUR' => $validation->errors()], 400);

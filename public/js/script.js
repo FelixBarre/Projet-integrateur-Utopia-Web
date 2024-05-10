@@ -1,11 +1,43 @@
 var date_derniere_update = new Date().toLocaleString('sv-SE');
+if (!localStorage.getItem('authToken')) {
+    localStorage.setItem('authToken', '');
+}
+
+const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
 
 window.onload = function() {
+    authenticateUser();
     pageAccueil();
     pageConversation();
     pageShowProfils();
     pageConversations();
     pagePret();
+}
+
+async function authenticateUser() {
+    if (localStorage.getItem('authToken') == '') {
+        let response = await fetch ('/api/token', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                email: 'test3@user.com',
+                password: 'test3@user.com',
+                token_name: 'TokenAPI'
+            })
+        });
+
+        let data = await response.json();
+
+        if (data['SUCCÈS']) {
+            localStorage.setItem('authToken', data['SUCCÈS'])
+        }
+    } else {
+        return;
+    }
 }
 
 async function pageAccueil() {
@@ -21,13 +53,14 @@ async function pageAccueil() {
 
         const selectedValue = this.value;
 
-
         try{
             let response = await fetch("/api/transactions/filter/" + selectedValue , {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json; charset=utf-8',
-                    'Content-Type': 'application/json; charset=utf-8'
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                    'X-CSRF-TOKEN': csrfToken
                 },
 
             });
@@ -44,8 +77,6 @@ async function pageAccueil() {
                     detailsTransaction.removeChild(detailsTransaction.lastChild);
                }
             }
-
-
 
             transactions.forEach(transaction => {
 
@@ -70,7 +101,6 @@ async function pageAccueil() {
                 tdNom.textContent = transaction.id_compte_envoyeur;
             }
 
-
             let tdEmail = document.createElement("td");
             tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdEmail.textContent = "";
@@ -82,7 +112,6 @@ async function pageAccueil() {
             let tdStatus = document.createElement("td");
             tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdStatus.textContent = transaction.id_etat_transaction;
-
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
@@ -90,19 +119,12 @@ async function pageAccueil() {
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
                 tbody.appendChild(tr);
-
-
             });
-
-
         } catch(error){
             console.log(error);
             alert('une erreur est survenue lors de la requête.');
         }
-
     });
-
-
 
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
@@ -177,7 +199,6 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function pageShowProfils() {
@@ -229,18 +250,19 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function envoyerMessage() {
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let id_message = document.getElementById('id_message');
+    let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
     let action = document.getElementById('action');
 
     boutonActionMessage.innerHTML = 'Envoyer';
     id_message.value = '';
     texte.value = '';
+    pieceJointe.value = '';
     texte.focus();
     action.value = 'POST';
 }
@@ -248,7 +270,7 @@ function envoyerMessage() {
 function modifierMessage(event) {
     let boutonModifierMessage = event.currentTarget;
     let divRow = boutonModifierMessage.parentElement.parentElement;
-    let pMessage = divRow.lastElementChild.lastElementChild;
+    let pMessage = divRow.lastElementChild.lastElementChild.firstElementChild;
     let boutonActionMessage = document.getElementById('boutonActionMessage');
     let texte = document.getElementById('texte');
     let action = document.getElementById('action');
@@ -312,7 +334,9 @@ async function getNewMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -320,7 +344,7 @@ async function getNewMessages() {
 
     if (data['data']) {
         data['data'].forEach((message) => {
-            creerMessage(message.envoyeur.id == id_envoyeur.value, message.texte, message.id);
+            creerMessage(message.envoyeur.id == id_envoyeur.value, message);
         });
     }
     else {
@@ -337,7 +361,9 @@ async function getUpdatedMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -354,7 +380,7 @@ async function getUpdatedMessages() {
                     divRowToUpdate.remove();
                 }
                 else {
-                    let pMessageToUpdate = divRowToUpdate.lastElementChild.lastElementChild;
+                    let pMessageToUpdate = divRowToUpdate.lastElementChild.lastElementChild.firstElementChild;
                     pMessageToUpdate.innerHTML = message.texte;
                 }
             }
@@ -372,6 +398,7 @@ async function actionMessage(event) {
         event.preventDefault();
     }
 
+    let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
     let id_envoyeur = document.getElementById('id_envoyeur');
     let id_receveur = document.getElementById('id_receveur');
@@ -388,25 +415,32 @@ async function actionMessage(event) {
             return;
         }
 
+        let messageData = new FormData();
+
+        if (pieceJointe.files.length > 0) {
+            messageData.append('pieceJointe', pieceJointe.files[0]);
+        }
+
+        messageData.append('texte', texte.value);
+        messageData.append('id_envoyeur', id_envoyeur.value);
+        messageData.append('id_receveur', id_receveur.value);
+        messageData.append('id_conversation', id_conversation.value);
+
         let response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
-                'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             },
-            body: JSON.stringify({
-                'texte' : texte.value,
-                'id_envoyeur' : id_envoyeur.value,
-                'id_receveur' : id_receveur.value,
-                'id_conversation' : id_conversation.value
-            })
+            body: messageData
         });
 
         let data = await response.json();
 
         if (data['SUCCÈS']) {
-            creerMessage(true, texte.value, data['id']);
+            creerMessage(true, data['message']);
             texte.value = '';
+            pieceJointe.value = '';
         }
         else {
             alertErreurs(data);
@@ -417,7 +451,9 @@ async function actionMessage(event) {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({
                 'texte' : texte.value
@@ -428,7 +464,7 @@ async function actionMessage(event) {
 
         if (data['SUCCÈS']) {
             let divRow = document.getElementById(id_message.value);
-            let pMessage = divRow.lastElementChild.lastElementChild;
+            let pMessage = divRow.lastElementChild.lastElementChild.firstElementChild;
 
             pMessage.innerHTML = texte.value;
 
@@ -443,7 +479,9 @@ async function actionMessage(event) {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             }
         });
 
@@ -463,8 +501,8 @@ async function actionMessage(event) {
     }
 }
 
-function creerMessage(isEnvoyeur, texte, idMessage) {
-    if (document.getElementById(idMessage)) {
+function creerMessage(isEnvoyeur, message) {
+    if (document.getElementById(message.id)) {
         return;
     }
 
@@ -475,7 +513,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
     }
 
     let divRow = document.createElement('div');
-    divRow.id = idMessage;
+    divRow.id = message.id;
     divRow.classList.add('flex');
     divRow.classList.add('items-center');
     if (isEnvoyeur) {
@@ -497,7 +535,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
         let imgEdit = document.createElement('img');
         imgEdit.classList.add('h-4');
         imgEdit.classList.add('boutonModifierMessage');
-        imgEdit.src = 'http://localhost:8000/img/edit.svg';
+        imgEdit.src = '../img/edit.svg';
         imgEdit.alt = 'Modifier';
         imgEdit.addEventListener('click', modifierMessage);
 
@@ -506,7 +544,7 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
         let imgDelete = document.createElement('img');
         imgDelete.classList.add('h-4');
         imgDelete.classList.add('boutonSupprimerMessage');
-        imgDelete.src = 'http://localhost:8000/img/delete.svg';
+        imgDelete.src = '../img/delete.svg';
         imgDelete.alt = 'Supprimer';
         imgDelete.addEventListener('click', supprimerMessage);
 
@@ -530,23 +568,59 @@ function creerMessage(isEnvoyeur, texte, idMessage) {
 
     divMessage.insertAdjacentElement('afterbegin', pCreatedAt);
 
-    let pMessage = document.createElement('p');
-    pMessage.classList.add('break-words');
+    let divContenuMessage = document.createElement('div');
+    divContenuMessage.classList.add('break-words');
     if (isEnvoyeur) {
-        pMessage.classList.add('bg-[#18B7BE]');
+        divContenuMessage.classList.add('bg-[#18B7BE]');
     }
     else {
-        pMessage.classList.add('bg-[#178CA4]');
+        divContenuMessage.classList.add('bg-[#178CA4]');
     }
-    pMessage.classList.add('p-6');
-    pMessage.classList.add('rounded-xl');
-    pMessage.classList.add('text-white');
-    pMessage.classList.add('text-justify');
-    pMessage.innerHTML = texte;
+    divContenuMessage.classList.add('p-6');
+    divContenuMessage.classList.add('rounded-xl');
+    divContenuMessage.classList.add('text-white');
+    divContenuMessage.classList.add('text-justify');
 
-    divMessage.insertAdjacentElement('beforeend', pMessage);
+    divMessage.insertAdjacentElement('beforeend', divContenuMessage);
+
+    let pMessage = document.createElement('p');
+    pMessage.innerHTML = message.texte;
+    divContenuMessage.insertAdjacentElement('afterbegin', pMessage);
+
+    if (message.chemin_du_fichier) {
+        divContenuMessage.insertAdjacentElement('beforeend', creerPieceJointe(message));
+    }
 
     divConversation.scrollTop = divConversation.scrollHeight;
+}
+
+function creerPieceJointe(message) {
+    let nomFichier = message.chemin_du_fichier.split('/').pop();
+    let extension = nomFichier.split('.').pop();
+    let supportedImagesExtensions = [ 'jpg', 'jpeg', 'png' ];
+
+    if (supportedImagesExtensions.includes(extension)) {
+        let imgPieceJointe = document.createElement('img');
+        imgPieceJointe.classList.add('max-h-80');
+        imgPieceJointe.classList.add('mx-auto');
+        imgPieceJointe.src = message.chemin_du_fichier;
+        imgPieceJointe.alt = nomFichier;
+        return imgPieceJointe;
+    }
+    else {
+        let aPieceJointe = document.createElement('a');
+        aPieceJointe.classList.add('block');
+        aPieceJointe.classList.add('bg-white');
+        aPieceJointe.classList.add('hover:bg-slate-100');
+        aPieceJointe.classList.add('text-black');
+        aPieceJointe.classList.add('rounded');
+        aPieceJointe.classList.add('p-4');
+        aPieceJointe.classList.add('mt-2');
+        aPieceJointe.href = message.chemin_du_fichier;
+        aPieceJointe.target = '_blank';
+        aPieceJointe.innerHTML = nomFichier;
+        return aPieceJointe;
+    }
 }
 
 async function filtrerProfils(event) {
@@ -579,7 +653,9 @@ async function filtrerProfils(event) {
             method: 'GET',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             }
         });
 
@@ -614,50 +690,35 @@ async function updatePageProfiles(data, isAdmin) {
         tbody.appendChild(ligne);
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].prenom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].nom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].email);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].telephone);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
 
         form = document.createElement("form");
             form.setAttribute("method", "GET");
-            form.setAttribute("action", "http://localhost:8000/profile/user")
+            form.setAttribute("action", "../profile/user")
             input = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("value", data['data']['0'].id);
@@ -689,7 +750,9 @@ async function supprimerConversation(event) {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -714,7 +777,9 @@ async function approuverPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
             'id_demande' : id,
@@ -748,7 +813,9 @@ async function refuserPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
             'id' : id,

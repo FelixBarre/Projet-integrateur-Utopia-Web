@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Http\Resources\MessageResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
@@ -32,11 +33,13 @@ class MessageController extends Controller
     {
         if ($request->routeIs('envoiMessage')) {
             $validation = Validator::make($request->all(), [
+                'pieceJointe' => 'mimes:jpg,jpeg,png,pdf,docx',
                 'texte' => 'required|max:255',
                 'id_envoyeur' => 'required|integer',
                 'id_receveur' => 'required|integer',
                 'id_conversation' => 'required|integer',
             ], [
+                'pieceJointe.mimes' => 'Veuillez entrez une pièce jointe avec une des extensions acceptées : .jpg, .jpeg, .png, .pdf ou .docx.',
                 'texte.required' => 'Veuillez entrer un message.',
                 'texte.max' => 'Votre message ne peut pas dépasser 255 caractères.',
                 'id_envoyeur.required' => 'Veuillez inscrire l\'id de l\'envoyeur.',
@@ -53,19 +56,26 @@ class MessageController extends Controller
 
             $contenuMessage = $validation->validated();
 
+            if ($request->hasFile('pieceJointe')) {
+                $pieceJointe = $request->file('pieceJointe');
+
+                if ($pieceJointe->isValid()) {
+                    $chemin = '/piecesJointes/' . $contenuMessage['id_envoyeur'] . '/' . $pieceJointe->getClientOriginalName();
+
+                    Storage::put('public' . $chemin, $pieceJointe->get());
+
+                    $contenuMessage['chemin_du_fichier'] = '/storage' . $chemin;
+                }
+            }
+
             try {
-                $message = Message::create([
-                    'texte' => $contenuMessage['texte'],
-                    'id_envoyeur' => $contenuMessage['id_envoyeur'],
-                    'id_receveur' => $contenuMessage['id_receveur'],
-                    'id_conversation' => $contenuMessage['id_conversation']
-                ]);
+                $message = Message::create($contenuMessage);
             } catch (QueryException $erreur) {
                 report($erreur);
                 return response()->json(['ERREUR' => 'Le message n\'a pas été créé.'], 500);
             }
 
-            return response()->json(['SUCCÈS' => 'Le message a bien été créé.', 'id' => $message->id ], 200);
+            return response()->json(['SUCCÈS' => 'Le message a bien été créé.', 'message' => new MessageResource($message) ], 200);
         }
     }
 
