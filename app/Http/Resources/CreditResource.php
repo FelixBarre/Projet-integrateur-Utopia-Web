@@ -18,6 +18,7 @@ class CreditResource extends JsonResource
             'id' => $this->id,
             'nom' => $this->nom,
             'limite' => $this->limite,
+            'est_valide' => $this->est_valide,
             'id_compte' => $this->id_compte,
         ];
     }
