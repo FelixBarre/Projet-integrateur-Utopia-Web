@@ -1,11 +1,43 @@
 var date_derniere_update = new Date().toLocaleString('sv-SE');
+if (!localStorage.getItem('authToken')) {
+    localStorage.setItem('authToken', '');
+}
+
+const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
 
 window.onload = function() {
+    authenticateUser();
     pageAccueil();
     pageConversation();
     pageShowProfils();
     pageConversations();
     pagePret();
+}
+
+async function authenticateUser() {
+    if (localStorage.getItem('authToken') == '') {
+        let response = await fetch ('/api/token', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+                'Content-Type': 'application/json; charset=utf-8',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                email: 'test3@user.com',
+                password: 'test3@user.com',
+                token_name: 'TokenAPI'
+            })
+        });
+
+        let data = await response.json();
+
+        if (data['SUCCÈS']) {
+            localStorage.setItem('authToken', data['SUCCÈS'])
+        }
+    } else {
+        return;
+    }
 }
 
 async function pageAccueil() {
@@ -26,7 +58,9 @@ async function pageAccueil() {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json; charset=utf-8',
-                    'Content-Type': 'application/json; charset=utf-8'
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                    'X-CSRF-TOKEN': csrfToken
                 },
 
             });
@@ -43,8 +77,6 @@ async function pageAccueil() {
                     detailsTransaction.removeChild(detailsTransaction.lastChild);
                }
             }
-
-
 
             transactions.forEach(transaction => {
 
@@ -69,7 +101,6 @@ async function pageAccueil() {
                 tdNom.textContent = transaction.id_compte_envoyeur;
             }
 
-
             let tdEmail = document.createElement("td");
             tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdEmail.textContent = "";
@@ -81,7 +112,6 @@ async function pageAccueil() {
             let tdStatus = document.createElement("td");
             tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdStatus.textContent = transaction.id_etat_transaction;
-
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
@@ -89,19 +119,12 @@ async function pageAccueil() {
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
                 tbody.appendChild(tr);
-
-
             });
-
-
         } catch(error){
             console.log(error);
             alert('une erreur est survenue lors de la requête.');
         }
-
     });
-
-
 
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
@@ -176,7 +199,6 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function pageShowProfils() {
@@ -228,7 +250,6 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function envoyerMessage() {
@@ -313,7 +334,9 @@ async function getNewMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -338,7 +361,9 @@ async function getUpdatedMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -403,6 +428,10 @@ async function actionMessage(event) {
 
         let response = await fetch('/api/messages', {
             method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
+            },
             body: messageData
         });
 
@@ -422,7 +451,9 @@ async function actionMessage(event) {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({
                 'texte' : texte.value
@@ -448,7 +479,9 @@ async function actionMessage(event) {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             }
         });
 
@@ -502,7 +535,7 @@ function creerMessage(isEnvoyeur, message) {
         let imgEdit = document.createElement('img');
         imgEdit.classList.add('h-4');
         imgEdit.classList.add('boutonModifierMessage');
-        imgEdit.src = 'http://localhost:8000/img/edit.svg';
+        imgEdit.src = '../img/edit.svg';
         imgEdit.alt = 'Modifier';
         imgEdit.addEventListener('click', modifierMessage);
 
@@ -511,7 +544,7 @@ function creerMessage(isEnvoyeur, message) {
         let imgDelete = document.createElement('img');
         imgDelete.classList.add('h-4');
         imgDelete.classList.add('boutonSupprimerMessage');
-        imgDelete.src = 'http://localhost:8000/img/delete.svg';
+        imgDelete.src = '../img/delete.svg';
         imgDelete.alt = 'Supprimer';
         imgDelete.addEventListener('click', supprimerMessage);
 
@@ -620,7 +653,9 @@ async function filtrerProfils(event) {
             method: 'GET',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'X-CSRF-TOKEN': csrfToken
             }
         });
 
@@ -683,7 +718,7 @@ async function updatePageProfiles(data, isAdmin) {
 
         form = document.createElement("form");
             form.setAttribute("method", "GET");
-            form.setAttribute("action", "http://localhost:8000/profile/user")
+            form.setAttribute("action", "../profile/user")
             input = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("value", data['data']['0'].id);
@@ -715,7 +750,9 @@ async function supprimerConversation(event) {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         }
     });
 
@@ -740,7 +777,9 @@ async function approuverPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
             'id_demande' : id,
@@ -774,7 +813,9 @@ async function refuserPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
             'id' : id,
