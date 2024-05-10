@@ -60,7 +60,7 @@ async function pageAccueil() {
 
             let tdOperation = document.createElement("td");
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdOperation.textContent = transaction.montant;
+            tdOperation.textContent = transaction.type_transactions.label;
 
             let tdNom = document.createElement("td");
             tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
