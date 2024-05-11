@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Conversation;
 use App\Http\Resources\MessageResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -32,20 +34,20 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         if ($request->routeIs('envoiMessage')) {
+            $id_user = Auth::id();
+
+            if (!$id_user) {
+                return response()->json(['ERREUR' => 'Utilisateur non authentifié.'], 400);
+            }
+
             $validation = Validator::make($request->all(), [
                 'pieceJointe' => 'mimes:jpg,jpeg,png,pdf,docx',
                 'texte' => 'required|max:255',
-                'id_envoyeur' => 'required|integer',
-                'id_receveur' => 'required|integer',
                 'id_conversation' => 'required|integer',
             ], [
                 'pieceJointe.mimes' => 'Veuillez entrez une pièce jointe avec une des extensions acceptées : .jpg, .jpeg, .png, .pdf ou .docx.',
                 'texte.required' => 'Veuillez entrer un message.',
                 'texte.max' => 'Votre message ne peut pas dépasser 255 caractères.',
-                'id_envoyeur.required' => 'Veuillez inscrire l\'id de l\'envoyeur.',
-                'id_envoyeur.integer' => 'L\'id de l\'envoyeur doit être un entier.',
-                'id_receveur.required' => 'Veuillez inscrire l\'id du receveur.',
-                'id_receveur.integer' => 'L\'id du receveur doit être un entier.',
                 'id_conversation.required' => 'Veuillez inscrire l\'id de la conversation.',
                 'id_conversation.integer' => 'L\'id de la conversation doit être un entier.',
             ]);
@@ -55,6 +57,33 @@ class MessageController extends Controller
             }
 
             $contenuMessage = $validation->validated();
+
+            $conversation = Conversation::find($contenuMessage['id_conversation']);
+
+            if (!$conversation) {
+                return response()->json(['ERREUR' => 'Cette conversation n\'existe pas.'], 400);
+            }
+
+            if ($conversation->ferme) {
+                return response()->json(['ERREUR' => 'Cette conversation est fermée.'], 400);
+            }
+
+            $interlocuteur = null;
+
+            $premierMessage = Message::where('id_conversation', $conversation->id)->first();
+
+            if ($premierMessage->envoyeur->id == $id_user) {
+                $interlocuteur = $premierMessage->receveur;
+            }
+            else if ($premierMessage->receveur->id == $id_user) {
+                $interlocuteur = $premierMessage->envoyeur;
+            }
+            else {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
+
+            $contenuMessage['id_envoyeur'] = $id_user;
+            $contenuMessage['id_receveur'] = $interlocuteur->id;
 
             if ($request->hasFile('pieceJointe')) {
                 $pieceJointe = $request->file('pieceJointe');
@@ -81,6 +110,23 @@ class MessageController extends Controller
 
     public function getNewMessages(Request $request, int $id_conversation, int $id_dernier_message) {
         if ($request->routeIs('getNewMessages')) {
+            $id_user = Auth::id();
+            $conversation = Conversation::find($id_conversation);
+
+            if (!$conversation) {
+                return response()->json(['ERREUR' => 'Cette conversation n\'existe pas.'], 400);
+            }
+
+            if ($conversation->ferme) {
+                return response()->json(['ERREUR' => 'Cette conversation est fermée.'], 400);
+            }
+
+            $premierMessage = Message::where('id_conversation', $id_conversation)->first();
+
+            if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
+
             return MessageResource::collection(Message::where('id_conversation', $id_conversation)
                 ->where('id', '>', $id_dernier_message)
                 ->whereNull('date_heure_supprime')
@@ -90,6 +136,23 @@ class MessageController extends Controller
 
     public function getUpdatedMessages(Request $request, int $id_conversation, String $date_derniere_update) {
         if ($request->routeIs('getUpdatedMessages')) {
+            $id_user = Auth::id();
+            $conversation = Conversation::find($id_conversation);
+
+            if (!$conversation) {
+                return response()->json(['ERREUR' => 'Cette conversation n\'existe pas.'], 400);
+            }
+
+            if ($conversation->ferme) {
+                return response()->json(['ERREUR' => 'Cette conversation est fermée.'], 400);
+            }
+
+            $premierMessage = Message::where('id_conversation', $id_conversation)->first();
+
+            if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
+
             return MessageResource::collection(Message::where('id_conversation', $id_conversation)
                 ->where('updated_at', '>=', $date_derniere_update)
                 ->get());
@@ -137,6 +200,10 @@ class MessageController extends Controller
                 return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
             }
 
+            if ($message->id_envoyeur != Auth::id()) {
+                return response()->json(['ERREUR' => 'Ce message ne vous appartient pas.'], 400);
+            }
+
             $message->texte = $contenuMessage['texte'];
 
             $message->save();
@@ -155,6 +222,10 @@ class MessageController extends Controller
 
             if (is_null($message)) {
                 return response()->json(['ERREUR' => 'Aucun message ne correspond à cet ID.'], 400);
+            }
+
+            if ($message->id_envoyeur != Auth::id()) {
+                return response()->json(['ERREUR' => 'Ce message ne vous appartient pas.'], 400);
             }
 
             $message->date_heure_supprime = now();

@@ -224,12 +224,9 @@ class ConversationController extends Controller
             }
         }
 
-        $premierMessage = null;
+        $premierMessage = Message::where('id_conversation', $conversation->id)->first();
 
-        if (count($conversation->messages()->get()) > 0) {
-            $premierMessage = $conversation->messages()->first();
-        }
-        else {
+        if (!$premierMessage) {
             if ($isApi) {
                 return response()->json(['ERREUR' => 'Cette conversation ne contient aucun message.'], 400);
             }
@@ -306,12 +303,10 @@ class ConversationController extends Controller
             return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
         }
 
-        if (count($conversation->messages()->get()) > 0) {
-            $premierMessage = $conversation->messages()->first();
+        $premierMessage = Message::where('id_conversation', $conversation->id)->first();
 
-            if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
-                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
-            }
+        if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
+            return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
         }
 
         $conversation->ferme = 1;
