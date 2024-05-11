@@ -389,8 +389,6 @@ async function actionMessage(event) {
 
     let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
-    let id_envoyeur = document.getElementById('id_envoyeur');
-    let id_receveur = document.getElementById('id_receveur');
     let id_conversation = document.getElementById('id_conversation');
     let id_message = document.getElementById('id_message');
     let action = document.getElementById('action');
@@ -411,8 +409,6 @@ async function actionMessage(event) {
         }
 
         messageData.append('texte', texte.value);
-        messageData.append('id_envoyeur', id_envoyeur.value);
-        messageData.append('id_receveur', id_receveur.value);
         messageData.append('id_conversation', id_conversation.value);
 
         let response = await fetch('/api/messages', {
