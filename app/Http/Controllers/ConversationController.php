@@ -9,6 +9,7 @@ use App\Http\Resources\ConversationResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ConversationController extends Controller
 {
@@ -33,15 +34,15 @@ class ConversationController extends Controller
             }
         }
 
-        $conversations = Conversation::select('conversations.*')
-            ->distinct()
-            ->where('ferme', 0)
+        $conversations = Conversation::select(DB::raw('conversations.*, MAX(messages.created_at) AS dernier_message'))
             ->join('messages', 'messages.id_conversation', '=', 'conversations.id')
+            ->where('conversations.ferme', 0)
             ->where(function ($query) use ($id_user) {
                    $query->where('messages.id_envoyeur', $id_user)
                    ->orWhere('messages.id_receveur', $id_user);
             })
-            ->orderBy('messages.created_at', 'desc')
+            ->groupBy('conversations.id', 'conversations.ferme')
+            ->orderBy('dernier_message', 'desc')
             ->get();
 
         if ($isApi) {
@@ -228,7 +229,7 @@ class ConversationController extends Controller
 
         if (!$premierMessage) {
             if ($isApi) {
-                return response()->json(['ERREUR' => 'Cette conversation ne contient aucun message.'], 400);
+                return response()->json(['ERREUR' => 'Cette conversation ne contient aucun message.'], 500);
             }
             else {
                 return back()->withErrors(['msg' => 'Cette conversation ne contient aucun message.']);
@@ -305,8 +306,10 @@ class ConversationController extends Controller
 
         $premierMessage = Message::where('id_conversation', $conversation->id)->first();
 
-        if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
-            return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+        if ($premierMessage) {
+            if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
         }
 
         $conversation->ferme = 1;

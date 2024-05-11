@@ -72,6 +72,10 @@ class MessageController extends Controller
 
             $premierMessage = Message::where('id_conversation', $conversation->id)->first();
 
+            if (!$premierMessage) {
+                return response()->json(['ERREUR' => 'Cette conversation est vide! Impossible d\'y envoyer un message.'], 500);
+            }
+
             if ($premierMessage->envoyeur->id == $id_user) {
                 $interlocuteur = $premierMessage->receveur;
             }
@@ -123,6 +127,10 @@ class MessageController extends Controller
 
             $premierMessage = Message::where('id_conversation', $id_conversation)->first();
 
+            if (!$premierMessage) {
+                return response()->json(['ERREUR' => 'Cette conversation ne contient aucun message.'], 500);
+            }
+
             if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
                 return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
             }
@@ -148,6 +156,10 @@ class MessageController extends Controller
             }
 
             $premierMessage = Message::where('id_conversation', $id_conversation)->first();
+
+            if (!$premierMessage) {
+                return response()->json(['ERREUR' => 'Cette conversation ne contient aucun message.'], 500);
+            }
 
             if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
                 return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
