@@ -18,6 +18,6 @@ class Conversation extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(Message::class, 'id_conversation', 'id');
+        return $this->hasMany(Message::class, 'id_conversation', 'id')->whereNull('date_heure_supprime');
     }
 }
