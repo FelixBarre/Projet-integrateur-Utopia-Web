@@ -44,16 +44,6 @@
 
     </div><!-- Fin section filter -->
 
-    <div class="flex flex-row justify-center">
-        <form action="{{route('FournisseurFilter')}}" method="post">
-            @csrf
-            <input type="text" placeholder="Entrez le nom du Fournisseur" name="nom" class="w-96" required>
-            <button class="bouton">Rechercher</button>
-        </form>
-    </div>
-
-
-
     <div class="p-10 mb-12 m_auto"><!-- Bloc du tableau des transactions -->
         <table>
             <thead>

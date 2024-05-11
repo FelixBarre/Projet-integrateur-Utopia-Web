@@ -82,18 +82,7 @@ class TransactionController extends Controller
             ]);
         }
 
-        else if($request->routeIs('factures')){
 
-            $factures = Transaction::where('id_type_transaction', 4)->get();
-
-            return view('facture.factures', [
-                'employe'=>$employe,
-                'date_time'=>$date_time,
-                'factures'=>$factures,
-                'type_transactions'=>TypeTransaction::all()
-
-            ]);
-        }
 
         else{
             return view('accueil/accueil', [
@@ -296,6 +285,7 @@ class TransactionController extends Controller
         else if($request->routeIs('transactionsFilterApi')){
 
             $idTransaction = $id_type_transaction;
+
             $employe = Auth::user();
             $transactions = Transaction::where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
             //return view('accueil/accueil', [
@@ -379,9 +369,14 @@ class TransactionController extends Controller
 
         else if($request->routeIs('transactionsFilterEmail')){
 
+
             $user = User::where('email', $request['email'])->first();
+       
             if($user){
                 $idUser = $user->id;
+                if(!$idUser){
+                    return back()->with('error', 'Aucune transaction n\' a été trouvé.');
+                }
 
             }else{
                 return back()->with('error', 'Aucune transaction n\'est liée à cette adresse.');
@@ -399,6 +394,7 @@ class TransactionController extends Controller
                 'type_transactions'=>TypeTransaction::all(),
                 'date_time'=>$date_time
             ]);
+
         }
 
     }

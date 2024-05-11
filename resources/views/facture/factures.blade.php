@@ -91,60 +91,24 @@
             <table>
                 <thead id="transactionTable">
                     <tr class=" bg-[#178CA4] text-white">
-                    <th class="w-1/6 p-4 m-auto border-2 border-solid">ID_Opération</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">Opération</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">E-mail</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">Date</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">Status</th>
+                    <th class="w-1/6 p-4 m-auto border-2 border-solid">Id facture</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Nom</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Description</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Montant défini</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Jour du mois</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Fournisseur</th>
                     </tr>
                 </thead>
                 <tbody id="detailsTransaction">
-
                     @foreach ($factures as $facture)
-                        @if ($facture->etat_transactions->label == "Terminé")
-                            @php
-                                $class_value = " bg-green-500 text-white";
-                            @endphp
-                        @elseif ($facture->etat_transactions->label == "Annulé")
-                            @php
-                                $class_value = " bg-red-500 text-white";
-                            @endphp
-                        @else
-                            @php
-                            $class_value = "bg-white";
-                            @endphp
-                        @endif
-                    <tr">
-
-                    <td id="transactionId" class="p-5 m-auto text-center bg-white border-2 border-solid">{{$facture->id}}</td>
-                    <td id="transactionLabel"  class="m-auto text-center bg-white border-2 border-solid">{{$facture->type_transactions->label}}</td>
-                    <td id="transactionNom" class="m-auto text-center bg-white border-2 border-solid">
-                        @if ($facture->id_compte_envoyeur==null)
-                            {{$facture->comptes_bancaire_receveur->comptes->nom}}
-                            {{$id_compte = $facture->id_compte_receveur}}
-                        @else
-                            {{ $facture->comptes_bancaire->comptes->nom}}
-                            {{$id_compte = $facture->id_compte_envoyeur}}
-                        @endif
-
-
-                    </td>
                     <td id="transactionEmail" class="m-auto text-center bg-white border-2 border-solid">
-                        @if ($facture->id_compte_envoyeur==null)
-                            {{$facture->comptes_bancaire_receveur->comptes->email}}
-                        @else
-                            {{ $facture->comptes_bancaire->comptes->email }}
-                        @endif
-
+                       {{facture->id}}
                     </td>
-                    <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$facture->created_at->format('d-M-Y')}}</td>
-                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$facture->etat_transactions->label}}</td>
-
-                            <td id="transactionVoir" class="m-auto text-center border-none">
-                                <a href="{{ route('transactions', ['id_compte_envoyeur' => $id_compte]) }}" class="bouton">Voir</a>
-                            </td>
-
+                    <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$facture->nom}}</td>
+                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$facture->description}}</td>
+                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$facture->montant_defini}}</td>
+                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$facture->jour_du_mois}}</td>
+                    <td id="transactionEtat" class="m-auto text-center border-2 border-solid {{$class_value}}">{{$facture->fournisseurs->nom}}</td>
                     </tr>
                     @endforeach
 

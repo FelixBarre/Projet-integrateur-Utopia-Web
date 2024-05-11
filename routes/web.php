@@ -16,7 +16,9 @@ use App\Models\TypeTransaction;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\FournisseurController;
+use App\Models\Facture;
 use App\Models\Fournisseur;
 
 Route::get('/', function () {
@@ -47,16 +49,20 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('/transaction/{id_transaction}', 'show')->name('transaction');
         Route::get('/accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
         Route::get('/transaction/view/{id}', 'show')->name('transactionView');
-        Route::post('/transactions/filter/user/', 'show')->name('transactionsFilterUser');
-        Route::post('/transactions/filter/date', 'show')->name('transactionsFilterDate');
-        Route::post('/transactions/filter/date/user', 'show')->name('transactionsFilterDateUser');
-        Route::post('/filter/email', 'show')->name('transactionsFilterEmail');
+        Route::post('/user', 'show')->name('transactionsFilterUser');
+        Route::post('/date', 'show')->name('transactionsFilterDate');
+        Route::post('date-user', 'show')->name('transactionsFilterDateUser');
         Route::get('/depots', 'index')->name('depots');
         Route::get('/retraits', 'index')->name('retraits');
         Route::get('/virements', 'index')->name('virements');
-        Route::get('/factures', 'index')->name('factures');
-
+        Route::post('/email', 'show')->name('transactionsFilterEmail');
     });
+
+    Route::controller(FactureController::class)->group(function(){
+        Route::get('/factures', 'index')->name('factures');
+    });
+
+
 
     Route::controller(RapportController::class)->group(function(){
         Route::get('rapports', 'index')->name('rapports');

@@ -34,6 +34,13 @@ function getCookie(cname) {
 }
 
 async function pageAccueil() {
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        return date.toLocaleDateString('fr-CA', options);
+    }
+
     let formSelect = document.getElementById('formSelect');
 
     if(!formSelect) {
@@ -84,31 +91,56 @@ async function pageAccueil() {
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdOperation.textContent = transaction.type_transactions.label;
 
+            let idCompte;
+
+
             let tdNom = document.createElement("td");
             tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             if(transaction.id_compte_envoyeur==null){
-                tdNom.textContent = transaction.id_compte_receveur;
+                idCompte = transaction.id_compte_receveur.id;
+                tdNom.textContent = transaction.id_compte_receveur.nom;
+
             }else{
-                tdNom.textContent = transaction.comptes_bancaire.nom;
+                idCompte = transaction.id_compte_envoyeur.id;
+                tdNom.textContent = transaction.id_compte_envoyeur.nom;
             }
+
 
             let tdEmail = document.createElement("td");
             tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdEmail.textContent = transaction.email;
+            if(transaction.id_compte_envoyeur==null){
+                tdEmail.textContent = transaction.email_compte_receveur;
+
+            }else{
+                tdEmail.textContent = transaction.email_compte_envoyeur;
+
+            }
+
 
             let tdDate = document.createElement("td");
             tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdDate.textContent = transaction.created_at;
+            tdDate.textContent = formatDate(transaction.created_at);
 
             let tdStatus = document.createElement("td");
             tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdStatus.textContent = transaction.id_etat_transaction;
+
+            let tdButton = document.createElement("td");
+            tdButton.classList.add("m-auto", "text-center", "border-none");
+
+            let a = document.createElement("a");
+            a.classList.add("bouton");
+            a.textContent = "Voir";
+            a.setAttribute("href", "transactions/" +idCompte);
+
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
                 tr.appendChild(tdEmail);
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
+                tdButton.appendChild(a);
+                tr.appendChild(tdButton);
                 tbody.appendChild(tr);
             });
         } catch(error){
@@ -117,6 +149,10 @@ async function pageAccueil() {
         }
     });
 
+    //Section recherche par email
+
+
+    //section pour la recherche par date
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
     let dateFin = document.getElementById("date_fin");
