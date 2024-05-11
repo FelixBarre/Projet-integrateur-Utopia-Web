@@ -98,12 +98,12 @@ async function pageAccueil() {
             if(transaction.id_compte_envoyeur==null){
                 tdNom.textContent = transaction.id_compte_receveur;
             }else{
-                tdNom.textContent = transaction.id_compte_envoyeur;
+                tdNom.textContent = transaction.comptes_bancaire.nom;
             }
 
             let tdEmail = document.createElement("td");
             tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdEmail.textContent = "";
+            tdEmail.textContent = transaction.email;
 
             let tdDate = document.createElement("td");
             tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");

@@ -44,14 +44,18 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::controller(TransactionController::class)->group(function(){
-        Route::get('transactions/{id_compte_envoyeur}', 'show')->name('transactions');
-        Route::get('transaction/{id_transaction}', 'show')->name('transaction');
-        Route::get('accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
-        Route::get('transaction/view/{id}', 'show')->name('transactionView');
-        Route::post('transactions/filter/user/', 'show')->name('transactionsFilterUser');
-        Route::post('transactions/filter/date', 'show')->name('transactionsFilterDate');
-        Route::post('transactions/filter/date/user', 'show')->name('transactionsFilterDateUser');
-        Route::post('transactions/filter/email', 'show')->name('transactionsFilterEmail');
+        Route::get('/transactions/{id_compte_envoyeur}', 'show')->name('transactions');
+        Route::get('/transaction/{id_transaction}', 'show')->name('transaction');
+        Route::get('/accueil', 'index')->middleware(['auth', 'verified'])->name('accueil');
+        Route::get('/transaction/view/{id}', 'show')->name('transactionView');
+        Route::post('/transactions/filter/user/', 'show')->name('transactionsFilterUser');
+        Route::post('/transactions/filter/date', 'show')->name('transactionsFilterDate');
+        Route::post('/transactions/filter/date/user', 'show')->name('transactionsFilterDateUser');
+        Route::post('/filter/email', 'show')->name('transactionsFilterEmail');
+        Route::get('/depots', 'index')->name('depots');
+        Route::get('/retraits', 'index')->name('retraits');
+        Route::get('/virements', 'index')->name('virements');
+        Route::get('/factures', 'index')->name('factures');
 
     });
 
