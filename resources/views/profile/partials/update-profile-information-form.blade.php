@@ -23,38 +23,32 @@
             <!-- Prenom -->
             <div>
                 <x-text-input id="prenom" class="block mt-1 w-full text-center" type="text" name="prenom" :value="old('prenom', $user->prenom)" required autofocus autocomplete="prenom"/>
-                <x-input-error :messages="$errors->get('prenom')" class="mt-2" />
             </div>
 
 
             <!-- Nom -->
             <div>
                 <x-text-input id="nom" class="block mt-1 w-full text-center" type="text" name="nom" :value="old('nom', $user->nom)" required autofocus autocomplete="nom" placeholder="Nom"/>
-                <x-input-error :messages="$errors->get('nom')" class="mt-2" />
             </div>
         </div>
 
         <!-- Telephone -->
         <div class="flex justify-center">
             <x-text-input id="telephone" class="block mt-1 w-2/5 text-center" type="text" name="telephone" :value="old('telephone', $user->telephone)" required autofocus autocomplete="telephone" />
-            <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
         </div>
 
         <!-- Adresse -->
         <div class="flex flex-wrap justify-center space-x-5 max-w-full">
             <div class="w-1/6">
                 <x-text-input id="appt" class="block mt-1 w-full" type="text" name="appt" :value="old('appt', $user->no_porte)" autofocus autocomplete="appt" placeholder="No. Appt" />
-                <x-input-error :messages="$errors->get('appt')" class="mt-2" />
             </div>
 
             <div class="w-1/6">
                 <x-text-input id="noCivique" class="block mt-1 w-full" type="text" name="noCivique" :value="old('noCivique', $user->no_civique)" required autofocus autocomplete="noCivique" />
-                <x-input-error :messages="$errors->get('noCivique')" class="mt-2" />
             </div>
 
             <div class="w-1/5">
                 <x-text-input id="rue" class="block mt-1 w-full" type="text" name="rue" :value="old('rue', $user->rue)" required autofocus autocomplete="rue" />
-                <x-input-error :messages="$errors->get('rue')" class="mt-2" />
             </div>
 
             <div class="flex justify-center space-x-5 w-full">
@@ -72,7 +66,6 @@
 
                 <div class = "mt-4 1/5">
                     <x-text-input id="codePostal" class="block mt-1 w-full" type="text" name="codePostal" :value="old('codePostal', $user->code_postal)" required autofocus autocomplete="codePostal" />
-                    <x-input-error :messages="$errors->get('codePostal')" class="mt-2" />
                 </div>
             </div>
         </div>
@@ -80,16 +73,6 @@
 
         <div class="flex justify-center items-center space-x-4">
             <button class="bouton">Sauvegarder</button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Sauvegardé.') }}</p>
-            @endif
         </div>
 
         <input type="hidden" name="id_user" id="id_user" value="{{$user->id}}">

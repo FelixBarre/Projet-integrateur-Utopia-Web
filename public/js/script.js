@@ -1,11 +1,36 @@
 var date_derniere_update = new Date().toLocaleString('sv-SE');
 
 window.onload = function() {
+    authenticateUser();
     pageAccueil();
     pageConversation();
     pageShowProfils();
     pageConversations();
     pagePret();
+}
+
+async function authenticateUser() {
+    if (getCookie('TokenAPI') == '') {
+        location.href = '/logout';
+    } else {
+        return;
+    }
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 async function pageAccueil() {
@@ -21,15 +46,14 @@ async function pageAccueil() {
 
         const selectedValue = this.value;
 
-
         try{
             let response = await fetch("/api/transactions/filter/" + selectedValue , {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json; charset=utf-8',
-                    'Content-Type': 'application/json; charset=utf-8'
-                },
-
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Authorization': `Bearer ${getCookie('TokenAPI')}`
+                }
             });
 
             if(!response.ok){
@@ -45,8 +69,6 @@ async function pageAccueil() {
                }
             }
 
-
-
             transactions.forEach(transaction => {
 
             let tbody = document.getElementById("detailsTransaction");
@@ -60,7 +82,7 @@ async function pageAccueil() {
 
             let tdOperation = document.createElement("td");
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdOperation.textContent = transaction.montant;
+            tdOperation.textContent = transaction.type_transactions.label;
 
             let tdNom = document.createElement("td");
             tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
@@ -69,7 +91,6 @@ async function pageAccueil() {
             }else{
                 tdNom.textContent = transaction.id_compte_envoyeur;
             }
-
 
             let tdEmail = document.createElement("td");
             tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
@@ -82,7 +103,6 @@ async function pageAccueil() {
             let tdStatus = document.createElement("td");
             tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             tdStatus.textContent = transaction.id_etat_transaction;
-
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
@@ -90,19 +110,12 @@ async function pageAccueil() {
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
                 tbody.appendChild(tr);
-
-
             });
-
-
         } catch(error){
             console.log(error);
             alert('une erreur est survenue lors de la requête.');
         }
-
     });
-
-
 
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
@@ -177,7 +190,6 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function pageShowProfils() {
@@ -229,7 +241,6 @@ function pagePret() {
         else
             return;
     });
-
 }
 
 function envoyerMessage() {
@@ -314,7 +325,8 @@ async function getNewMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -339,7 +351,8 @@ async function getUpdatedMessages() {
         method: 'GET',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -404,6 +417,9 @@ async function actionMessage(event) {
 
         let response = await fetch('/api/messages', {
             method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
+            },
             body: messageData
         });
 
@@ -423,7 +439,8 @@ async function actionMessage(event) {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             },
             body: JSON.stringify({
                 'texte' : texte.value
@@ -449,7 +466,8 @@ async function actionMessage(event) {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             }
         });
 
@@ -503,7 +521,7 @@ function creerMessage(isEnvoyeur, message) {
         let imgEdit = document.createElement('img');
         imgEdit.classList.add('h-4');
         imgEdit.classList.add('boutonModifierMessage');
-        imgEdit.src = 'http://localhost:8000/img/edit.svg';
+        imgEdit.src = '../img/edit.svg';
         imgEdit.alt = 'Modifier';
         imgEdit.addEventListener('click', modifierMessage);
 
@@ -512,7 +530,7 @@ function creerMessage(isEnvoyeur, message) {
         let imgDelete = document.createElement('img');
         imgDelete.classList.add('h-4');
         imgDelete.classList.add('boutonSupprimerMessage');
-        imgDelete.src = 'http://localhost:8000/img/delete.svg';
+        imgDelete.src = '../img/delete.svg';
         imgDelete.alt = 'Supprimer';
         imgDelete.addEventListener('click', supprimerMessage);
 
@@ -621,7 +639,8 @@ async function filtrerProfils(event) {
             method: 'GET',
             headers: {
                 'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             }
         });
 
@@ -656,50 +675,35 @@ async function updatePageProfiles(data, isAdmin) {
         tbody.appendChild(ligne);
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].prenom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].nom);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].email);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
         texteColonne = document.createTextNode(data['data']['0'].telephone);
         colonne.appendChild(texteColonne);
         ligne.appendChild(colonne)
 
         colonne = document.createElement("td");
-        colonne.classList.add("pt-5");
-        colonne.classList.add("pb-5");
-        colonne.classList.add("border-2");
-        colonne.classList.add("border-solid");
+        colonne.classList.add("pt-5", "pb-5", "border-2", "border-solid");
 
         form = document.createElement("form");
             form.setAttribute("method", "GET");
-            form.setAttribute("action", "http://localhost:8000/profile/user")
+            form.setAttribute("action", "../profile/user")
             input = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("value", data['data']['0'].id);
@@ -731,7 +735,8 @@ async function supprimerConversation(event) {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -756,7 +761,8 @@ async function approuverPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         },
         body: JSON.stringify({
             'id_demande' : id,
@@ -790,7 +796,8 @@ async function refuserPret(e) {
         method: 'POST',
         headers: {
             'Accept': 'application/json; charset=utf-8',
-            'Content-Type': 'application/json; charset=utf-8'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         },
         body: JSON.stringify({
             'id' : id,

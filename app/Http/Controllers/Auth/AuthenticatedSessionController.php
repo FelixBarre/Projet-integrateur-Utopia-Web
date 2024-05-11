@@ -28,6 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        setcookie('TokenAPI', auth()->user()->createToken('TokenAPI')->plainTextToken, time() + (86400 * 30));
+
         return redirect()->intended(route('accueil', absolute: false));
     }
 
@@ -41,6 +43,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
+        setcookie('TokenAPI', '', 1);
 
         return redirect('/');
     }
