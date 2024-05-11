@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\FactureResource;
 use App\Models\Facture;
 use App\Models\Fournisseur;
+use App\Models\TypeTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\QueryException;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class FactureController extends Controller
 {
@@ -16,6 +19,8 @@ class FactureController extends Controller
      */
     public function index(Request $request)
     {
+        $date_time = Carbon::now()->format('d-M-Y H:i');
+        $employe =Auth::user();
         $factures = Facture::where('id_fournisseur', $request['id_fournisseur'])->get(); //toutes les factures d'un fournisseur
         $facture = Facture::find($request['id']); //une facture en particulier
 
@@ -26,13 +31,18 @@ class FactureController extends Controller
 
             return FactureResource::collection($factures);
         }
-        else if($request->routeIs('factureApi')){
+        else if($request->routeIs('factures')){
 
+            $factures = Facture::all();
+            print('facture');
 
-            if (empty($facture))
-                return response()->json(['ERREUR' => 'Aucune facture n\'a été trouvé'], 400);
+            return view('facture.factures', [
+                'date_time'=>$date_time,
+                'employe'=>$employe,
+                'factures'=>$factures,
+                'type_transactions'=>TypeTransaction::all()
 
-            return new FactureResource($facture);
+            ]);
         }
     }
 
@@ -49,6 +59,9 @@ class FactureController extends Controller
      */
     public function store(Request $request)
     {
+
+
+
         if($request->routeIs('newFactureApi')){
             $validation = Validator::make($request->all(),[
                 'nom'=>'required',
@@ -100,7 +113,8 @@ class FactureController extends Controller
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée.'], 400);
                 }
 
-        }
+            }
+
     }
 
     /**

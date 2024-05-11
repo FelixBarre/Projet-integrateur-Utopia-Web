@@ -88,9 +88,9 @@
         </div><!-- Fin section filter -->
 
         <div class="flex flex-row justify-center">
-            <form action="{{route('transactionsFilterEmail')}}" method="post">
+            <form method="post" action="{{route('transactionsFilterEmail')}}" id="formulaireEmail">
                 @csrf
-                <input type="email" placeholder="Entrez l'email du client" name="email" class="w-96" required>
+                <input id="valueForm" type="email" placeholder="Entrez l'email du client" name="email" class="w-96" required>
                 <button class="bouton">Rechercher</button>
             </form>
         </div>
@@ -125,7 +125,7 @@
                             $class_value = "bg-white";
                             @endphp
                         @endif
-                    <tr">
+                    <tr>
 
                     <td id="transactionId" class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td id="transactionLabel"  class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>

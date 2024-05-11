@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/transactionApi/update', 'update')->name('updateTransactionApi');
         Route::post('/transactionApi/delete', 'update')->name('deleteTransactionApi');
         Route::get('/transactions/filter/{id_type_transaction}', 'show')->name('transactionsFilterApi');
+
     });
 
     Route::controller(DemandeController::class)->group(function(){

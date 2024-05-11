@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use PhpParser\Node\Stmt\Label;
 
 class TransactionResource extends JsonResource
 {
@@ -14,13 +15,18 @@ class TransactionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+
         return [
             'id' => $this->id,
             'montant' => $this->montant,
-            'id_compte_envoyeur' => $this->id_compte_envoyeur,
-            'id_compte_receveur' => $this->id_compte_receveur,
+            'id_compte_envoyeur' => $this->comptes_bancaire,
+            'id_compte_receveur' => $this->comptes_bancaire_receveur,
+            'email_compte_envoyeur' => $this->comptes_bancaire,
+            'email_compte_receveur' => $this->comptes_bancaire_receveur,
             'id_type_transaction' => $this->id_type_transaction,
-            'id_etat_transaction'=> $this->id_etat_transaction,
+            'type_transactions'=>$this->type_transactions,
+            'id_etat_transaction'=> $this->etat_transactions->label,
             'created_at'=> $this->created_at,
             'updated_at'=> $this->updated_at,
             ];
