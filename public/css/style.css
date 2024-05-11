@@ -22,12 +22,12 @@ form#nouveauRapport label {
     color: white;
 }
 
-#table_demandePret {
+#table_demandePret,  #table_demandeDesac{
     width: 95%;
     text-align: center;
     margin-top: 10px;
 }
 
-#table_demandePret th{
+#table_demandePret th, #table_demandeDesac th{
     width: calc(100% / 8);
 }

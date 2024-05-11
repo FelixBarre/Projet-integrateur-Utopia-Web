@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->boolean('est_valide')->nullable()->default(true);
         });
 
         Schema::table('users', function (Blueprint $table) {

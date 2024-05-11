@@ -74,6 +74,10 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('demandesDePret', 'index')->name('demandesPret');
         Route::get('demandesDePret/filtre', 'index')->name('demandesPretFiltre');
         Route::get('/demande_de_pret', 'show')->name('demandePret');
+        Route::get('demandesDeDesactivation', 'index')->name('demandesDeDesactivation');
+        Route::get('demandesDeDesactivation/filtre', 'index')->name('demandesDeDesactivationFiltre');
+        Route::get('demandeDeDesactivation', 'show')->name('demandeDeDesactivation');
+        Route::post('demandeDeDesactivation/destroy', 'destroy')->name('destroyCompte');
     });
 
     Route::controller(ConversationController::class)->group(function(){

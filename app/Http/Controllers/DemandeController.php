@@ -38,6 +38,23 @@ class DemandeController extends Controller
             return DemandePretResource::collection(Demande::where('id_demandeur', $request['id_user'])->get());
         } elseif ($request->routeIs('demandesDesactivationApi')) {
             return DemandeDesactivationResource::collection(Demande::where('id_type_demande', 2)->get());
+        } elseif ($request->routeIs('demandesDeDesactivation')) {
+            return view('demandeDesactivation/demandesDesactivation', [
+                'demandes' => Demande::where('id_type_demande', 2)->get(),
+                'etats' => EtatDemande::all()
+            ]);
+        } elseif ($request->routeIs('demandesDeDesactivationFiltre')) {
+            if ($request['filtre_demandeDesac'] == "all") {
+                return view('demandeDesactivation/demandesDesactivation', [
+                    'demandes' => Demande::where('id_type_demande', 2)->get(),
+                    'etats' => EtatDemande::all()
+                ]);
+            } else {
+                return view('demandeDesactivation/demandesDesactivation', [
+                    'demandes' => Demande::where('id_type_demande', 2)->where('id_etat_demande', $request['filtre_demandeDesac'])->get(),
+                    'etats' => EtatDemande::all()
+                ]);
+            }
         }
     }
 
@@ -151,6 +168,10 @@ class DemandeController extends Controller
             return response()->json(['ERREUR' => 'Cet demande n\'existe pas ou a été désactivé.'], 400);
 
             return new DemandeDesactivationResource($demande);
+        } elseif ($request->routeIs('demandeDeDesactivation')) {
+            return view('demandeDesactivation/demandeDesactivation', [
+                'demande' => Demande::find($request['id_demande'])
+            ]);
         }
     }
 
@@ -285,6 +306,43 @@ class DemandeController extends Controller
                 return response()->json(['SUCCES' => 'L\'annulation de la demande a bien fonctionné.'], 200);
             else
                 return response()->json(['ERREUR' => 'L\'annulation de la demande a échoué.'], 400);
+        } elseif ($request->routeIs('destroyCompte')) {
+            if ($request['actionDesac'] == "retour") {
+                return view('demandeDesactivation/demandesDesactivation', [
+                    'demandes' => Demande::where('id_type_demande', 2)->get(),
+                    'etats' => EtatDemande::all()
+                ]);
+            } elseif ($request['actionDesac'] == "approuver") {
+                $demande = Demande::find($request['id_demandeDesac']);
+                if (!empty($demande) && $demande->id_etat_demande == 3) {
+                    $user = User::find($demande->id_demandeur);
+                    if (!empty($user) && $user->est_valide == 1) {
+                        $demande->id_etat_demande = 1;
+                        $user->est_valide = 0;
+                        $user->save();
+                        $demande->save();
+                    } else {
+                        session()->flash('erreur', 'Ce user n\'existe plus.');
+                        return redirect('/demandesDeDesactivation');
+                    }
+                } else {
+                    session()->flash('erreur', 'La demande n\'existe pas ou elle a déjà été traitée.');
+                    return redirect('/demandesDeDesactivation');
+                }
+
+                return redirect('/demandesDeDesactivation');
+            } elseif ($request['actionDesac'] == "refuser") {
+                $demande = Demande::find($request['id_demandeDesac']);
+                if ($demande->id_etat_demande == 3) {
+                    $demande->id_etat_demande = 2;
+                    $demande->save();
+
+                    return redirect('/demandesDeDesactivation');
+                } else {
+                    session()->flash('erreur', 'La demande a déjà été traité.');
+                    return redirect('/demandesDeDesactivation');
+                }
+            }
         }
     }
 }

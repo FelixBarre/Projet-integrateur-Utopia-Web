@@ -8,17 +8,7 @@
 
         @foreach ($conversations as $conversation)
             @php
-                $tousMessages = $conversation->messages()->orderBy('created_at', 'desc')->get();
-                $messagesNonSupprimes = $conversation->messages()->orderBy('created_at', 'desc')->whereNull('date_heure_supprime')->get();
-
-                $dernierMessage = null;
-
-                if (count($messagesNonSupprimes) > 0) {
-                    $dernierMessage = $messagesNonSupprimes->first();
-                }
-                else {
-                    $dernierMessage = $tousMessages->first();
-                }
+                $dernierMessage = App\Models\Message::where('id_conversation', $conversation->id)->orderBy('created_at', 'desc')->first();
 
                 $interlocuteur = null;
                 $envoyeurMessage = null;

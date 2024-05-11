@@ -5,8 +5,7 @@
         <p><a href="{{ route('register')}}">Création de comptes</a></p>
         <p><a href="{{ route('users.show')}}">Modification de profil</a></p>
         <p><a href="{{ route('password.request')}}">Changement de mot de passe </a></p>
-        <p><a href="">Consultation des demandes de désactivation de compte </a></p>
-        <p><a href="">Modification des demandes de désactivation de compte </a></p>
+        <p><a href="{{ route('demandesDeDesactivation')}}">Consultation des demandes de désactivation de compte </a></p>
     </div>
 
     <div class="w-1/4 p-3">
