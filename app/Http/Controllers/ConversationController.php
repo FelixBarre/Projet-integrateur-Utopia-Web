@@ -15,13 +15,22 @@ class ConversationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, int $id_user = null)
+    public function index(Request $request)
     {
+        $isApi = $request->routeIs('conversationsApi');
+
+        $id_user = null;
+
         if (Auth::id()) {
             $id_user = Auth::id();
         }
-        else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
+        else {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Utilisateur non authentifié.'], 400);
+            }
+            else {
+                return redirect()->route('login');
+            }
         }
 
         $conversations = Conversation::select('conversations.*')
@@ -35,23 +44,25 @@ class ConversationController extends Controller
             ->orderBy('messages.created_at', 'desc')
             ->get();
 
-        if ($request->routeIs('conversations')) {
+        if ($isApi) {
+            return ConversationResource::collection($conversations);
+        }
+        else {
             return view('messagerie.conversations', [
                 'conversations' => $conversations,
                 'AuthId' => Auth::id()
             ]);
         }
-        else if ($request->routeIs('conversationsApi')) {
-            return ConversationResource::collection($conversations);
-        }
     }
 
-    public function obtenirDestinatairesPossibles(int $id_user = null) {
+    public function obtenirDestinatairesPossibles() {
+        $id_user = null;
+
         if (Auth::id()) {
             $id_user = Auth::id();
         }
-        else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
+        else {
+            return array();
         }
 
         return User::where('id', '!=', $id_user)
@@ -91,15 +102,22 @@ class ConversationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, int $id_user = null)
+    public function store(Request $request)
     {
         $isApi = $request->routeIs('creerConversationApi');
+
+        $id_user = null;
 
         if (Auth::id()) {
             $id_user = Auth::id();
         }
-        else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
+        else {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Utilisateur non authentifié.'], 400);
+            }
+            else {
+                return redirect()->route('login');
+            }
         }
 
         $validation = Validator::make($request->all(), [
@@ -135,7 +153,7 @@ class ConversationController extends Controller
             }
         }
 
-        $destinatairesPossibles = $this->obtenirDestinatairesPossibles($id_user);
+        $destinatairesPossibles = $this->obtenirDestinatairesPossibles();
 
         if (!$destinatairesPossibles->contains('id', $idDestinataire)) {
             if ($isApi) {
@@ -174,11 +192,18 @@ class ConversationController extends Controller
 
         $conversation = Conversation::find($id);
 
+        $id_user = null;
+
         if (Auth::id()) {
             $id_user = Auth::id();
         }
-        else if (!User::find($id_user)) {
-            return response()->json(['ERREUR' => 'Cet ID ne correspond à aucun utilisateur.'], 400);
+        else {
+            if ($isApi) {
+                return response()->json(['ERREUR' => 'Utilisateur non authentifié.'], 400);
+            }
+            else {
+                return redirect()->route('login');
+            }
         }
 
         if (!$conversation) {
@@ -266,17 +291,32 @@ class ConversationController extends Controller
      */
     public function destroy(Request $request, int $id)
     {
-        if ($request->routeIs('fermerConversationApi')) {
-            $conversation = Conversation::find($id);
+        $id_user = null;
 
-            if (is_null($conversation)) {
-                return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
-            }
-
-            $conversation->ferme = 1;
-            $conversation->save();
-
-            return response()->json(['SUCCÈS' => 'La conversation a bien été supprimée.'], 200);
+        if (Auth::id()) {
+            $id_user = Auth::id();
         }
+        else {
+            return response()->json(['ERREUR' => 'Utilisateur non authentifié.'], 400);
+        }
+
+        $conversation = Conversation::find($id);
+
+        if (is_null($conversation)) {
+            return response()->json(['ERREUR' => 'Aucune conversation ne correspond à cet ID.'], 400);
+        }
+
+        if (count($conversation->messages()->get()) > 0) {
+            $premierMessage = $conversation->messages()->first();
+
+            if ($premierMessage->envoyeur->id != $id_user && $premierMessage->receveur->id != $id_user) {
+                return response()->json(['ERREUR' => 'Vous ne faites pas partie de cette conversation.'], 400);
+            }
+        }
+
+        $conversation->ferme = 1;
+        $conversation->save();
+
+        return response()->json(['SUCCÈS' => 'La conversation a bien été supprimée.'], 200);
     }
 }
