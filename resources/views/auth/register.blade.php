@@ -1,4 +1,26 @@
 <x-app-layout>
+    @if (session('status') === 'profile-added')
+    <div class="flex justify-center w-full"
+        x-data="{ show: true }"
+        x-show="show"
+        x-transition
+        x-init="setTimeout(() => show = false, 2000)">
+        <div class="flex flex-col justify-center w-96">
+            <div class="px-4 py-2 font-bold text-white bg-green-500 rounded-t">Réussite</div>
+                <div class="px-4 py-3 text-green-700 bg-green-100 border border-t-0 border-green-400 rounded-b">
+                    <p
+                        x-data="{ show: true }"
+                        x-show="show"
+                        x-transition
+                        x-init="setTimeout(() => show = false, 2000)"
+                        class="text-sm text-green-700"
+                    >{{ __('Profil ajouté.') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="w-1/2 text-left mt-6">
         <h2 class="text-5xl font-bold text-white mx-9">Inscription d'usager</h2>
     </div>

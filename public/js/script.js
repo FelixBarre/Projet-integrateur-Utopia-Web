@@ -1,9 +1,4 @@
 var date_derniere_update = new Date().toLocaleString('sv-SE');
-if (!localStorage.getItem('authToken')) {
-    localStorage.setItem('authToken', '');
-}
-
-const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
 
 window.onload = function() {
     authenticateUser();
@@ -15,29 +10,27 @@ window.onload = function() {
 }
 
 async function authenticateUser() {
-    if (localStorage.getItem('authToken') == '') {
-        let response = await fetch ('/api/token', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json; charset=utf-8',
-                'Content-Type': 'application/json; charset=utf-8',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                email: 'test3@user.com',
-                password: 'test3@user.com',
-                token_name: 'TokenAPI'
-            })
-        });
-
-        let data = await response.json();
-
-        if (data['SUCCÈS']) {
-            localStorage.setItem('authToken', data['SUCCÈS'])
-        }
+    if (getCookie('TokenAPI') == '') {
+        location.href = '/logout';
     } else {
         return;
     }
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 async function pageAccueil() {
@@ -59,10 +52,8 @@ async function pageAccueil() {
                 headers: {
                     'Accept': 'application/json; charset=utf-8',
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                    'X-CSRF-TOKEN': csrfToken
-                },
-
+                    'Authorization': `Bearer ${getCookie('TokenAPI')}`
+                }
             });
 
             if(!response.ok){
@@ -335,8 +326,7 @@ async function getNewMessages() {
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-CSRF-TOKEN': csrfToken
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -362,8 +352,7 @@ async function getUpdatedMessages() {
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-CSRF-TOKEN': csrfToken
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -429,8 +418,7 @@ async function actionMessage(event) {
         let response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'X-CSRF-TOKEN': csrfToken
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             },
             body: messageData
         });
@@ -452,8 +440,7 @@ async function actionMessage(event) {
             headers: {
                 'Accept': 'application/json; charset=utf-8',
                 'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'X-CSRF-TOKEN': csrfToken
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             },
             body: JSON.stringify({
                 'texte' : texte.value
@@ -480,8 +467,7 @@ async function actionMessage(event) {
             headers: {
                 'Accept': 'application/json; charset=utf-8',
                 'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'X-CSRF-TOKEN': csrfToken
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             }
         });
 
@@ -654,8 +640,7 @@ async function filtrerProfils(event) {
             headers: {
                 'Accept': 'application/json; charset=utf-8',
                 'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'X-CSRF-TOKEN': csrfToken
+                'Authorization': `Bearer ${getCookie('TokenAPI')}`
             }
         });
 
@@ -751,8 +736,7 @@ async function supprimerConversation(event) {
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-CSRF-TOKEN': csrfToken
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         }
     });
 
@@ -778,8 +762,7 @@ async function approuverPret(e) {
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-CSRF-TOKEN': csrfToken
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         },
         body: JSON.stringify({
             'id_demande' : id,
@@ -814,8 +797,7 @@ async function refuserPret(e) {
         headers: {
             'Accept': 'application/json; charset=utf-8',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'X-CSRF-TOKEN': csrfToken
+            'Authorization': `Bearer ${getCookie('TokenAPI')}`
         },
         body: JSON.stringify({
             'id' : id,
