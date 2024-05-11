@@ -6,9 +6,6 @@
 
         <div id="divConversation" class="bg-[#F9F7F0] overflow-y-scroll p-5 h-[70vh] rounded-3xl border border-solid border-[#178CA4] border-4">
             @foreach ($conversation->messages as $message)
-                @if ($message->date_heure_supprime)
-                    @continue
-                @endif
                 @php
                     $isEnvoyeur = $message->envoyeur->id == $AuthId;
                 @endphp
