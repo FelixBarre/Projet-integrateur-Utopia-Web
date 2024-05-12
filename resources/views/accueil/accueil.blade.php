@@ -50,7 +50,7 @@
                 <p class="my-5 mx-9">
                     <label for="filter" class="text-lg text-white">Trier par </label>
                     <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
-                        <option value="none" id="optionValue">Sélectionner</option>
+                        <option value="10" id="optionValue">selectionner</option>
                         @foreach ($type_transactions as $type_transaction)
                         <option value="{{$type_transaction->id}}" id="optionValue">{{$type_transaction->label}}</option>
                         @endforeach
@@ -93,7 +93,7 @@
                     <th class="w-1/6 p-4 m-auto border-2 border-solid">ID_Opération</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Opération</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">E-mail</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Montant</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Date</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Status</th>
                     </tr>
@@ -130,11 +130,9 @@
 
                     </td>
                     <td id="transactionEmail" class="m-auto text-center bg-white border-2 border-solid">
-                        @if ($transaction->id_compte_envoyeur==null)
-                            {{$transaction->comptes_bancaire_receveur->comptes->email}}
-                        @else
-                            {{ $transaction->comptes_bancaire->comptes->email }}
-                        @endif
+
+                            {{ $transaction->montant }} $
+
 
                     </td>
                     <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>
