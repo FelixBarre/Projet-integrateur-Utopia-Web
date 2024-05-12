@@ -49,11 +49,16 @@ async function pageAccueil() {
 
     let selectValue = document.getElementById('selectValue');
 
-    selectValue.addEventListener('change', async function(){
+    selectValue.addEventListener('change', async function(e){
 
         const selectedValue = this.value;
 
+        if(selectedValue.value==10){
+            e.preventDefault();
+        }
+
         try{
+
             let response = await fetch("/api/transactions/filter/" + selectedValue , {
                 method: 'GET',
                 headers: {
@@ -78,6 +83,16 @@ async function pageAccueil() {
 
             transactions.forEach(transaction => {
 
+                let classEtatTransaction;
+
+                if(transaction.id_etat_transaction=="Terminé"){
+                    classEtatTransaction = "bg-green-500";
+                }else if(transaction.id_etat_transaction=="Annulé"){
+                    classEtatTransaction = "bg-red-500";
+                }else{
+                    classEtatTransaction= "bg-white";
+                }
+
             let tbody = document.getElementById("detailsTransaction");
 
             let tr = document.createElement("tr")
@@ -89,7 +104,7 @@ async function pageAccueil() {
 
             let tdOperation = document.createElement("td");
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdOperation.textContent = transaction.type_transactions.label;
+            tdOperation.textContent = transaction.type_transactions;
 
             let idCompte;
 
@@ -106,15 +121,9 @@ async function pageAccueil() {
             }
 
 
-            let tdEmail = document.createElement("td");
-            tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            if(transaction.id_compte_envoyeur==null){
-                tdEmail.textContent = transaction.email_compte_receveur;
-
-            }else{
-                tdEmail.textContent = transaction.email_compte_envoyeur;
-
-            }
+            let tdMontant = document.createElement("td");
+            tdMontant.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdMontant.textContent = transaction.montant +" $";
 
 
             let tdDate = document.createElement("td");
@@ -122,7 +131,7 @@ async function pageAccueil() {
             tdDate.textContent = formatDate(transaction.created_at);
 
             let tdStatus = document.createElement("td");
-            tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdStatus.classList.add("border-2", "border-solid", "p-5", "m-auto", "text-center", classEtatTransaction);
             tdStatus.textContent = transaction.id_etat_transaction;
 
             let tdButton = document.createElement("td");
@@ -136,7 +145,7 @@ async function pageAccueil() {
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
-                tr.appendChild(tdEmail);
+                tr.appendChild(tdMontant);
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
                 tdButton.appendChild(a);
