@@ -19,7 +19,7 @@
         <p><a href="{{ route('depots')}}">Dépôt</a></p>
         <p><a href="{{ route('retraits')}}">Rétraits</a></p>
         <p><a href="{{route('virements')}}">Virement</a></p>
-        <p><a href="{{route('fournisseurs')}}">Fournisseur</a></p>
+        <p><a href="{{route('fournisseurs')}}">Fournisseurs</a></p>
         <p><a href="{{ route('demandesPret')}}">Consulter les demandes de prêt </a></p>
 
     </div>

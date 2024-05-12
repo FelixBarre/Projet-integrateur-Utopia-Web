@@ -88,8 +88,8 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
     });
 
     Route::controller(FournisseurController::class)->group(function(){
-        Route::get('fournisseurs', 'index')->name('fournisseurs');
-        Route::post('fournisseurs/filter', 'show')->name('FournisseurFilter');
+        Route::get('/fournisseurs', 'index')->name('fournisseurs');
+        Route::post('/fournisseur/filter', 'show')->name('fournisseurFilter');
     });
 });
 
