@@ -21,7 +21,8 @@ class FournisseurController extends Controller
         $employe =Auth::user();
 
         if($request->routeIs('fournisseurs')){
-            return view('fournisseur/fournisseurs', ['fournisseurs'=>Fournisseur::all(),
+            return view('fournisseur/fournisseurs', [
+            'fournisseurs'=>Fournisseur::orderBy('nom', 'asc')->get(),
             'employe'=>$employe,
             'date_time'=>$date_time]);
         }
@@ -48,23 +49,30 @@ class FournisseurController extends Controller
      */
     public function show(Request $request)
     {
+
+        if($request->routeIs('fournisseurFilter')){
+
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
-        $fournisseurName = $request['nom'];
-        $fournisseur = Fournisseur::where('nom', $fournisseurName)->get();
+        $fournisseur = Fournisseur::where('nom', $request['fournisseur'])->first();
 
 
-        if($request->routeIs('FournisseurFilter')){
-            if(!$fournisseur)
-                return back()->with('error', 'Fournisseur non trouvé!');
+            if(!$fournisseur){
 
-        return view('fournisseur/fournisseurs', [
-            'fournisseurs'=>$fournisseur,
-            'employe'=>$employe,
-            'date_time'=>$date_time
-        ]);
+                session()->flash('erreur', 'Aucun fournisseur n\'a été trouvé.');
+                return redirect(route('fournisseurs'));
+            }
+
+            $idFournisseur = $fournisseur->id;
+            $fournisseurs = Fournisseur::where('id', $idFournisseur)->get();
+
+            return view('fournisseur.fournisseurs', [
+                'fournisseurs'=>$fournisseurs,
+                'employe'=>$employe,
+                'date_time'=>$date_time]);
 
         }
+
     }
 
     /**
