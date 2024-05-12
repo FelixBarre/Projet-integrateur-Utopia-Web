@@ -369,33 +369,35 @@ class TransactionController extends Controller
 
         else if($request->routeIs('transactionsFilterEmail')){
 
-
             $user = User::where('email', $request['email'])->first();
-       
-            if($user){
-                $idUser = $user->id;
-                if(!$idUser){
-                    return back()->with('error', 'Aucune transaction n\' a été trouvé.');
-                }
+
+            if(!$user){
+
+                session()->flash('erreur', 'Aucune transaction ne correspond à cette adresse.');
+                return redirect(route('accueil'));
 
             }else{
-                return back()->with('error', 'Aucune transaction n\'est liée à cette adresse.');
-            }
 
-            $transactions = Transaction::where('id_compte_envoyeur', $idUser)
-                            ->orwhere('id_compte_envoyeur', $idUser)
+                $idUser = $user->id;
+
+                $transactions = Transaction::where('id_compte_envoyeur', $idUser)
+                            ->orWhere('id_compte_receveur', $idUser)
                             ->orderBy('created_at', 'desc')
                             ->get();
 
-            $employe = Auth::user();
-            return view('accueil/accueil', [
-                'employe'=>$employe,
-                'transactions'=>$transactions,
-                'type_transactions'=>TypeTransaction::all(),
-                'date_time'=>$date_time
-            ]);
+                $employe = Auth::user();
+                return view('accueil.filter', [
+                    'employe'=>$employe,
+                    'transactions'=>$transactions,
+                    'type_transactions'=>TypeTransaction::all(),
+                    'date_time'=>$date_time
+                ]);
+
+            }
+
 
         }
+
 
     }
 

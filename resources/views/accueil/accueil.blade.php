@@ -21,17 +21,6 @@
 
         </div> <!-- Fin du premier bloc -->
 
-        @if (Session::has('error'))
-        <div class="flex justify-center w-full">
-            <div role="alert" class="flex flex-col justify-center w-96">
-                <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
-                    <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
-                        <p>{{ Session::get('error') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
         @if (session('status') === 'profile-updated')
         <div class="flex justify-center w-full"
