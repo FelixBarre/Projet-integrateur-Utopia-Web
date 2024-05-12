@@ -44,10 +44,13 @@ class ProfileController extends Controller
 
                 $userIsAdmin = false;
                 $userSpecificNeedAdmin = false;
+                $userHasNoRights = false;
 
                 foreach($request->user()->roles as $role) {
                     if ($role->role == "Administrateur") {
                         $userIsAdmin = true;
+                    } elseif ($role->role == "Utilisateur") {
+                        $userHasNoRights = true;
                     }
                 }
 
@@ -59,7 +62,7 @@ class ProfileController extends Controller
                     }
                 }
 
-                if ($userIsAdmin || !$userSpecificNeedAdmin) {
+                if ($userIsAdmin || (!$userSpecificNeedAdmin && !$userHasNoRights) || $user[0]->id == $request->user()->id) {
                     return ProfileResource::collection($user);
                 } else {
                     return response()->json(['ERREUR' => 'Vous n\'êtes pas autorisé à voir ce profil'], 400);
@@ -234,6 +237,7 @@ class ProfileController extends Controller
     public function updateApi(Request $request, User $user) {
         $userIsAdmin = false;
         $userSpecificNeedAdmin = false;
+        $userHasNoRights = false;
 
         if ($request->routeIs('updateUserApi')) {
             $validation = Validator::make($request->all(), [
@@ -284,6 +288,8 @@ class ProfileController extends Controller
             foreach($request->user()->roles as $role) {
                 if ($role->role == "Administrateur") {
                     $userIsAdmin = true;
+                } elseif ($role->role == "Utilisateur") {
+                    $userHasNoRights = true;
                 }
             }
 
@@ -295,8 +301,7 @@ class ProfileController extends Controller
                 }
             }
 
-
-            if ($userIsAdmin || !$userSpecificNeedAdmin) {
+            if ($userIsAdmin || (!$userSpecificNeedAdmin && !$userHasNoRights) || $request->user()->id == $user->id) {
                 if (!isset($contenuDeCode['appt'])) {
                     $contenuDeCode['appt'] = null;
                 }
@@ -315,7 +320,7 @@ class ProfileController extends Controller
                 else
                     return response()->json(['ERREUR' => 'La modification du profil a échouée'], 400);
             } else {
-                return response()->json(['ERREUR' => 'Vous n\'êtes pas autorisés à modifier ce profil'], 400);
+                return response()->json(['ERREUR' => 'Vous n\'êtes pas autorisé à modifier ce profil'], 400);
             }
         }
     }
