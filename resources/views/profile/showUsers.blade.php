@@ -3,6 +3,28 @@
         <h2 class="text-6xl font-bold text-white mx-9">Comptes utilisateurs</h2>
     </div>
 
+    @if (session('status') === 'non-authorized')
+    <div class="flex justify-center w-full"
+        x-data="{ show: true }"
+        x-show="show"
+        x-transition
+        x-init="setTimeout(() => show = false, 2000)">
+        <div class="flex flex-col justify-center w-96">
+            <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
+                <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
+                    <p
+                        x-data="{ show: true }"
+                        x-show="show"
+                        x-transition
+                        x-init="setTimeout(() => show = false, 2000)"
+                        class="text-sm text-red-700"
+                    >{{ __('Vous n\'êtes pas autorisés à voir ou modifier ce profil.') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="w-full flex justify-center mt-4 mb-4">
         <input type="text" placeholder="Courriel" name="filtreCourriel" id="filtreCourriel" class="w-1/6">
         <input type="hidden" id="action" value="GET">
