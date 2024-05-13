@@ -56,6 +56,7 @@ Route::middleware(['auth', EnsureUserIsNotUtilisateur::class])->group(function (
         Route::get('/retraits', 'index')->name('retraits');
         Route::get('/virements', 'index')->name('virements');
         Route::post('/accueil/filter', 'show')->name('transactionsFilterEmail');
+        Route::post('/transactions/filter', 'show')->name('transactionsFilter');
     });
 
     Route::controller(FactureController::class)->group(function(){

@@ -243,13 +243,16 @@ class TransactionController extends Controller
     public function show(Request $request, int $id_type_transaction = null)
     {
         $id = $request['id_compte'];
-        $transaction = Transaction::find($id);
+        $transaction = User::find($id);
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
 
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
+            $user = User::find($id);
+            $idUser = $user->id;
+            $compte = User::where('id', $idUser)->first();
             $transaction = Transaction::find($id);
             $transactions = Transaction::where('id_compte_envoyeur', $id)
                             ->orWhere('id_compte_receveur', $id)->orderBy('created_at', 'desc')->get();
@@ -259,6 +262,7 @@ class TransactionController extends Controller
             return view('transaction/transactions', [
                 'employe'=>$employe,
                 'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'compte'=>$compte,
                 'transaction'=> $transaction,
                 'transactions'=>$transactions,
                 'id_compte_envoyeur'=>$id,
@@ -397,6 +401,51 @@ class TransactionController extends Controller
 
 
         }
+
+        else if($request->routeIs('transactionsFilter')){
+            $montant = request('montant');
+            $id = $request['id_compte_user'];
+
+            $user = User::find($id);
+
+            $idUser = $user->id;
+            $compte = User::where('id', $idUser)->first();
+            $transaction = Transaction::find($id);
+
+
+
+            $transactions = Transaction::where('id_compte_envoyeur', $idUser)
+            ->orWhere('id_compte_receveur', $idUser)
+            ->where('montant', '=', $montant) // Condition sur le montant
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            if(!$transactions){
+
+                session()->flash('erreur', 'Aucune transaction ne correspond a ce montant.');
+                return redirect(route('accueil'));
+
+            }else{
+
+                $employe = Auth::user();
+                return view('transaction.filter', [
+                    'employe'=>$employe,
+                    'compte'=>$compte,
+                    'transaction'=>$transaction,
+                    'transactions'=>$transactions,
+                    'type_transactions'=>TypeTransaction::all(),
+                    'date_time'=>$date_time
+                ]);
+
+
+            }
+
+
+
+
+
+        }
+
 
 
     }
