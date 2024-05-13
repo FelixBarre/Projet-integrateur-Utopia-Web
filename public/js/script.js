@@ -34,6 +34,13 @@ function getCookie(cname) {
 }
 
 async function pageAccueil() {
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        return date.toLocaleDateString('fr-CA', options);
+    }
+
     let formSelect = document.getElementById('formSelect');
 
     if(!formSelect) {
@@ -42,11 +49,16 @@ async function pageAccueil() {
 
     let selectValue = document.getElementById('selectValue');
 
-    selectValue.addEventListener('change', async function(){
+    selectValue.addEventListener('change', async function(e){
 
         const selectedValue = this.value;
 
+        if(selectedValue.value==10){
+            e.preventDefault();
+        }
+
         try{
+
             let response = await fetch("/api/transactions/filter/" + selectedValue , {
                 method: 'GET',
                 headers: {
@@ -71,6 +83,16 @@ async function pageAccueil() {
 
             transactions.forEach(transaction => {
 
+                let classEtatTransaction;
+
+                if(transaction.id_etat_transaction=="Terminé"){
+                    classEtatTransaction = "bg-green-500";
+                }else if(transaction.id_etat_transaction=="Annulé"){
+                    classEtatTransaction = "bg-red-500";
+                }else{
+                    classEtatTransaction= "bg-white";
+                }
+
             let tbody = document.getElementById("detailsTransaction");
 
             let tr = document.createElement("tr")
@@ -82,33 +104,52 @@ async function pageAccueil() {
 
             let tdOperation = document.createElement("td");
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdOperation.textContent = transaction.type_transactions.label;
+            tdOperation.textContent = transaction.id_type_transactions;
+
+            let idCompte;
+
 
             let tdNom = document.createElement("td");
             tdNom.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
             if(transaction.id_compte_envoyeur==null){
-                tdNom.textContent = transaction.id_compte_receveur;
+                idCompte = transaction.id_compte_receveur.id;
+                tdNom.textContent = transaction.id_compte_receveur.nom;
+
             }else{
-                tdNom.textContent = transaction.id_compte_envoyeur;
+                idCompte = transaction.id_compte_envoyeur.id;
+                tdNom.textContent = transaction.id_compte_envoyeur.nom;
             }
 
-            let tdEmail = document.createElement("td");
-            tdEmail.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdEmail.textContent = "";
+
+            let tdMontant = document.createElement("td");
+            tdMontant.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdMontant.textContent = transaction.montant +" $";
+
 
             let tdDate = document.createElement("td");
             tdDate.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdDate.textContent = transaction.created_at;
+            tdDate.textContent = formatDate(transaction.created_at);
 
             let tdStatus = document.createElement("td");
-            tdStatus.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
+            tdStatus.classList.add("border-2", "border-solid", "p-5", "m-auto", "text-center", classEtatTransaction);
             tdStatus.textContent = transaction.id_etat_transaction;
+
+            let tdButton = document.createElement("td");
+            tdButton.classList.add("m-auto", "text-center", "border-none");
+
+            let a = document.createElement("a");
+            a.classList.add("bouton");
+            a.textContent = "Voir";
+            a.setAttribute("href", "transactions/" +idCompte);
+
                 tr.appendChild(tdID);
                 tr.appendChild(tdOperation);
                 tr.appendChild(tdNom);
-                tr.appendChild(tdEmail);
+                tr.appendChild(tdMontant);
                 tr.appendChild(tdDate);
                 tr.appendChild(tdStatus);
+                tdButton.appendChild(a);
+                tr.appendChild(tdButton);
                 tbody.appendChild(tr);
             });
         } catch(error){
@@ -117,6 +158,10 @@ async function pageAccueil() {
         }
     });
 
+    //Section recherche par email
+
+
+    //section pour la recherche par date
     let formDate = document.getElementById("formDate");
     let dateDebut = document.getElementById("date_debut");
     let dateFin = document.getElementById("date_fin");
@@ -389,8 +434,6 @@ async function actionMessage(event) {
 
     let pieceJointe = document.getElementById('pieceJointe');
     let texte = document.getElementById('texte');
-    let id_envoyeur = document.getElementById('id_envoyeur');
-    let id_receveur = document.getElementById('id_receveur');
     let id_conversation = document.getElementById('id_conversation');
     let id_message = document.getElementById('id_message');
     let action = document.getElementById('action');
@@ -411,8 +454,6 @@ async function actionMessage(event) {
         }
 
         messageData.append('texte', texte.value);
-        messageData.append('id_envoyeur', id_envoyeur.value);
-        messageData.append('id_receveur', id_receveur.value);
         messageData.append('id_conversation', id_conversation.value);
 
         let response = await fetch('/api/messages', {

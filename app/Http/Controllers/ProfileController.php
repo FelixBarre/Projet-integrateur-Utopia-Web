@@ -14,6 +14,7 @@ use App\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProfileResource;
+use App\Models\RolesUsers;
 
 class ProfileController extends Controller
 {
@@ -32,11 +33,40 @@ class ProfileController extends Controller
         if ($request->routeIs('getUserApi')) {
             if (isset($request['id'])) {
                 $user = User::where('id', $request['id'])->get();
-
                 if ($user->isEmpty())
                     return response()->json(['ERREUR' => 'Aucun utilisateur n\'est lié à cet ID'], 400);
 
-                return ProfileResource::collection($user);
+                $rolesUserSpecific = DB::select('SELECT * FROM roles_users
+                                    WHERE id_user =' . $request['id']);
+
+                $roleEmploye = Role::where('role', "Employé")->get();
+                $roleAdmin = Role::where('role', "Administrateur")->get();
+
+                $userIsAdmin = false;
+                $userSpecificNeedAdmin = false;
+                $userHasNoRights = false;
+
+                foreach($request->user()->roles as $role) {
+                    if ($role->role == "Administrateur") {
+                        $userIsAdmin = true;
+                    } elseif ($role->role == "Utilisateur") {
+                        $userHasNoRights = true;
+                    }
+                }
+
+                if (!$userIsAdmin) {
+                    foreach ($rolesUserSpecific as $role) {
+                        if ($role->id_role == $roleEmploye[0]->id || $role->id_role == $roleAdmin[0]->id) {
+                            $userSpecificNeedAdmin = true;
+                        }
+                    }
+                }
+
+                if ($userIsAdmin || (!$userSpecificNeedAdmin && !$userHasNoRights) || $user[0]->id == $request->user()->id) {
+                    return ProfileResource::collection($user);
+                } else {
+                    return response()->json(['ERREUR' => 'Vous n\'êtes pas autorisé à voir ce profil'], 400);
+                }
             } else {
                 return response()->json(['ERREUR' => 'Veuillez spécifier l\'ID'], 400);
             }
@@ -79,30 +109,73 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function showUser(Request $request): View
+    public function showUser(Request $request)
     {
+        $userIsAdmin = false;
+        $userSpecificNeedAdmin = false;
+
         $userSpecific = User::find($request->id_user);
         $ville = Ville::find($userSpecific->id_ville);
-        return view('profile.show', [
-            'user' => $userSpecific,
-            'ville' => $ville
-        ]);
+
+        foreach(Auth::user()->roles as $role) {
+            if ($role->role == "Administrateur") {
+                $userIsAdmin = true;
+            }
+        }
+
+        if (!$userIsAdmin) {
+            foreach ($userSpecific->roles as $role) {
+                if ($role->role == "Employé" || $role->role == "Administrateur") {
+                    $userSpecificNeedAdmin = true;
+                }
+            }
+        }
+
+        if ($userIsAdmin || !$userSpecificNeedAdmin) {
+            return view('profile.show', [
+                'user' => $userSpecific,
+                'ville' => $ville
+            ]);
+        } else {
+            return Redirect::route('users.show')->with('status', 'non-authorized');
+        }
     }
 
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
+        $userIsAdmin = false;
+        $userSpecificNeedAdmin = false;
+
+        foreach(Auth::user()->roles as $role) {
+            if ($role->role == "Administrateur") {
+                $userIsAdmin = true;
+            }
+        }
+
         $userSpecific = User::find($request->id_user);
         if ($userSpecific) {
+            if (!$userIsAdmin) {
+                foreach ($userSpecific->roles as $role) {
+                    if ($role->role == "Employé" || $role->role == "Administrateur") {
+                        $userSpecificNeedAdmin = true;
+                    }
+                }
+            }
             $userSpecificChecked = $userSpecific;
         } else {
             $userSpecificChecked = $request->user();
         }
-        return view('profile.edit', [
-            'user' => $userSpecificChecked,
-        ]);
+
+        if ($userIsAdmin || !$userSpecificNeedAdmin) {
+            return view('profile.edit', [
+                'user' => $userSpecificChecked,
+            ]);
+        } else {
+            return Redirect::route('users.show')->with('status', 'non-authorized');
+        }
     }
 
     /**
@@ -162,6 +235,10 @@ class ProfileController extends Controller
     }
 
     public function updateApi(Request $request, User $user) {
+        $userIsAdmin = false;
+        $userSpecificNeedAdmin = false;
+        $userHasNoRights = false;
+
         if ($request->routeIs('updateUserApi')) {
             $validation = Validator::make($request->all(), [
                 'id' => 'required',
@@ -207,19 +284,44 @@ class ProfileController extends Controller
             }
 
             $user = User::find($contenuDeCode['id']);
-            $user->prenom = $contenuDeCode['prenom'];
-            $user->nom = $contenuDeCode['nom'];
-            $user->telephone = $contenuDeCode['telephone'];
-            $user->no_civique = $contenuDeCode['noCivique'];
-            $user->rue = $contenuDeCode['rue'];
-            $user->id_ville = $contenuDeCode['id_ville'];
-            $user->code_postal = $contenuDeCode['codePostal'];
-            $user->no_porte = $contenuDeCode['appt'];
 
-            if ($user->save())
-                return response()->json(['SUCCÈS' => 'La modification du profil a bien été effectuée'], 200);
-            else
-                return response()->json(['ERREUR' => 'La modification du profil a échouée'], 400);
+            foreach($request->user()->roles as $role) {
+                if ($role->role == "Administrateur") {
+                    $userIsAdmin = true;
+                } elseif ($role->role == "Utilisateur") {
+                    $userHasNoRights = true;
+                }
+            }
+
+            if (!$userIsAdmin) {
+                foreach ($user->roles as $role) {
+                    if ($role->role == "Employé" || $role->role == "Administrateur") {
+                        $userSpecificNeedAdmin = true;
+                    }
+                }
+            }
+
+            if ($userIsAdmin || (!$userSpecificNeedAdmin && !$userHasNoRights) || $request->user()->id == $user->id) {
+                if (!isset($contenuDeCode['appt'])) {
+                    $contenuDeCode['appt'] = null;
+                }
+
+                $user->prenom = $contenuDeCode['prenom'];
+                $user->nom = $contenuDeCode['nom'];
+                $user->telephone = $contenuDeCode['telephone'];
+                $user->no_civique = $contenuDeCode['noCivique'];
+                $user->rue = $contenuDeCode['rue'];
+                $user->id_ville = $contenuDeCode['id_ville'];
+                $user->code_postal = $contenuDeCode['codePostal'];
+                $user->no_porte = $contenuDeCode['appt'];
+
+                if ($user->save())
+                    return response()->json(['SUCCÈS' => 'La modification du profil a bien été effectuée'], 200);
+                else
+                    return response()->json(['ERREUR' => 'La modification du profil a échouée'], 400);
+            } else {
+                return response()->json(['ERREUR' => 'Vous n\'êtes pas autorisé à modifier ce profil'], 400);
+            }
         }
     }
 

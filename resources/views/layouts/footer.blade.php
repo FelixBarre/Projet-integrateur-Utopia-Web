@@ -16,10 +16,10 @@
 
     <div class="w-1/4 p-3">
         <p class="mb-3 text-2xl font-bold"><span><i class="fas fa-retweet"></i> </span><span>Gestion des opérations</span></p>
-
-        <p><a href="">Virement</a></p>
-        <p><a href="{{ route('accueil')}}">Transactions</a></p>
-        <p><a href="">Facture</a></p>
+        <p><a href="{{ route('depots')}}">Dépôt</a></p>
+        <p><a href="{{ route('retraits')}}">Rétraits</a></p>
+        <p><a href="{{route('virements')}}">Virement</a></p>
+        <p><a href="{{route('fournisseurs')}}">Fournisseurs</a></p>
         <p><a href="{{ route('demandesPret')}}">Consulter les demandes de prêt </a></p>
 
     </div>

@@ -35,12 +35,13 @@ class RegisteredUserController extends Controller
         $validation = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
-            'token_name' => 'required'
+            'token_name' => 'required|max:255'
         ], [
             'email.required' => 'Veuillez entrer l\'adresse courriel',
             'email.email' => 'Le courriel n\'est pas valide.',
             'password.required' => 'Veuillez entrer le mot de passe',
-            'token_name.required' => 'Veuillez inscrire le nom souhaité pour le token'
+            'token_name.required' => 'Veuillez inscrire le nom souhaité pour le token',
+            'token_name.max' => 'Veuillez entrer un maximum de 255 charactères pour le nom de token'
         ]);
 
         if ($validation->fails())

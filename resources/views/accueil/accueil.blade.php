@@ -21,17 +21,6 @@
 
         </div> <!-- Fin du premier bloc -->
 
-        @if (Session::has('error'))
-        <div class="flex justify-center w-full">
-            <div role="alert" class="flex flex-col justify-center w-96">
-                <div class="px-4 py-2 font-bold text-white bg-red-500 rounded-t">Erreur</div>
-                    <div class="px-4 py-3 text-red-700 bg-red-100 border border-t-0 border-red-400 rounded-b">
-                        <p>{{ Session::get('error') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
         @if (session('status') === 'profile-updated')
         <div class="flex justify-center w-full"
@@ -61,7 +50,7 @@
                 <p class="my-5 mx-9">
                     <label for="filter" class="text-lg text-white">Trier par </label>
                     <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
-                        <option value="none" id="optionValue">Sélectionner</option>
+                        <option value="10" id="optionValue">selectionner</option>
                         @foreach ($type_transactions as $type_transaction)
                         <option value="{{$type_transaction->id}}" id="optionValue">{{$type_transaction->label}}</option>
                         @endforeach
@@ -88,9 +77,9 @@
         </div><!-- Fin section filter -->
 
         <div class="flex flex-row justify-center">
-            <form action="{{route('transactionsFilterEmail')}}" method="post">
+            <form method="post" action="{{route('transactionsFilterEmail')}}" id="formulaireEmail">
                 @csrf
-                <input type="email" placeholder="Entrez l'email du client" name="email" class="w-96" required>
+                <input id="valueForm" type="email" placeholder="Entrez l'email du client" name="email" class="w-96" required>
                 <button class="bouton">Rechercher</button>
             </form>
         </div>
@@ -104,7 +93,7 @@
                     <th class="w-1/6 p-4 m-auto border-2 border-solid">ID_Opération</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Opération</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Nom du client</th>
-                    <th class="w-1/6 m-auto border-2 border-solid">E-mail</th>
+                    <th class="w-1/6 m-auto border-2 border-solid">Montant</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Date</th>
                     <th class="w-1/6 m-auto border-2 border-solid">Status</th>
                     </tr>
@@ -125,7 +114,7 @@
                             $class_value = "bg-white";
                             @endphp
                         @endif
-                    <tr">
+                    <tr>
 
                     <td id="transactionId" class="p-5 m-auto text-center bg-white border-2 border-solid">{{$transaction->id}}</td>
                     <td id="transactionLabel"  class="m-auto text-center bg-white border-2 border-solid">{{$transaction->type_transactions->label}}</td>
@@ -141,11 +130,9 @@
 
                     </td>
                     <td id="transactionEmail" class="m-auto text-center bg-white border-2 border-solid">
-                        @if ($transaction->id_compte_envoyeur==null)
-                            {{$transaction->comptes_bancaire_receveur->comptes->email}}
-                        @else
-                            {{ $transaction->comptes_bancaire->comptes->email }}
-                        @endif
+
+                            {{ $transaction->montant }} $
+
 
                     </td>
                     <td id="transactionDate" class="m-auto text-center bg-white border-2 border-solid">{{$transaction->created_at->format('d-M-Y')}}</td>

@@ -12,11 +12,7 @@ class Transaction extends Model
 
     protected $fillable = ['montant', 'id_compte_envoyeur', 'id_compte_receveur', 'id_type_transaction', 'id_etat_transaction', 'created_at','updated_at'];
 
-    public function comptes_utopia() : BelongsTo
-    {
-        return $this->belongsTo(CompteBancaire::class, 'id_compte_envoyeur');
-    }
-
+  
     public function comptes_bancaire() : BelongsTo
     {
         return $this->belongsTo(CompteBancaire::class, 'id_compte_envoyeur');

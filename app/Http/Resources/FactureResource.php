@@ -20,7 +20,7 @@ class FactureResource extends JsonResource
             'description'=>$this->description,
             'montant_defini' => $this->montant_defini,
             'jour_du_mois' => $this->jour_du_mois,
-            'id_fournisseur' => $this->id_fournisseur,
+            'id_fournisseur' => $this->fournisseurs->nom,
             ];
     }
 }

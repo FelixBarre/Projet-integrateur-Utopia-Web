@@ -33,6 +33,7 @@ class TransactionController extends Controller
 
             return TransactionResource::collection($transactions);
         }
+
         else if($request->routeIs('transactionApi')){
 
 
@@ -41,6 +42,47 @@ class TransactionController extends Controller
 
             return new TransactionResource($transaction);
         }
+
+        else if($request->routeIs('depots')){
+
+            $transactions = Transaction::where('id_type_transaction', 1)->get();
+
+            return view('accueil.accueil', [
+                'employe'=>$employe,
+                'date_time'=>$date_time,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all()
+
+            ]);
+        }
+
+        else if($request->routeIs('retraits')){
+
+            $transactions = Transaction::where('id_type_transaction', 2)->get();
+
+            return view('accueil.accueil', [
+                'employe'=>$employe,
+                'date_time'=>$date_time,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all()
+
+            ]);
+        }
+
+        else if($request->routeIs('virements')){
+
+            $transactions = Transaction::where('id_type_transaction', 3)->get();
+
+            return view('accueil.accueil', [
+                'employe'=>$employe,
+                'date_time'=>$date_time,
+                'transactions'=>$transactions,
+                'type_transactions'=>TypeTransaction::all()
+
+            ]);
+        }
+
+
 
         else{
             return view('accueil/accueil', [
@@ -51,8 +93,6 @@ class TransactionController extends Controller
             ]);
 
         }
-
-
 
     }
 
@@ -102,8 +142,6 @@ class TransactionController extends Controller
                     $compte = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
                     $soldeCompte = $compte->solde;
                 }
-
-
 
                 if($typeTransaction == 2 && $soldeCompte < $contenuDecode['montant']){
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
@@ -205,13 +243,16 @@ class TransactionController extends Controller
     public function show(Request $request, int $id_type_transaction = null)
     {
         $id = $request['id_compte'];
-        $transaction = Transaction::find($id);
+        $transaction = User::find($id);
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
 
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
+            $user = User::find($id);
+            $idUser = $user->id;
+            $compte = User::where('id', $idUser)->first();
             $transaction = Transaction::find($id);
             $transactions = Transaction::where('id_compte_envoyeur', $id)
                             ->orWhere('id_compte_receveur', $id)->orderBy('created_at', 'desc')->get();
@@ -221,6 +262,7 @@ class TransactionController extends Controller
             return view('transaction/transactions', [
                 'employe'=>$employe,
                 'date_time'=>Carbon::now()->format('d-M-Y H:i'),
+                'compte'=>$compte,
                 'transaction'=> $transaction,
                 'transactions'=>$transactions,
                 'id_compte_envoyeur'=>$id,
@@ -247,9 +289,9 @@ class TransactionController extends Controller
         else if($request->routeIs('transactionsFilterApi')){
 
             $idTransaction = $id_type_transaction;
+
             $employe = Auth::user();
-            $transactions = Transaction::with(['comptes','comptes_bancaire', 'comptes_bancaire_receveur', 'type_transactions', 'etat_transactions'])
-                                        ->where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
+            $transactions = Transaction::where('id_type_transaction', $idTransaction)->orderBy('created_at', 'desc')->get();
             //return view('accueil/accueil', [
             //    'employe'=>$employe,
             //    'transactions'=>$transactions,
@@ -257,7 +299,7 @@ class TransactionController extends Controller
             //    'date_time'=>$date_time
             //]);
 
-            return response()->json($transactions);
+            return response()->json(TransactionResource::collection($transactions));
         }
         else if($request->routeIs('transactionsFilterUser')){
             $idTransaction = $request['id_type_Transaction'];
@@ -291,11 +333,14 @@ class TransactionController extends Controller
 
             if (empty($dateDebut)) {
 
-                return back()->with('error', 'Veuillez choisir une date de début.');
+                session()->flash('erreur', 'Vous devez choisir une date de début');
+                return redirect(route('accueil'));
             }
 
             if (!empty($dateFin) && $dateFin < $dateDebut) {
-                return back()->with('error', 'La date de fin doit être ultérieure à la date de début.');
+                session()->flash('erreur', 'La date de fin doit être ultérieure à la date de début.');
+                return redirect(route('accueil'));
+
             }
             $transactions = Transaction::whereDate('created_at', '>=', $dateDebut)
                             ->whereDate('created_at', '<=', $dateFin)
@@ -328,26 +373,83 @@ class TransactionController extends Controller
                 'date_time'=>$date_time
             ]);
         }
-        else if($request->routeIs('transactionsFilterEmail')){
-            $user = User::where('email', $request['email'])->first();
-            if($user){
-                $idUser = $user->id;
-            }else{
-                return back()->with('error', 'Aucune transaction n\'est liée à cette adresse.');
-            }
 
-            $transactions = Transaction::where('id_compte_envoyeur', $idUser)
+        else if($request->routeIs('transactionsFilterEmail')){
+
+            $user = User::where('email', $request['email'])->first();
+
+            if(!$user){
+
+                session()->flash('erreur', 'Aucune transaction ne correspond à cette adresse.');
+                return redirect(route('accueil'));
+
+            }else{
+
+                $idUser = $user->id;
+
+                $transactions = Transaction::where('id_compte_envoyeur', $idUser)
+                            ->orWhere('id_compte_receveur', $idUser)
                             ->orderBy('created_at', 'desc')
                             ->get();
 
-            $employe = Auth::user();
-            return view('accueil/accueil', [
-                'employe'=>$employe,
-                'transactions'=>$transactions,
-                'type_transactions'=>TypeTransaction::all(),
-                'date_time'=>$date_time
-            ]);
+                $employe = Auth::user();
+                return view('accueil.filter', [
+                    'employe'=>$employe,
+                    'transactions'=>$transactions,
+                    'type_transactions'=>TypeTransaction::all(),
+                    'date_time'=>$date_time
+                ]);
+
+            }
+
+
         }
+
+        else if($request->routeIs('transactionsFilter')){
+            $montant = request('montant');
+            $id = $request['id_compte_user'];
+
+            $user = User::find($id);
+
+            $idUser = $user->id;
+            $compte = User::where('id', $idUser)->first();
+            $transaction = Transaction::find($id);
+
+
+
+            $transactions = Transaction::where('id_compte_envoyeur', $idUser)
+            ->orWhere('id_compte_receveur', $idUser)
+            ->where('montant', '=', $montant) // Condition sur le montant
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            if(!$transactions){
+
+                session()->flash('erreur', 'Aucune transaction ne correspond a ce montant.');
+                return redirect(route('accueil'));
+
+            }else{
+
+                $employe = Auth::user();
+                return view('transaction.filter', [
+                    'employe'=>$employe,
+                    'compte'=>$compte,
+                    'transaction'=>$transaction,
+                    'transactions'=>$transactions,
+                    'type_transactions'=>TypeTransaction::all(),
+                    'date_time'=>$date_time
+                ]);
+
+
+            }
+
+
+
+
+
+        }
+
+
 
     }
 

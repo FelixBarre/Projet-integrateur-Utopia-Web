@@ -24,6 +24,21 @@
 
 
 
+    <div class="">
+
+
+        <div class="flex flex-row justify-center">
+            <form method="post" action="{{route('transactionsFilter')}}" id="formulaireEmail">
+                @csrf
+                <input id="valueForm" type="number" placeholder="Entrez le montant de l'opération" name="montant" class="w-96" required>
+                <input type="hidden" value="{{$transaction->id}}" name="id_compte_user">
+                <button class="bouton">Rechercher</button>
+            </form>
+        </div>
+
+
+    </div><!-- Fin section filter -->
+
     <div class="p-10 mb-12 m_auto"><!-- Bloc du tableau des transactions -->
         <table>
             <thead id="transactionTable">
