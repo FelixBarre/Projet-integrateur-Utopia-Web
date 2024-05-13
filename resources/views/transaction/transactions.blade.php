@@ -24,13 +24,13 @@
 
 
 
-    <div class="flex flex-row"><!--Section filter -->
+    <!--<div class="flex flex-row"><!--Section filter --><!--
         <form method="get" id="formSelect" class="w-2/4">
             @csrf
             <p class="my-5 mx-9">
                 <label for="filter" class="text-lg text-white">Trier par </label>
                 <select id="selectValue" name="id_type_Transaction" class="w-64 p-3">
-                    <option value="none" id="optionValue">Sélectionner</option>
+                    <option value="10" id="optionValue">Sélectionner</option>
                     @foreach ($type_transactions as $type_transaction)
                     <option value="{{$type_transaction->id}}" id="optionValue">{{$type_transaction->label}}</option>
                     @endforeach
@@ -39,7 +39,7 @@
             </p>
 
 
-        </form>
+        </form>-->
 
         <!--<form method="post" action="{{ route('transactionsFilterDateUser')}}" class="w-2/4 mr-20 text-right" id="formDate">
             @csrf
