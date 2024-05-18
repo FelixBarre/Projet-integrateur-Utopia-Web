@@ -6,6 +6,7 @@ use App\Models\CompteBancaire;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CompteBancaireResource;
 
 class CompteBancaireController extends Controller
@@ -23,8 +24,13 @@ class CompteBancaireController extends Controller
             if(isset($request['id_user']))
                 return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)
                 ->where('id_user', $request['id_user'])->get());
-            else
-                return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)->get());
+            else {
+                //modif mobile
+                $id_user = Auth::id();
+                return CompteBancaireResource::collection(CompteBancaire::where('est_valide', 1)
+                ->where('id_user', $id_user)->get());
+            }
+
     }
 
     /**
