@@ -495,7 +495,7 @@ class TransactionController extends Controller
                 if (!Transaction::find($contenuDecode['id'])) {
                     return response()->json(['ERREUR' => 'Cette transaction n\'existe pas.'], 400);
                 } elseif (!Transaction::where('id_etat_transaction', 2)
-                                        ->where('id_etat_transaction', 3)->find($contenuDecode['id'])) {
+                                        ->orwhere('id_etat_transaction', 3)->find($contenuDecode['id'])) {
                     return response()->json(['ERREUR' => 'Cette transaction est déjà finaliser, vous ne pouver pas la modifier.'], 400);
                 }
 
