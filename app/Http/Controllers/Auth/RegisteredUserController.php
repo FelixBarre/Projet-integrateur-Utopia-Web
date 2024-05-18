@@ -51,7 +51,7 @@ class RegisteredUserController extends Controller
         $utilisateur = User::where('email', '=', $contenuDecode['email'])->first();
 
         if (($utilisateur === null) || !Hash::check($contenuDecode['password'], $utilisateur->password))
-            return response()->json(['ERREUR' => 'Informations d\'authentification invalides'], 500);
+            return response()->json(['ERREUR' => 'Informations d\'authentification invalides'], 400);
 
         return response()->json(
             ['SUCCÈS' => $utilisateur->createToken($contenuDecode['token_name'])->plainTextToken], 200
