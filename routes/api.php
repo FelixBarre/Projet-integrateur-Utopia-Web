@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
@@ -30,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::controller(VilleController::class)->group(function() {
         Route::get('villesApi', 'index')->name('villesApi');
         Route::get('villeApi/{id}', 'show')->name('villeApi');
+    });
+
+    Route::controller(PasswordController::class)->group(function() {
+        Route::put('passwordApi', 'update')->name('passwordApi');
     });
 
     Route::controller(CompteBancaireController::class)->group(function() {
