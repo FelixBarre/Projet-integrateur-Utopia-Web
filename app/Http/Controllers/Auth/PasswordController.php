@@ -24,7 +24,7 @@ class PasswordController extends Controller
             ], [
                 'current_password:api.required' => 'Veuillez inscrire l\'ancien mot de passe',
                 'current_password.current_password' => 'L\'ancien mot de passe ne correspond pas',
-                'password.required' => 'Le nouveau mot de passe doit être précisé',
+                'password.required' => 'Veuillez inscrire le nouveau mot de passe',
                 'password.confirmed' => 'La confirmation du mot de passe ne correspond pas',
                 'password.min' => 'Le mot de passe doit contenir au minimum 8 charactères',
             ]);
