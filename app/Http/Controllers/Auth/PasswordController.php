@@ -22,7 +22,7 @@ class PasswordController extends Controller
                 'current_password:api' => 'required|current_password',
                 'password' => 'required|confirmed|min:8'
             ], [
-                'current_password.required' => 'Veuillez inscrire l\'ancien mot de passe',
+                'current_password:api.required' => 'Veuillez inscrire l\'ancien mot de passe',
                 'current_password.current_password' => 'L\'ancien mot de passe ne correspond pas',
                 'password.required' => 'Le nouveau mot de passe doit être précisé',
                 'password.confirmed' => 'La confirmation du mot de passe ne correspond pas',
