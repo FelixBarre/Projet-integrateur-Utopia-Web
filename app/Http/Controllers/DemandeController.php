@@ -7,6 +7,7 @@ use App\Models\EtatDemande;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DemandePretResource;
 use App\Http\Resources\DemandeDesactivationResource;
 
@@ -35,7 +36,12 @@ class DemandeController extends Controller
                 ]);
             }
         } elseif ($request->routeIs('demandesPretApi')) {
-            return DemandePretResource::collection(Demande::where('id_demandeur', $request['id_user'])->get());
+            //modif mobile
+            $id_user = Auth::id();
+            return DemandePretResource::collection(Demande::where('id_type_demande', 1)
+            ->where('id_demandeur', $id_user)->get());
+            //return DemandePretResource::collection(Demande::where('id_type_demande', 1)
+            //->where('id_demandeur', $request['id_user'])->get());
         } elseif ($request->routeIs('demandesDesactivationApi')) {
             return DemandeDesactivationResource::collection(Demande::where('id_type_demande', 2)->get());
         } elseif ($request->routeIs('demandesDeDesactivation')) {
