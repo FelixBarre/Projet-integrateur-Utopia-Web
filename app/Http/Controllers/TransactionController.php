@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Http\Resources\TransactionResource;
+use App\Http\Resources\TransactionsResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\QueryException;
 
@@ -32,6 +33,15 @@ class TransactionController extends Controller
                 return response()->json(['ERREUR' => 'Aucune opération n\'est liée à ce compte'], 400);
 
             return TransactionResource::collection($transactions);
+        }
+
+        if($request->routeIs('transactionsApiAll')){
+            $transactions = Transaction::all();
+
+            if ($transactions->isEmpty())
+                return response()->json(['ERREUR' => 'Aucune transaction enrégistrée'], 400);
+
+            return TransactionsResource::collection($transactions);
         }
 
         else if($request->routeIs('transactionApi')){
