@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/comptesBancaires', 'index')->name('comptesBancairesApi');
         Route::get('/compteBancaire', 'show')->name('compteBancaireApi');
         Route::post('/creation/compteBancaire', 'store')->name('creationCompteBancaireApi');
-        Route::put('/modification/compteBancaire', 'update')->name('modificationCompteBancaireApi');
+        Route::post('/modification/compteBancaire', 'update')->name('modificationCompteBancaireApi');
         Route::delete('/desactivation/compteBancaire', 'destroy')->name('desactivationCompteBancaireApi');
     });
 
