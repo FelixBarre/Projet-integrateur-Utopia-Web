@@ -54,12 +54,13 @@ class CompteBancaireController extends Controller
             'nom' => 'required',
             'solde' => 'regex:/^\d+(?:\.\d{2})?$/',
             'taux_interet' => 'regex:/^\d+(?:\.\d{2})?$/',
-            'id_user' => 'required'
+            //modif mobile
+            //'id_user' => 'required'
             ], [
             'nom.required' => 'Veuillez entrer un nom pour votre compte.',
             'solde.regex' => 'Veuillez inscrire un solde avec deux chiffres après la virgule.',
             'taux_interet.regex' => 'Veuillez inscrire un taux d\'intérêt avec deux chiffres après la virgule.',
-            'id_user.required' => 'Le propriétaire du compte est introuvable.',
+            //'id_user.required' => 'Le propriétaire du compte est introuvable.',
             ]);
             if ($validation->fails()) {
                 return response()->json(['ERREUR' => $validation->errors()], 400);
@@ -67,9 +68,10 @@ class CompteBancaireController extends Controller
 
             $contenuDecode = $validation->validated();
 
-            if (!User::find($contenuDecode['id_user'])) {
+            /*if (!User::find($contenuDecode['id_user'])) {
                 return response()->json(['ERREUR' => 'Cet utilisateur n\'existe pas.'], 400);
-            }
+            }*/
+            $id_user = Auth::id();
            }
 
            try {
@@ -78,7 +80,7 @@ class CompteBancaireController extends Controller
                         'nom' => $contenuDecode['nom'],
                         'solde' => $contenuDecode['solde'],
                         'taux_interet' => $contenuDecode['taux_interet'],
-                        'id_user' => $contenuDecode['id_user'],
+                        'id_user' => $id_user,
                         'est_valide' => 1
                     ]);
                 } elseif (!isset($contenuDecode['solde']) && !isset($contenuDecode['taux_interet'])) {
@@ -86,7 +88,7 @@ class CompteBancaireController extends Controller
                         'nom' => $contenuDecode['nom'],
                         'solde' => 0.00,
                         'taux_interet' => 0.01,
-                        'id_user' => $contenuDecode['id_user'],
+                        'id_user' => $id_user,
                         'est_valide' => 1
                     ]);
                 } elseif (!isset($contenuDecode['solde'])) {
@@ -94,7 +96,7 @@ class CompteBancaireController extends Controller
                         'nom' => $contenuDecode['nom'],
                         'solde' => 0.00,
                         'taux_interet' => $contenuDecode['taux_interet'],
-                        'id_user' => $contenuDecode['id_user'],
+                        'id_user' => $id_user,
                         'est_valide' => 1
                     ]);
                 } elseif (!isset($contenuDecode['taux_interet'])) {
@@ -102,7 +104,7 @@ class CompteBancaireController extends Controller
                         'nom' => $contenuDecode['nom'],
                         'solde' => $contenuDecode['solde'],
                         'taux_interet' => 0.01,
-                        'id_user' => $contenuDecode['id_user'],
+                        'id_user' => $id_user,
                         'est_valide' => 1
                     ]);
                 }
