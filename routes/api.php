@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::controller(TransactionController::class)->group(function(){
+        Route::get('/transactionsApiAll/', 'index')->name('transactionsApiAll');
         Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
         Route::get('transactionApi/{id}', 'index')->name('transactionApi');
         Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
