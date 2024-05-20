@@ -244,6 +244,7 @@ class ProfileController extends Controller
                 'id' => 'required',
                 'prenom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
                 'nom' => 'required|regex:/^[A-ZÀ-Ù]{1}[a-za-ù]*([-]?[A-ZÀ-Ù]{1}[a-za-ù]*)?$/',
+                'courriel' => 'required|email',
                 'telephone' => 'required|regex:/^\d{3}[ ]?\d{3}[- ]?\d{4}$/',
                 'noCivique' => 'required|regex:/^\d{1,5}$/',
                 'rue' => 'required|regex:/^[A-zÀ-ú\d ]+$/',
@@ -256,6 +257,8 @@ class ProfileController extends Controller
                 'prenom.regex' => 'Format de prénom invalide',
                 'nom.required' => 'Veuillez entrer le nom.',
                 'nom.regex' => 'Format de nom invalide',
+                'courriel.required' => 'Veuillez entrer l\'adresse courriel',
+                'courriel.email' => 'Format de courriel invalide',
                 'telephone.required' => 'Veuillez entrer le numéro de téléphone',
                 'telephone.regex' => 'Format de téléphone invalide',
                 'noCivique.required' => 'Veuillez entrer le numéro civique',
@@ -283,6 +286,13 @@ class ProfileController extends Controller
                 return response()->json(['ERREUR' => 'Ville introuvable'], 400);
             }
 
+            if ($request->user()->email != $contenuDeCode['courriel']) {
+                $userWithSameEmail = User::where('email', $contenuDeCode['courriel'])->get();
+                if (isset($userWithSameEmail[0])) {
+                    return response()->json(['ERREUR' => 'Courriel déjà présent dans le système'], 400);
+                }
+            }
+
             $user = User::find($contenuDeCode['id']);
 
             foreach($request->user()->roles as $role) {
@@ -308,6 +318,7 @@ class ProfileController extends Controller
 
                 $user->prenom = $contenuDeCode['prenom'];
                 $user->nom = $contenuDeCode['nom'];
+                $user->email = $contenuDeCode['courriel'];
                 $user->telephone = $contenuDeCode['telephone'];
                 $user->no_civique = $contenuDeCode['noCivique'];
                 $user->rue = $contenuDeCode['rue'];
