@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PretController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\VilleController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/user', function (Request $request) {
@@ -24,6 +25,11 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/profilesApi/{email}', 'getUserByEmail')->name('users.getUsersAPI');
         Route::get('/profileApi', 'show')->name('getUserApi');
         Route::put('/modification/profileApi', 'updateApi')->name('updateUserApi');
+    });
+
+    Route::controller(VilleController::class)->group(function() {
+        Route::get('villesApi', 'index')->name('villesApi');
+        Route::get('villeApi/{id}', 'show')->name('villeApi');
     });
 
     Route::controller(CompteBancaireController::class)->group(function() {

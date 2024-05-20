@@ -14,7 +14,6 @@ class VilleSeeder extends Seeder
      */
     public function run(): void
     {
-        //Ville::truncate();
         $dataCSV = fopen(base_path('database/csv/MUN.csv'), 'r');
         $rangeeTitre = true;
         while(($data = fgetcsv($dataCSV)) !== false) {
@@ -26,11 +25,5 @@ class VilleSeeder extends Seeder
             $rangeeTitre = false;
         }
         fclose($dataCSV);
-
-        /*
-        DB::table('villes')->insert([
-            ['nom' => 'ville de test']
-        ]);
-        */
     }
 }
