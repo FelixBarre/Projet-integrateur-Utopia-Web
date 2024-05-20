@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompteBancaireController;
@@ -32,6 +33,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('villeApi/{id}', 'show')->name('villeApi');
     });
 
+    Route::controller(PasswordController::class)->group(function() {
+        Route::put('passwordApi', 'update')->name('passwordApi');
+    });
+
     Route::controller(CompteBancaireController::class)->group(function() {
         Route::get('/comptesBancaires', 'index')->name('comptesBancairesApi');
         Route::get('/compteBancaire', 'show')->name('compteBancaireApi');
@@ -41,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::controller(TransactionController::class)->group(function(){
+        Route::get('/transactionsApiAll/', 'index')->name('transactionsApiAll');
         Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
         Route::get('transactionApi/{id}', 'index')->name('transactionApi');
         Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
