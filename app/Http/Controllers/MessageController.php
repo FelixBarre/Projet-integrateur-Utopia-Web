@@ -166,7 +166,7 @@ class MessageController extends Controller
             }
 
             return MessageResource::collection(Message::where('id_conversation', $id_conversation)
-                ->where('updated_at', '>=', $date_derniere_update)
+                ->where('updated_at', '>', $date_derniere_update)
                 ->get());
         }
     }
