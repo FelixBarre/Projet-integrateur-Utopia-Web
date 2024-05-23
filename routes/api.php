@@ -7,6 +7,7 @@ use App\Http\Controllers\CompteBancaireController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\FactureController;
+use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PretController;
@@ -46,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::controller(TransactionController::class)->group(function(){
-        Route::get('/transactionsApiAll/', 'index')->name('transactionsApiAll');
+        Route::get('/transactionsApiAll/{id}', 'show')->name('transactionsApiAll');
         Route::get('transactionsApi/{id}', 'index')->name('transactionsApi');
         Route::get('transactionApi/{id}', 'index')->name('transactionApi');
         Route::post('/transactionApi/new', 'store')->name('newTransactionApi');
@@ -100,6 +101,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/factureApi/new', 'store')->name('newFactureApi');
         Route::post('/factureApi/update', 'update')->name('updateFactureApi');
         Route::post('/factureApi/delete', 'destroy')->name('deleteFactureApi');
+    });
+
+    Route::controller(FournisseurController::class)->group(function(){
+        Route::get('/fournisseursApi', 'index')->name('fournisseursApi');
     });
 
     Route::controller(CreditController::class)->group(function() {
