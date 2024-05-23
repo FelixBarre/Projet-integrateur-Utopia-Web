@@ -104,7 +104,7 @@ async function pageAccueil() {
 
             let tdOperation = document.createElement("td");
             tdOperation.classList.add("p-5", "m-auto", "text-center", "bg-white", "border-2", "border-solid");
-            tdOperation.textContent = transaction.id_type_transactions;
+            tdOperation.textContent = transaction.id_type_transaction;
 
             let idCompte;
 
