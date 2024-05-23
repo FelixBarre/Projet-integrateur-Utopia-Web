@@ -81,12 +81,12 @@ class DemandeController extends Controller
             $validation = Validator::make($request->all(), [
             'raison' => 'required',
             'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
-            'id_demandeur' => 'required|regex:/^\d+$/',
+            //modif mobile required
+            'id_demandeur' => 'regex:/^\d+$/',
             ], [
             'raison.required' => 'Veuillez entrer la raison de la demande.',
             'montant.required' => 'Veuillez entrer le montant de la demande.',
             'montant.regex' => 'Veuillez inscrire un montant avec deux chiffres après la virgule.',
-            'id_demandeur.required' => 'L\auteur de la demande est introuvable.',
             'id_demandeur.regex' => 'Le id doit être numérique.',
             ]);
             if ($validation->fails()) {
@@ -95,9 +95,10 @@ class DemandeController extends Controller
 
             $contenuDecode = $validation->validated();
 
-            if (!User::find($contenuDecode['id_demandeur'])) {
+            /*if (!User::find($contenuDecode['id_demandeur'])) {
                 return response()->json(['ERREUR' => 'Cet utilisateur n\'existe pas.'], 400);
-            }
+            }*/
+            $id_user = Auth::id();
 
            try {
                 Demande::create([
@@ -105,7 +106,7 @@ class DemandeController extends Controller
                     'raison' => $contenuDecode['raison'],
                     'montant' => $contenuDecode['montant'],
                     'id_etat_demande' => 3,
-                    'id_demandeur' => $contenuDecode['id_demandeur'],
+                    'id_demandeur' => $id_user,
                     'id_type_demande' => 1
                 ]);
 
