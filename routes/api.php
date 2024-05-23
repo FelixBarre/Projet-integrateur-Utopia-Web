@@ -57,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/creation/demande_de_pret', 'store')->name('creationDemandePretApi');
         Route::put('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi');
         Route::post('/modification/demande_de_pret', 'update')->name('modificationDemandePretApi'); //fetch
-        Route::delete('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi');
+        Route::post('/annulation/demande_de_pret', 'destroy')->name('annulationDemandePretApi'); //modif mobile
         Route::get('/demandes_de_desactivation', 'index')->name('demandesDesactivationApi');
         Route::get('/demande_de_desactivation', 'show')->name('demandeDesactivationApi');
         Route::post('/creation/demande_de_desactivation', 'store')->name('creationDemandeDesactivationApi');
