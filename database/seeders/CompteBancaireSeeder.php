@@ -44,6 +44,16 @@ class CompteBancaireSeeder extends Seeder
             'taux_interet' => 0.03,
             'est_valide' => 1,
             'id_user' => 3],
+            ['nom' => 'PretVoyage',
+            'solde' => 5000,
+            'taux_interet' => 2.00,
+            'est_valide' => 1,
+            'id_user' => 1],
+            ['nom' => 'carte de crédit',
+            'solde' => 19.99,
+            'taux_interet' => 0.50,
+            'est_valide' => 1,
+            'id_user' => 1]
         ]);
     }
 }
