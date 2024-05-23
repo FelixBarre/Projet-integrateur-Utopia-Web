@@ -28,10 +28,16 @@ class DemandeSeeder extends Seeder
             'id_type_demande' => 1],
             ['date_demande' => '2023-08-25',
             'raison' => "Voyage",
-            'montant' => 20000,
-            'id_etat_demande' => 3,
+            'montant' => 5000,
+            'id_etat_demande' => 1,
             'id_demandeur' => 1,
-            'id_type_demande' => 1]
+            'id_type_demande' => 1],
+            ['date_demande' => '2024-08-20',
+            'raison' => "changement de banque",
+            'montant' => null,
+            'id_etat_demande' => 3,
+            'id_demandeur' => 2,
+            'id_type_demande' => 2],
         ]);
     }
 }
