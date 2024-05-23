@@ -28,7 +28,9 @@ class DatabaseSeeder extends Seeder
             EtatDemandeSeeder::class,
             DemandeSeeder::class,
             ConversationSeeder::class,
-            MessageSeeder::class
+            MessageSeeder::class,
+            PretSeeder::class,
+            CreditSeeder::class
         ]);
 
     }
