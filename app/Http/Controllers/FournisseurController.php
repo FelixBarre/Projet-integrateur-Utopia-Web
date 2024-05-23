@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
+use App\Http\Resources\FournisseurResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -25,6 +26,14 @@ class FournisseurController extends Controller
             'fournisseurs'=>Fournisseur::orderBy('nom', 'asc')->get(),
             'employe'=>$employe,
             'date_time'=>$date_time]);
+        }
+        elseif($request->routeIs('fournisseursApi')){
+            $fournisseurs = Fournisseur::all();
+
+            if ($fournisseurs->isEmpty())
+                return response()->json(['ERREUR' => 'Aucun fournisseur a été trouvé'], 400);
+
+            return FournisseurResource::collection($fournisseurs);
         }
     }
 

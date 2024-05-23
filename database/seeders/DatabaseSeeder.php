@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Facture;
 use App\Models\Fournisseur;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RolesUsersSeeder::class,
             FournisseurSeeder::class,
+            FactureSeeder::class,
             CompteBancaireSeeder::class,
             TypeTransactionSeeder::class,
             EtatTransactionSeeder::class,

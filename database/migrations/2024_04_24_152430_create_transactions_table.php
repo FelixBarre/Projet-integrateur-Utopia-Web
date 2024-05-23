@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('id_compte_receveur')->nullable()->unsigned();
             $table->bigInteger('id_type_transaction')->unsigned();
             $table->bigInteger('id_etat_transaction')->unsigned();
+            $table->bigInteger('id_facture')->nullable()->unsigned();
             $table->timestamps();
         });
 
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->foreign('id_compte_receveur')->references('id')->on('compte_bancaires');
             $table->foreign('id_type_transaction')->references('id')->on('type_transactions');
             $table->foreign('id_etat_transaction')->references('id')->on('etat_transactions');
+            $table->foreign('id_facture')->references('id')->on('factures');
         });
     }
 
