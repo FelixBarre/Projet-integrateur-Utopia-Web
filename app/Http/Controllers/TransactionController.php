@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FournisseurResource;
 use App\Models\CompteBancaire;
 use App\Models\Transaction;
 use App\Models\TypeTransaction;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Http\Resources\TransactionResource;
 use App\Http\Resources\TransactionsResource;
+use App\Models\Fournisseur;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\QueryException;
 
@@ -35,14 +37,7 @@ class TransactionController extends Controller
             return TransactionResource::collection($transactions);
         }
 
-        if($request->routeIs('transactionsApiAll')){
-            $transactions = Transaction::all();
 
-            if ($transactions->isEmpty())
-                return response()->json(['ERREUR' => 'Aucune transaction enrégistrée'], 400);
-
-            return TransactionsResource::collection($transactions);
-        }
 
         else if($request->routeIs('transactionApi')){
 
@@ -93,7 +88,6 @@ class TransactionController extends Controller
         }
 
 
-
         else{
             return view('accueil/accueil', [
                 'employe'=>$employe,
@@ -122,15 +116,19 @@ class TransactionController extends Controller
         if($request->routeIs('newTransactionApi')){
             $validation = Validator::make($request->all(), [
                 'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
-
                 'id_compte_envoyeur' => 'required|regex:/^\d+$/',
                 'id_compte_receveur' => 'required|regex:/^\d+$/',
-
+                'id_type_transaction' => 'required|regex:/^\d+$/',
+                'id_etat_transaction' => 'required|regex:/^\d+$/',
+                'id_facture' => 'required|regex:/^\d+$/',
 
                 ], [
                 'montant.required' => 'Veuillez entrer un montant valide',
                 'id_compte_envoyeur.required' => 'Veuillez un numero de compte valide',
                 'id_compte_receveur.required' => 'Veuillez un numero de compte valide',
+                'id_type_transaction.required' => 'Veuillez un numero valide',
+                'id_etat_transaction.required' => 'Veuillez un numero valide',
+                'id_facture.required' => 'Veuillez un numero valide',
                 ]);
                 if ($validation->fails()) {
                     return response()->json(['ERREUR' => $validation->errors()], 400);
@@ -138,24 +136,36 @@ class TransactionController extends Controller
 
                 $contenuDecode = $validation->validated();
 
-                if($contenuDecode['id_compte_envoyeur']==0){
+                $etatTransaction = $contenuDecode['id_etat_transaction'];
+                $compteEnvoyeur = $contenuDecode['id_compte_receveur'];
+                $compteReceveur = $contenuDecode['id_compte_receveur'];
+                $typeTransaction = $contenuDecode['id_type_transaction'];
+                $idFacture= $contenuDecode['id_facture'];
 
+                if($contenuDecode['id_compte_envoyeur']==0){
                     $compteEnvoyeur = null;
+                    $idFacture = null;
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
-                    $typeTransaction = 1;
-                    $compte = CompteBancaire::find($contenuDecode['id_compte_receveur']);
-                    $soldeCompte = $compte->solde;
+                    $compte2 = CompteBancaire::find($compteReceveur);
+
                 }elseif($contenuDecode['id_compte_receveur']==0 ){
                     $compteReceveur= null;
+                    $idFacture = null;
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
-                    $typeTransaction = 2;
-                    $compte = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
-                    $soldeCompte = $compte->solde;
+                    $compte1 = CompteBancaire::find($compteEnvoyeur);
+
+                }else{
+                    $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
+                    $compteReceveur = $contenuDecode['id_compte_receveur'];
+                    $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                    $compte2 = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+                    $idFacture = null;
                 }
 
-                if($typeTransaction == 2 && $soldeCompte < $contenuDecode['montant']){
+                if($typeTransaction == 2 && $compte1->solde< $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 3 && $compte1->solde < $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 4 && $compte1->solde < $contenuDecode['montant']){
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
                 }
+
                 try {
 
                     Transaction::create([
@@ -163,16 +173,33 @@ class TransactionController extends Controller
                     'id_compte_envoyeur' => $compteEnvoyeur,
                     'id_compte_receveur' => $compteReceveur,
                     'id_type_transaction' => $typeTransaction,
-                    'id_etat_transaction' => 3,
+                    'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
+                    'id_facture' => $idFacture,
                     'created_at' => now(),
                     'updated_at' => now()
                     ]);
-                    if($typeTransaction == 2){
-                        $compte->solde -= $contenuDecode['montant'];
-                        $compte->save();
-                    }elseif($typeTransaction == 1){
-                        $compte->solde += $contenuDecode['montant'];
-                        $compte->save();
+                    if($typeTransaction == 2 && $contenuDecode['id_etat_transaction'] != 2){
+                        $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                        $compte1->solde -= $contenuDecode['montant'];
+                        $compte1->save();
+
+                    }elseif($typeTransaction == 4 && $contenuDecode['id_etat_transaction'] != 2){
+                        $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                        $compte1->solde -= $contenuDecode['montant'];
+                        $compte1->save();
+
+                    }elseif($typeTransaction == 1 && $contenuDecode['id_etat_transaction'] != 2){
+                        $compte2 = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+                        $compte2->solde += $contenuDecode['montant'];
+                        $compte2->save();
+                    }elseif($typeTransaction == 3 && $contenuDecode['id_etat_transaction'] != 2){
+                        $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
+                        $compte2 = CompteBancaire::find($contenuDecode['id_compte_receveur']);
+                        $compte1->solde -= $contenuDecode['montant'];
+                        $compte1->save();
+                        $compte2->solde += $contenuDecode['montant'];
+                        $compte2->save();
+
                     }
 
                     return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
@@ -257,6 +284,19 @@ class TransactionController extends Controller
         $transactions = Transaction::where('id_compte_envoyeur', $id)->get();
         $date_time = Carbon::now()->format('d-M-Y H:i');
         $employe =Auth::user();
+
+        if($request->routeIs('transactionsApiAll')){
+            $id = $request['id'];
+            $transactions = Transaction::where('id_compte_envoyeur', $id)
+                                        ->orwhere('id_compte_receveur', $id)
+                                        ->get();
+
+            if ($transactions->isEmpty())
+                return response()->json(['ERREUR' => 'Aucune transaction enrégistrée'], 400);
+
+            return TransactionsResource::collection($transactions);
+        }
+
 
         if($request->routeIs('transactions')){
             $id = $request['id_compte_envoyeur'];
