@@ -8,6 +8,7 @@ use App\Models\CompteBancaire;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\PretResource;
 
 class PretController extends Controller
@@ -18,9 +19,11 @@ class PretController extends Controller
     public function index(Request $request)
     {
         if ($request->routeIs('PretsApi')) {
-            if(isset($request['id_user']) && User::find($request['id_user'])) {
+            //modif mobile
+            $id_user = Auth::id();
+            if(isset($id_user)) {
                 $pretArray = array();
-                $comptesBancaires = CompteBancaire::where('id_user', $request['id_user'])->get();
+                $comptesBancaires = CompteBancaire::where('id_user', $id_user)->get();
 
                 foreach ($comptesBancaires as $compteBancaire) {
                     if ($pret = Pret::where('id_compte', $compteBancaire->id)->where('est_valide', 1)->get())
