@@ -154,6 +154,11 @@ class TransactionController extends Controller
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compte1 = CompteBancaire::find($compteEnvoyeur);
 
+                }elseif($contenuDecode['id_compte_receveur']==0 && $contenuDecode['id_type_transaction']==4){
+                    $compteReceveur= null;
+                    $idFacture = 4;
+                    $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
+                    $compte1 = CompteBancaire::find($compteEnvoyeur);
                 }else{
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
