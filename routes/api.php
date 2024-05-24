@@ -70,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/creation/demande_de_desactivation', 'store')->name('creationDemandeDesactivationApi');
         Route::put('/modification/demande_de_desactivation', 'update')->name('modificationDemandeDesactivationApi');
         Route::delete('/annulation/demande_de_desactivation', 'destroy')->name('annulationDemandeDesactivationApi');
+        Route::post('/creation/demande_de_desactivation_bancaire', 'store')->name('creationDemandeDesactivationBancaireApi');
     });
 
     Route::controller(MessageController::class)->group(function() {

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DemandePretResource;
 use App\Http\Resources\DemandeDesactivationResource;
+use App\Models\CompteBancaire;
 
 class DemandeController extends Controller
 {
@@ -148,7 +149,41 @@ class DemandeController extends Controller
                 } catch (QueryException $erreur) {
                     report($erreur);
                     return response()->json(['ERREUR' => 'La demande n\'a pas été créé.'], 500);
+               }
+        } elseif ($request->routeIs('creationDemandeDesactivationBancaireApi')) {
+            $validation = Validator::make($request->all(), [
+                'raison' => 'required',
+                'id_compte' => 'required|regex:/^\d+$/',
+                ], [
+                'raison.required' => 'Veuillez entrer la raison de la demande.',
+                'id_compte.required' => 'Veuillez entrer le compte concerné.',
+                'id_compte.regex' => 'Le format de compte n\'est pas valide.',
+                ]);
+                if ($validation->fails()) {
+                    return response()->json(['ERREUR' => $validation->errors()], 400);
                 }
+
+                $contenuDecode = $validation->validated();
+
+                if (!CompteBancaire::find($contenuDecode['id_compte'])) {
+                    return response()->json(['ERREUR' => 'Ce compte bancaire n\'existe pas.'], 400);
+                }
+
+               try {
+                    Demande::create([
+                        'date_demande' => now(),
+                        'raison' => $contenuDecode['raison'],
+                        'montant' => null,
+                        'id_etat_demande' => 3,
+                        'id_demandeur' => $request->user()->id,
+                        'id_type_demande' => 3
+                    ]);
+
+                    return response()->json(['SUCCES' => 'La demande a été créé avec succès.'], 200);
+                } catch (QueryException $erreur) {
+                    report($erreur);
+                    return response()->json(['ERREUR' => 'La demande n\'a pas été créé.'], 500);
+               }
         }
     }
 

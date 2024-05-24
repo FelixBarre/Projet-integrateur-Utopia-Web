@@ -15,7 +15,8 @@ class TypeDemandeSeeder extends Seeder
     {
         DB::table('type_demandes')->insert([
             ['label' => 'Demande de Prêt'],
-            ['label' => 'Demande de désactivation de compte']
+            ['label' => 'Demande de désactivation de compte utilisateur'],
+            ['label' => 'Demande de désactivation de compte bancaire']
         ]);
     }
 }
