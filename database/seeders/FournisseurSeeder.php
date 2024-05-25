@@ -17,8 +17,8 @@ class FournisseurSeeder extends Seeder
             ['nom' => 'SAAQ', 'description'=>'Société de l\'assurance automobile du québec'],
             ['nom' => 'Hydro Sherbrooke', 'description'=>'Hydro Sherbrooke'],
             ['nom' => 'Bell', 'description'=>'Bell audiovisuel'],
-            ['nom' => 'ARC', 'description'=>'Agence de revenus du Canada'],
-            ['nom' => 'Revenu Québec', 'description'=>'Agence de revenus du Québec']
+            //['nom' => 'ARC', 'description'=>'Agence de revenus du Canada'],
+            //['nom' => 'Revenu Québec', 'description'=>'Agence de revenus du Québec']
         ]);
     }
 
