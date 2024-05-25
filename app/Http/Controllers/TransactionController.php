@@ -154,11 +154,6 @@ class TransactionController extends Controller
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compte1 = CompteBancaire::find($compteEnvoyeur);
 
-                }elseif($contenuDecode['id_compte_receveur']==0 && $contenuDecode['id_type_transaction']==4){
-                    $compteReceveur= null;
-                    $idFacture = 4;
-                    $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
-                    $compte1 = CompteBancaire::find($compteEnvoyeur);
                 }else{
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
@@ -166,6 +161,7 @@ class TransactionController extends Controller
                     $compte2 = CompteBancaire::find($contenuDecode['id_compte_receveur']);
                     $idFacture = null;
                 }
+
 
                 if($typeTransaction == 2 && $compte1->solde< $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 3 && $compte1->solde < $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 4 && $compte1->solde < $contenuDecode['montant']){
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
