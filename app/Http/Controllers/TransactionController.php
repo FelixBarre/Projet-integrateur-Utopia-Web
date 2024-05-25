@@ -162,6 +162,7 @@ class TransactionController extends Controller
                     $idFacture = null;
                 }
 
+
                 if($typeTransaction == 2 && $compte1->solde< $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 3 && $compte1->solde < $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 4 && $compte1->solde < $contenuDecode['montant']){
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
                 }
