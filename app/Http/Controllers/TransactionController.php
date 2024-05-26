@@ -219,7 +219,6 @@ class TransactionController extends Controller
 
                     }
 
-
                     return response()->json([
                         'SUCCES' => 'La transaction a été effectuée avec succès.',], 200);
 
