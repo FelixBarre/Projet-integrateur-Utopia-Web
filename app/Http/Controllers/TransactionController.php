@@ -114,6 +114,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         if($request->routeIs('newTransactionApi')){
+
             $validation = Validator::make($request->all(), [
                 'montant' => 'required|regex:/^\d+(?:\.\d{2})?$/',
                 'id_compte_envoyeur' => 'required|regex:/^\d+$/',
@@ -136,6 +137,8 @@ class TransactionController extends Controller
 
                 $contenuDecode = $validation->validated();
 
+
+
                 $etatTransaction = $contenuDecode['id_etat_transaction'];
                 $compteEnvoyeur = $contenuDecode['id_compte_receveur'];
                 $compteReceveur = $contenuDecode['id_compte_receveur'];
@@ -143,36 +146,37 @@ class TransactionController extends Controller
                 $idFacture= $contenuDecode['id_facture'];
 
                 //Facture
-                if($contenuDecode['id_facture'] != null){
-                $compteReceveur= 3;
+                if($contenuDecode['id_type_transaction'] == 4){
+                $compteReceveur= null;
                 $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                 $compte1 = CompteBancaire::find($compteEnvoyeur);
                 $idFacture = $contenuDecode['id_facture'];
                 }
-
                 //Dépôt
-                if($contenuDecode['id_compte_envoyeur']==0){
+                elseif($contenuDecode['id_type_transaction'] == 1){
                     $compteEnvoyeur = null;
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $compte2 = CompteBancaire::find($compteReceveur);
                     $idFacture=null;
 
+                }
                 //Rétrait
-                }elseif($contenuDecode['id_compte_receveur']==0 ){
+                elseif($contenuDecode['id_type_transaction'] == 2){
                     $compteReceveur= null;
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compte1 = CompteBancaire::find($compteEnvoyeur);
-                    $idFacture = 4;
+                    $idFacture = null;
 
+                }
                 //Virement
-                }else{
+                elseif($contenuDecode['id_type_transaction'] == 3){
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
                     $compte2 = CompteBancaire::find($contenuDecode['id_compte_receveur']);
                     $idFacture = null;
-                }
 
+                }
 
                 if($typeTransaction == 2 && $compte1->solde< $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 3 && $compte1->solde < $contenuDecode['montant'] && $etatTransaction !=2 || $typeTransaction == 4 && $compte1->solde < $contenuDecode['montant']){
                     return response()->json(['ERREUR' => 'La transaction n\'a pas pu être effectuée. Votre solde est insuffisant'], 400);
@@ -190,6 +194,7 @@ class TransactionController extends Controller
                     'created_at' => now(),
                     'updated_at' => now()
                     ]);
+
                     if($typeTransaction == 2 && $contenuDecode['id_etat_transaction'] != 2){
                         $compte1 = CompteBancaire::find($contenuDecode['id_compte_envoyeur']);
                         $compte1->solde -= $contenuDecode['montant'];
@@ -214,7 +219,8 @@ class TransactionController extends Controller
 
                     }
 
-                    return response()->json(['SUCCES' => 'La transaction a été effectuée avec succès.'], 200);
+                    return response()->json([
+                        'SUCCES' => 'La transaction a été effectuée avec succès.',], 200);
 
                 }catch (QueryException $erreur) {
                     report($erreur);

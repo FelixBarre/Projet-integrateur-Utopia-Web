@@ -153,7 +153,7 @@
             @else
 
                 <p class="flex items-center mb-5 text-xl italic text-white">
-                    Le compte destinataire n'a pas été trouvé car l'utilisateur à fait un retrait.<br>
+                    Le compte destinataire n'a pas été trouvé car l'utilisateur à une opération de liée à un(e) {{$transaction->type_transactions->label}}.<br>
                 </p>
 
             @endif
