@@ -142,18 +142,29 @@ class TransactionController extends Controller
                 $typeTransaction = $contenuDecode['id_type_transaction'];
                 $idFacture= $contenuDecode['id_facture'];
 
+                //Facture
+                if($contenuDecode['id_facture'] != null){
+                $compteReceveur= 3;
+                $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
+                $compte1 = CompteBancaire::find($compteEnvoyeur);
+                $idFacture = $contenuDecode['id_facture'];
+                }
+
+                //Dépôt
                 if($contenuDecode['id_compte_envoyeur']==0){
                     $compteEnvoyeur = null;
-                    $idFacture = null;
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
                     $compte2 = CompteBancaire::find($compteReceveur);
+                    $idFacture=null;
 
+                //Rétrait
                 }elseif($contenuDecode['id_compte_receveur']==0 ){
                     $compteReceveur= null;
-                    $idFacture = null;
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compte1 = CompteBancaire::find($compteEnvoyeur);
+                    $idFacture = 4;
 
+                //Virement
                 }else{
                     $compteEnvoyeur = $contenuDecode['id_compte_envoyeur'];
                     $compteReceveur = $contenuDecode['id_compte_receveur'];
@@ -174,7 +185,7 @@ class TransactionController extends Controller
                     'id_compte_envoyeur' => $compteEnvoyeur,
                     'id_compte_receveur' => $compteReceveur,
                     'id_type_transaction' => $typeTransaction,
-                    'id_etat_transaction' => $contenuDecode['id_etat_transaction'],
+                    'id_etat_transaction' => $etatTransaction,
                     'id_facture' => $idFacture,
                     'created_at' => now(),
                     'updated_at' => now()
