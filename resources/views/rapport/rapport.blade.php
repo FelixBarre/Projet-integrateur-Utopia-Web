@@ -34,8 +34,16 @@
                             <td>{{ $transaction->id }}</td>
                             <td>{{ $transaction->montant }}</td>
                             <td>{{ $transaction->type_transactions->label }}</td>
-                            <td>{{ $transaction->comptes_bancaire->comptes->prenom }} {{ $transaction->comptes_bancaire->comptes->nom }}</td>
-                            <td>{{ $transaction->comptes_bancaire_receveur->comptes->prenom }} {{ $transaction->comptes_bancaire_receveur->comptes->nom }}</td>
+                            <td>
+                                @if ($transaction->comptes_bancaire != null)
+                                    {{ $transaction->comptes_bancaire->comptes->prenom }} {{ $transaction->comptes_bancaire->comptes->nom }}
+                                @endif
+                            </td>
+                            <td>
+                                @if ($transaction->comptes_bancaire_receveur != null)
+                                    {{ $transaction->comptes_bancaire_receveur->comptes->prenom }} {{ $transaction->comptes_bancaire_receveur->comptes->nom }}
+                                @endif
+                            </td>
                             <td>{{ $transaction->etat_transactions->label }}</td>
                             <td>{{ $transaction->created_at }}</td>
                             <td>{{ $transaction->updated_at }}</td>
